@@ -7,17 +7,17 @@ This app shows selfie points or locations on the map marked by previous traveler
 ## User Stories
 
 **required** functionality:
-[] Login using Facebook
-[] Show selfie points on map using users current location
-[] Add selfie points on the app
-[] Rate the locations based on number of selfie points there
-[] Tag the selfie points #fun, #adventure, #group_jump etc.
+- [ ] Login using Facebook
+- [ ] Show selfie points on map using users current location
+- [ ] Add selfie points on the app
+- [ ] Rate the locations based on number of selfie points there
+- [ ] Tag the selfie points #fun, #adventure, #group_jump etc.
 
 **optional** functionality:
-[] Share exciting points with friends and family, via Facebook - more social media can be added, time permitting
+- [ ] Share exciting points with friends and family, via Facebook - more social media can be added, time permitting
 
 **stretch** functionality:
-[] We can add audio and visual feature from Tourster, again time permitting
+- [ ] We can add audio and visual feature from Tourster, again time permitting
 
 ## Wireframes
 [Wireframes](https://github.com/selfie-spot/SelfieSpot/wiki/Wireframes)
