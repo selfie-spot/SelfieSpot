@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">SelfieSpot</string>
+    <string name="title_activity_selfie_spots_map">Selfie-Spots Map</string>
 </resources>

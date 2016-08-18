@@ -3,6 +3,7 @@ package com.codepath.selfiespot;
 import android.app.Application;
 import android.content.Context;
 import android.support.annotation.NonNull;
+import android.support.multidex.MultiDex;
 
 import com.codepath.selfiespot.di.ApplicationComponent;
 import com.codepath.selfiespot.di.DaggerApplicationComponent;
@@ -17,6 +18,12 @@ import com.parse.interceptors.ParseLogInterceptor;
 
 public class SelfieSpotApplication extends Application {
     private ApplicationComponent mComponent;
+
+    @Override
+    protected void attachBaseContext(final Context base) {
+        super.attachBaseContext(base);
+        MultiDex.install(this);
+    }
 
     @Override
     public void onCreate() {
