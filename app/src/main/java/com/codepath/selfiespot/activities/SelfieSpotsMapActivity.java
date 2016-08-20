@@ -3,6 +3,7 @@ package com.codepath.selfiespot.activities;
 import android.Manifest;
 import android.app.Activity;
 import android.app.Dialog;
+import android.content.Context;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.location.Location;
@@ -16,7 +17,6 @@ import com.codepath.selfiespot.R;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdate;
@@ -32,8 +32,7 @@ import permissions.dispatcher.RuntimePermissions;
 
 @RuntimePermissions
 public class SelfieSpotsMapActivity extends FragmentActivity implements GoogleApiClient.ConnectionCallbacks,
-        GoogleApiClient.OnConnectionFailedListener,
-        LocationListener {
+        GoogleApiClient.OnConnectionFailedListener {
 
     private GoogleMap mMap;
     private GoogleApiClient mGoogleApiClient;
@@ -46,6 +45,11 @@ public class SelfieSpotsMapActivity extends FragmentActivity implements GoogleAp
 	 * returned in Activity.onActivityResult
 	 */
     private final static int CONNECTION_FAILURE_RESOLUTION_REQUEST = 9000;
+
+    public static Intent createIntent(final Context context) {
+        final Intent intent = new Intent(context, SelfieSpotsMapActivity.class);
+        return intent;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -185,26 +189,6 @@ public class SelfieSpotsMapActivity extends FragmentActivity implements GoogleAp
         } else {
             Toast.makeText(this, "Current location was null, enable GPS on emulator!", Toast.LENGTH_SHORT).show();
         }
-        startLocationUpdates();
-    }
-
-    @SuppressWarnings({"MissingPermission"})
-    private void startLocationUpdates() {
-        mLocationRequest = new LocationRequest();
-        mLocationRequest.setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
-        mLocationRequest.setInterval(UPDATE_INTERVAL);
-        mLocationRequest.setFastestInterval(FASTEST_INTERVAL);
-        LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient,
-                mLocationRequest, this);
-    }
-
-    public void onLocationChanged(Location location) {
-        // Report to the UI that the location was updated
-        String msg = "Updated Location: " +
-                Double.toString(location.getLatitude()) + "," +
-                Double.toString(location.getLongitude());
-        Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
-
     }
 
     /*

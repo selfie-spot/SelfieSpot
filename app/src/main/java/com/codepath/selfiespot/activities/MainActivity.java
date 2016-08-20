@@ -1,7 +1,9 @@
 package com.codepath.selfiespot.activities;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.view.View;
 
 import com.codepath.selfiespot.R;
 import com.codepath.selfiespot.SelfieSpotApplication;
@@ -19,6 +21,14 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         SelfieSpotApplication.from(this).getComponent().inject(this);
+
+        findViewById(R.id.btn_map).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                final Intent intent = SelfieSpotsMapActivity.createIntent(MainActivity.this);
+                startActivity(intent);
+            }
+        });
 
 //        testParse();
     }
