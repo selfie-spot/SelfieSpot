@@ -14,7 +14,6 @@ import android.widget.Toast;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -30,11 +29,8 @@ import permissions.dispatcher.RuntimePermissions;
 public class BaseMapFragment extends SupportMapFragment implements GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener {
 
-    private GoogleMap mMap;
-    private GoogleApiClient mGoogleApiClient;
-    private LocationRequest mLocationRequest;
-    private long UPDATE_INTERVAL = 60000;  /* 60 secs */
-    private long FASTEST_INTERVAL = 5000; /* 5 secs */
+    protected GoogleMap mMap;
+    protected GoogleApiClient mGoogleApiClient;
 
     /*
      * Define a request code to send to Google Play services This code is
@@ -54,7 +50,7 @@ public class BaseMapFragment extends SupportMapFragment implements GoogleApiClie
         });
     }
 
-    private void loadMap(final GoogleMap googleMap) {
+    protected void loadMap(final GoogleMap googleMap) {
         mMap = googleMap;
         BaseMapFragmentPermissionsDispatcher.getMyLocationWithCheck(this);
     }

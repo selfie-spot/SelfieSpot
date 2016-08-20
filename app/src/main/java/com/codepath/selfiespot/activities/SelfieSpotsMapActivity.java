@@ -13,7 +13,6 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Toast;
 
 import com.codepath.selfiespot.R;
 import com.codepath.selfiespot.repositories.PreferencesDAO;
@@ -67,7 +66,8 @@ public class SelfieSpotsMapActivity extends AppCompatActivity {
         mSelfieFab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(final View view) {
-                Toast.makeText(SelfieSpotsMapActivity.this, "New Selfie", Toast.LENGTH_SHORT).show();
+                final Intent intent = EditSelfieSpotActivity.createIntent(SelfieSpotsMapActivity.this);
+                startActivity(intent);
             }
         });
     }

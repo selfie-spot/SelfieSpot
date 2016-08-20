@@ -28,6 +28,15 @@
 
         <activity android:name=".activities.SelfieSpotsMapActivity" />
 
+        <activity android:name=".activities.EditSelfieSpotActivity"
+                  android:windowSoftInputMode="stateHidden|adjustPan">
+
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".activities.SelfieSpotsMapActivity" />
+
+        </activity>
+
         <meta-data
             android:name="com.parse.APPLICATION_ID"
             android:value="@string/PARSE_ID"/>
