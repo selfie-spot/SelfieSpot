@@ -75,32 +75,34 @@
                     android:scrollbars="vertical"/>
             </android.support.design.widget.TextInputLayout>
 
-            <FrameLayout
-                android:id="@+id/fl_progress_holder"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_alignParentTop="true"
-                android:layout_alignParentBottom="true"
-                android:alpha="0.4"
-                android:animateLayoutChanges="true"
-                android:background="#000000"
-                android:visibility="gone">
-
-                <ProgressBar
-                    android:id="@+id/pb_saving"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentBottom="true"
-                    android:layout_alignParentTop="true"
-                    android:layout_gravity="center"
-                    android:indeterminate="true"
-                    android:indeterminateDrawable="@drawable/ic_progress_indeterminate"/>
-
-            </FrameLayout>
-
         </android.support.percent.PercentRelativeLayout>
 
     </android.support.v4.widget.NestedScrollView>
+
+    <!-- do we need this framelayout? -->
+    <FrameLayout
+        android:id="@+id/fl_progress_holder"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentBottom="true"
+        android:alpha="0.4"
+        android:animateLayoutChanges="true"
+        android:clickable="true"
+        android:background="#000000"
+        android:visibility="gone">
+
+        <ProgressBar
+            android:id="@+id/pb_saving"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentTop="true"
+            android:layout_gravity="center"
+            android:indeterminate="true"
+            android:indeterminateDrawable="@drawable/ic_progress_indeterminate"/>
+
+    </FrameLayout>
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/fab_save_selfie"
