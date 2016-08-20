@@ -14,19 +14,27 @@ import android.text.Editable;
 import android.text.InputType;
 import android.text.TextUtils;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.View;
+import android.widget.FrameLayout;
+import android.widget.Toast;
 
 import com.codepath.selfiespot.R;
 import com.codepath.selfiespot.fragments.AlertLocationPickerMapFragment;
 import com.codepath.selfiespot.models.SelfieSpot;
 import com.codepath.selfiespot.views.HideKeyboardEditTextFocusChangeListener;
 import com.google.android.gms.maps.model.LatLng;
+import com.parse.ParseException;
 import com.parse.ParseGeoPoint;
+import com.parse.ParseUser;
+import com.parse.SaveCallback;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
 public class EditSelfieSpotActivity extends AppCompatActivity {
+    private static final String TAG = EditSelfieSpotActivity.class.getSimpleName();
+
     private static final String TAG_MAP_PICKER = "mapPicker";
 
     @BindView(R.id.tie_name)
@@ -39,7 +47,7 @@ public class EditSelfieSpotActivity extends AppCompatActivity {
     TextInputEditText mDescEditText;
 
     @BindView(R.id.tie_location)
-    TextInputEditText mItemLocationEditText;
+    TextInputEditText mLocationEditText;
 
     @BindView(R.id.til_location)
     TextInputLayout mLocationTextInputLayout;
@@ -49,6 +57,9 @@ public class EditSelfieSpotActivity extends AppCompatActivity {
 
     @BindView(R.id.toolbar)
     Toolbar mToolbar;
+
+    @BindView(R.id.fl_progress_holder)
+    FrameLayout mProgressFrameLayout;
 
     private HideKeyboardEditTextFocusChangeListener mHideKeyboardEditTextFocusChangeListener;
     private SelfieSpot mSelfieSpot;
@@ -101,10 +112,10 @@ public class EditSelfieSpotActivity extends AppCompatActivity {
 
         mDescEditText.setOnFocusChangeListener(mHideKeyboardEditTextFocusChangeListener);
 
-        mItemLocationEditText.setInputType(InputType.TYPE_NULL);
+        mLocationEditText.setInputType(InputType.TYPE_NULL);
 
         // this is required once the focus is obtained
-        mItemLocationEditText.setOnClickListener(new View.OnClickListener() {
+        mLocationEditText.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 showMap();
@@ -112,7 +123,7 @@ public class EditSelfieSpotActivity extends AppCompatActivity {
         });
 
         // this is required the first time focus is obtained
-        mItemLocationEditText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+        mLocationEditText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
             public void onFocusChange(final View v, final boolean hasFocus) {
                 if (hasFocus) {
@@ -146,18 +157,32 @@ public class EditSelfieSpotActivity extends AppCompatActivity {
 
         final String updatedDescription = mDescEditText.getText().toString();
         mSelfieSpot.setDescription(updatedDescription);
+        mSelfieSpot.setUser(ParseUser.getCurrentUser());
+        showBusy();
 
-//        mSelfieSpot.saveInBackground(new SaveCallback() {
-//            @Override
-//            public void done(final ParseException e) {
-//                if (e == null) {
-//                    Toast.makeText(EditSelfieSpotActivity.this, "Saving SelfieSpot", Toast.LENGTH_SHORT).show();
-//                    finish();
-//                } else {
-//                    Toast.makeText(EditSelfieSpotActivity.this, "Error saving SelfieSpot", Toast.LENGTH_SHORT).show();
-//                }
-//            }
-//        });
+        mSelfieSpot.saveInBackground(new SaveCallback() {
+            @Override
+            public void done(final ParseException e) {
+                if (e == null) {
+                    Toast.makeText(EditSelfieSpotActivity.this, "Saved SelfieSpot", Toast.LENGTH_SHORT).show();
+                    finish();
+                } else {
+                    Log.e(TAG, "Error saving SelfieSpot", e);
+                    hideBusy();
+                    Toast.makeText(EditSelfieSpotActivity.this, "Error saving SelfieSpot", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+    }
+
+    private void showBusy() {
+        mProgressFrameLayout.setVisibility(View.VISIBLE);
+        mSaveButton.hide();
+    }
+
+    private void hideBusy() {
+        mProgressFrameLayout.setVisibility(View.GONE);
+        mSaveButton.show();
     }
 
     private void showMap() {
@@ -174,7 +199,8 @@ public class EditSelfieSpotActivity extends AppCompatActivity {
     }
 
     private void setLocation(final LatLng location) {
-        mItemLocationEditText.setText(location.toString());
+        mLocationEditText.setText(location.toString());
+        mLocationTextInputLayout.setErrorEnabled(false);
         mSelfieSpot.setLocation(new ParseGeoPoint(location.latitude, location.longitude));
     }
 }

@@ -2,27 +2,27 @@
 <android.support.design.widget.CoordinatorLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:fitsSystemWindows="true"
+    android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_width="match_parent">
+    android:fitsSystemWindows="true">
 
     <android.support.design.widget.AppBarLayout
         android:id="@+id/appbar"
-        android:layout_height="wrap_content"
-        android:layout_width="match_parent">
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
 
         <android.support.v7.widget.Toolbar
             android:id="@+id/toolbar"
-            android:layout_height="wrap_content"
             android:layout_width="match_parent"
+            android:layout_height="wrap_content"
             android:minHeight="?attr/actionBarSize"
             app:layout_scrollFlags="scroll|enterAlways"/>
     </android.support.design.widget.AppBarLayout>
 
     <android.support.v4.widget.NestedScrollView
-        android:layout_marginTop="80dp"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:layout_marginTop="80dp">
 
         <android.support.percent.PercentRelativeLayout
             android:layout_width="match_parent"
@@ -38,10 +38,10 @@
                     android:id="@+id/tie_name"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:singleLine="true"
-                    android:maxLines="1"
+                    android:hint="@string/hint_name"
                     android:inputType="textCapSentences"
-                    android:hint="@string/hint_name" />
+                    android:maxLines="1"
+                    android:singleLine="true"/>
             </android.support.design.widget.TextInputLayout>
 
             <android.support.design.widget.TextInputLayout
@@ -56,7 +56,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:hint="@string/hint_location"
-                    android:imeOptions="actionNone" />
+                    android:imeOptions="actionNone"/>
             </android.support.design.widget.TextInputLayout>
 
             <android.support.design.widget.TextInputLayout
@@ -70,24 +70,47 @@
                     android:id="@+id/tie_description"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:hint="@string/hint_description"
                     android:inputType="textMultiLine|textCapSentences"
-                    android:scrollbars="vertical"
-                    android:hint="@string/hint_description" />
+                    android:scrollbars="vertical"/>
             </android.support.design.widget.TextInputLayout>
+
+            <FrameLayout
+                android:id="@+id/fl_progress_holder"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentBottom="true"
+                android:alpha="0.4"
+                android:animateLayoutChanges="true"
+                android:background="#000000"
+                android:visibility="gone">
+
+                <ProgressBar
+                    android:id="@+id/pb_saving"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentBottom="true"
+                    android:layout_alignParentTop="true"
+                    android:layout_gravity="center"
+                    android:indeterminate="true"
+                    android:indeterminateDrawable="@drawable/ic_progress_indeterminate"/>
+
+            </FrameLayout>
 
         </android.support.percent.PercentRelativeLayout>
 
     </android.support.v4.widget.NestedScrollView>
 
     <android.support.design.widget.FloatingActionButton
-        android:contentDescription="@string/label_save_selfie"
-        android:foreground="?android:attr/selectableItemBackground"
         android:id="@+id/fab_save_selfie"
-        android:layout_gravity="bottom|right"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_gravity="bottom|right"
         android:layout_marginBottom="@dimen/activity_horizontal_margin"
         android:layout_marginRight="@dimen/activity_horizontal_margin"
-        android:layout_width="wrap_content"
+        android:contentDescription="@string/label_save_selfie"
+        android:foreground="?android:attr/selectableItemBackground"
         android:src="@drawable/ic_save"
         android:text="@string/label_save_selfie"
         app:borderWidth="0dp"
