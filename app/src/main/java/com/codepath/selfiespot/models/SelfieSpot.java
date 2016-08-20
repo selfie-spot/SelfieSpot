@@ -12,7 +12,8 @@ public class SelfieSpot extends ParseObject {
     private static final String PROPERTY_DESC = "desc";
     private static final String PROPERTY_USER = "user";
     private static final String PROPERTY_LOCATION = "loc";
-
+    private static final String PROPERTY_REVIEWS_COUNT = "reviews_count";
+    private static final String PROPERTY_REVIEW_STARS_COUNT = "review_stars_count";
 
     // empty constructor required
     public SelfieSpot() {
@@ -49,6 +50,22 @@ public class SelfieSpot extends ParseObject {
 
     public void setLocation(final ParseGeoPoint value) {
         put(PROPERTY_LOCATION, value);
+    }
+
+    public static String getPropertyReviewsCount() {
+        return PROPERTY_REVIEWS_COUNT;
+    }
+
+    public void setPropertyReviewsCount(final int propertyReviewsCount) {
+        put(PROPERTY_REVIEWS_COUNT, propertyReviewsCount);
+    }
+
+    public static String getPropertyReviewStarsCount() {
+        return PROPERTY_REVIEW_STARS_COUNT;
+    }
+
+    public void setPropertyReviewStarsCount(final int propertyReviewStarsCount) {
+        put(PROPERTY_REVIEW_STARS_COUNT, propertyReviewStarsCount);
     }
 
     public static ParseQuery<SelfieSpot> getQuery() {
