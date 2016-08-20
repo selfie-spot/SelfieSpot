@@ -155,17 +155,19 @@ public class BaseMapFragment extends SupportMapFragment implements GoogleApiClie
 	 */
     @Override
     @SuppressWarnings({"MissingPermission"})
-    public void onConnected(Bundle dataBundle) {
-        // Display the connection status
-        Location location = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
+    public void onConnected(final Bundle dataBundle) {
+        final Location location = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
         if (location != null) {
-            Toast.makeText(getActivity(), "GPS location was found!", Toast.LENGTH_SHORT).show();
-            LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
-            CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(latLng, 17);
+            final LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
+            final CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(latLng, 17);
             mMap.animateCamera(cameraUpdate);
-        } else {
-            Toast.makeText(getActivity(), "Current location was null, enable GPS on emulator!", Toast.LENGTH_SHORT).show();
+            onLastLocationFound(latLng);
         }
+    }
+
+    // hook to enable subclasses to react when last location is found the first time
+    protected void onLastLocationFound(final LatLng latLng) {
+        // no-op
     }
 
     /*

@@ -62,9 +62,10 @@ public class AlertLocationPickerMapFragment extends DialogFragment implements Lo
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         Dialog dialog = super.onCreateDialog(savedInstanceState);
+        dialog.setTitle("Select location on map..");
+
         // request a window without the title
         dialog.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
-        dialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
         return dialog;
     }
 
@@ -87,12 +88,21 @@ public class AlertLocationPickerMapFragment extends DialogFragment implements Lo
             }
         });
 
+        // show the fab only if the initial position is not null, this will force the user to
+        // select something
+        if (mInitialPosition != null) {
+            mSelectionButton.setVisibility(View.GONE);
+        }
+
         return view;
     }
 
     @Override
     public void onLocationSelected(final LatLng position) {
         mCurrentPosition = position;
+
+        // now that something is selected, show the fab
+        mSelectionButton.setVisibility(View.VISIBLE);
     }
 
     public void setLocationPickedListener(final LocationPickedListener locationPickedListener) {

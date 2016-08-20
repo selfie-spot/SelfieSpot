@@ -26,7 +26,7 @@ import com.parse.ParseGeoPoint;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class EditSelfieSpotActivity extends AppCompatActivity implements AlertLocationPickerMapFragment.LocationPickedListener {
+public class EditSelfieSpotActivity extends AppCompatActivity {
     private static final String TAG_MAP_PICKER = "mapPicker";
 
     @BindView(R.id.tie_name)
@@ -162,13 +162,18 @@ public class EditSelfieSpotActivity extends AppCompatActivity implements AlertLo
 
     private void showMap() {
         final AlertLocationPickerMapFragment locationPickerMapFragment = AlertLocationPickerMapFragment.createInstance(null);
-        locationPickerMapFragment.setLocationPickedListener(this);
+        locationPickerMapFragment.setLocationPickedListener(new AlertLocationPickerMapFragment.LocationPickedListener() {
+            @Override
+            public void onLocationPicked(final LatLng location) {
+                setLocation(location);
+                locationPickerMapFragment.dismiss();
+            }
+        });
         locationPickerMapFragment.setStyle(DialogFragment.STYLE_NO_FRAME, R.style.Dialog_FullScreen);
         locationPickerMapFragment.show(getSupportFragmentManager(), TAG_MAP_PICKER);
     }
 
-    @Override
-    public void onLocationPicked(final LatLng location) {
+    private void setLocation(final LatLng location) {
         mItemLocationEditText.setText(location.toString());
         mSelfieSpot.setLocation(new ParseGeoPoint(location.latitude, location.longitude));
     }

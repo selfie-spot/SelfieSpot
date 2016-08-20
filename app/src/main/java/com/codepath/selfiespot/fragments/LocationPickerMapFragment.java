@@ -48,6 +48,14 @@ public class LocationPickerMapFragment extends BaseMapFragment implements Google
     }
 
     @Override
+    protected void onLastLocationFound(final LatLng latLng) {
+        // if a position has not been selected yet, mark the current location
+        if (mCurrentMarker == null) {
+            onMapClick(latLng);
+        }
+    }
+
+    @Override
     public void onMapClick(final LatLng position) {
         if (mLocationListener != null) {
             mLocationListener.onLocationSelected(position);
