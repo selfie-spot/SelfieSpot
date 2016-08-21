@@ -8,6 +8,8 @@ import com.parse.ParseUser;
 
 @ParseClassName("SelfieSpot")
 public class SelfieSpot extends ParseObject {
+    public static final int DEFAULT_LIMIT = 100;
+
     private static final String PROPERTY_NAME = "name";
     private static final String PROPERTY_DESC = "desc";
     private static final String PROPERTY_USER = "user";
@@ -76,6 +78,7 @@ public class SelfieSpot extends ParseObject {
                                                                    final ParseGeoPoint ne) {
         final ParseQuery<SelfieSpot> query = getQuery();
         query.whereWithinGeoBox(PROPERTY_LOCATION, sw, ne);
+        query.setLimit(DEFAULT_LIMIT);
         return query;
     }
 }
