@@ -1,5 +1,7 @@
 package com.codepath.selfiespot.models;
 
+import com.google.android.gms.maps.model.LatLng;
+import com.google.maps.android.clustering.ClusterItem;
 import com.parse.ParseClassName;
 import com.parse.ParseGeoPoint;
 import com.parse.ParseObject;
@@ -7,7 +9,7 @@ import com.parse.ParseQuery;
 import com.parse.ParseUser;
 
 @ParseClassName("SelfieSpot")
-public class SelfieSpot extends ParseObject {
+public class SelfieSpot extends ParseObject implements ClusterItem {
     public static final int DEFAULT_LIMIT = 100;
 
     private static final String PROPERTY_NAME = "name";
@@ -80,5 +82,11 @@ public class SelfieSpot extends ParseObject {
         query.whereWithinGeoBox(PROPERTY_LOCATION, sw, ne);
         query.setLimit(DEFAULT_LIMIT);
         return query;
+    }
+
+    @Override
+    public LatLng getPosition() {
+        final ParseGeoPoint location = getLocation();
+        return new LatLng(location.getLatitude(), location.getLongitude());
     }
 }
