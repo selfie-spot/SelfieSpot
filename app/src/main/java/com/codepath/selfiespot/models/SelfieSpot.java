@@ -71,4 +71,11 @@ public class SelfieSpot extends ParseObject {
     public static ParseQuery<SelfieSpot> getQuery() {
         return ParseQuery.getQuery(SelfieSpot.class);
     }
+
+    public static ParseQuery<SelfieSpot> getWhereWithinGeoBoxQuery(final ParseGeoPoint sw,
+                                                                   final ParseGeoPoint ne) {
+        final ParseQuery<SelfieSpot> query = getQuery();
+        query.whereWithinGeoBox(PROPERTY_LOCATION, sw, ne);
+        return query;
+    }
 }
