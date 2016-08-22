@@ -56,16 +56,16 @@ public class SelfieSpot extends ParseObject implements ClusterItem {
         put(PROPERTY_LOCATION, value);
     }
 
-    public static String getPropertyReviewsCount() {
-        return PROPERTY_REVIEWS_COUNT;
+    public int getPropertyReviewsCount() {
+        return getInt(PROPERTY_REVIEWS_COUNT);
     }
 
     public void setPropertyReviewsCount(final int propertyReviewsCount) {
         put(PROPERTY_REVIEWS_COUNT, propertyReviewsCount);
     }
 
-    public static String getPropertyReviewStarsCount() {
-        return PROPERTY_REVIEW_STARS_COUNT;
+    public int getPropertyReviewStarsCount() {
+        return getInt(PROPERTY_REVIEW_STARS_COUNT);
     }
 
     public void setPropertyReviewStarsCount(final int propertyReviewStarsCount) {

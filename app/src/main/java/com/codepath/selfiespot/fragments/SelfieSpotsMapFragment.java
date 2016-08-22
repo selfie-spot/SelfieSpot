@@ -4,8 +4,8 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.codepath.selfiespot.models.SelfieSpot;
+import com.codepath.selfiespot.views.SelfieSpotItemRenderer;
 import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.maps.android.clustering.ClusterManager;
 import com.parse.FindCallback;
@@ -17,7 +17,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-public class SelfieSpotsMapFragment extends BaseMapFragment {
+public class SelfieSpotsMapFragment extends BaseMapFragment implements ClusterManager.OnClusterItemClickListener<SelfieSpot> {
     private static final String TAG = SelfieSpotsMapFragment.class.getSimpleName();
     // TODO - check if there is a better way to keep reference to added markers
     private Set<String> mMarkersReference = new HashSet<>();
@@ -32,22 +32,17 @@ public class SelfieSpotsMapFragment extends BaseMapFragment {
         googleMap.setMyLocationEnabled(false);
 
         mClusterManager = new ClusterManager<>(getActivity(), googleMap);
-
+        mClusterManager.setRenderer(new SelfieSpotItemRenderer(getActivity(), mMap, mClusterManager));
 
         // googleMap.setOnCameraChangeListener(mClusterManager);
         googleMap.setOnMarkerClickListener(mClusterManager);
+        mClusterManager.setOnClusterItemClickListener(this);
 
         // TODO - add parsequery cache, set a TTL
 
         googleMap.setOnCameraIdleListener(new GoogleMap.OnCameraIdleListener() {
             @Override
             public void onCameraIdle() {
-                // get the map position and explicitly call setOnCameraChangeListener, instead of
-                // googleMap.setOnCameraChangeListener(mClusterManager), as this is causing rendering
-                // pins
-                final CameraPosition cameraPosition = mMap.getCameraPosition();
-                mClusterManager.onCameraChange(cameraPosition);
-
                 final LatLngBounds latLngBounds = googleMap.getProjection().getVisibleRegion().latLngBounds;
                 final ParseGeoPoint sw = new ParseGeoPoint(latLngBounds.southwest.latitude, latLngBounds.southwest.longitude);
                 final ParseGeoPoint ne = new ParseGeoPoint(latLngBounds.northeast.latitude, latLngBounds.northeast.longitude);
@@ -80,5 +75,18 @@ public class SelfieSpotsMapFragment extends BaseMapFragment {
         }
         // without this, pins are not displayed the first time
         mClusterManager.cluster();
+
+//        // get the map position and explicitly call setOnCameraChangeListener, instead of
+//        // googleMap.setOnCameraChangeListener(mClusterManager), as this is causing rendering
+//        // pins
+//        final CameraPosition cameraPosition = mMap.getCameraPosition();
+//        mClusterManager.onCameraChange(cameraPosition);
+    }
+
+    @Override
+    public boolean onClusterItemClick(final SelfieSpot selfieSpot) {
+        Toast.makeText(getActivity(), "SelfieSpot clicked: " + selfieSpot.getName(),
+                Toast.LENGTH_SHORT).show();
+        return true;
     }
 }
