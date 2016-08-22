@@ -8,4 +8,7 @@
     <color name="secondary_text">#757575</color>
     <color name="icons">#FFFFFF</color>
     <color name="divider">#BDBDBD</color>
+
+    <color name="fab_new_selfie_background">@color/accent</color>
+    <color name="star_gold">#ffd700</color>
 </resources>

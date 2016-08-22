@@ -1,0 +1,60 @@
+<android.support.v4.widget.DrawerLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:fitsSystemWindows="true"
+    android:id="@+id/drawer_layout"
+    android:layout_height="match_parent"
+    android:layout_width="match_parent">
+
+    <android.support.design.widget.CoordinatorLayout
+        android:fitsSystemWindows="true"
+        android:layout_height="match_parent"
+        android:layout_width="match_parent">
+
+        <android.support.design.widget.AppBarLayout
+            android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            android:theme="@style/ToolbarTheme">
+
+            <android.support.v7.widget.Toolbar
+                android:id="@+id/toolbar"
+                android:layout_height="wrap_content"
+                android:layout_width="match_parent"
+                android:minHeight="?attr/actionBarSize"
+                app:layout_scrollFlags="scroll|enterAlways"/>
+
+        </android.support.design.widget.AppBarLayout>
+
+        <fragment
+            android:id="@+id/map"
+            android:layout_height="match_parent"
+            android:layout_width="match_parent"
+            android:name="com.codepath.selfiespot.fragments.SelfieSpotsMapFragment"
+            tools:context="com.codepath.selfiespot.activities.SelfieSpotsMapActivity"/>
+
+        <android.support.design.widget.FloatingActionButton
+            android:contentDescription="@string/label_new_selfie"
+            android:foreground="?android:attr/selectableItemBackground"
+            android:id="@+id/fab_selfie"
+            android:layout_gravity="bottom|right"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/activity_horizontal_margin"
+            android:layout_marginRight="@dimen/activity_horizontal_margin"
+            android:layout_width="wrap_content"
+            android:src="@drawable/ic_selfie"
+            android:text="@string/label_new_selfie"
+            app:borderWidth="0dp"
+            app:elevation="@dimen/fab_elevation"/>
+
+    </android.support.design.widget.CoordinatorLayout>
+
+    <android.support.design.widget.NavigationView
+        android:id="@+id/nv_drawer"
+        android:layout_gravity="start"
+        android:layout_height="match_parent"
+        android:layout_width="wrap_content"
+        app:headerLayout="@layout/nav_header"
+        app:menu="@menu/menu_main_drawer"/>
+
+</android.support.v4.widget.DrawerLayout>

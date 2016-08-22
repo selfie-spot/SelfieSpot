@@ -2,7 +2,6 @@ package com.codepath.selfiespot.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -32,13 +31,18 @@ public class LoginActivity extends AppCompatActivity {
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+
+        // already logged-in, directly go to home-activity
+        if (ParseUser.getCurrentUser() != null) {
+            navigateToMain();
+        }
+
+
         View decorView = getWindow().getDecorView();
         // Hide the status bar.
         int uiOptions = View.SYSTEM_UI_FLAG_FULLSCREEN;
 
         decorView.setSystemUiVisibility(uiOptions);
-        final ActionBar actionBar = getSupportActionBar();
-        actionBar.hide();
 
         loginButton = (Button) findViewById(R.id.login_button);
 
@@ -70,8 +74,9 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void navigateToMain() {
-        final Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+        final Intent intent = SelfieSpotsMapActivity.createIntent(this);
         startActivity(intent);
+        finish();
     }
 
     private void getUserDetailsFromFaceBook() {

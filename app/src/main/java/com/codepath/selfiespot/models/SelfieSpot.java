@@ -1,12 +1,23 @@
 package com.codepath.selfiespot.models;
 
+import com.google.android.gms.maps.model.LatLng;
+import com.google.maps.android.clustering.ClusterItem;
 import com.parse.ParseClassName;
+import com.parse.ParseGeoPoint;
 import com.parse.ParseObject;
+import com.parse.ParseQuery;
+import com.parse.ParseUser;
 
 @ParseClassName("SelfieSpot")
-public class SelfieSpot extends ParseObject {
+public class SelfieSpot extends ParseObject implements ClusterItem {
+    public static final int DEFAULT_LIMIT = 100;
+
     private static final String PROPERTY_NAME = "name";
     private static final String PROPERTY_DESC = "desc";
+    private static final String PROPERTY_USER = "user";
+    private static final String PROPERTY_LOCATION = "loc";
+    private static final String PROPERTY_REVIEWS_COUNT = "reviews_count";
+    private static final String PROPERTY_REVIEW_STARS_COUNT = "review_stars_count";
 
     // empty constructor required
     public SelfieSpot() {
@@ -27,5 +38,55 @@ public class SelfieSpot extends ParseObject {
 
     public void setDescription(final String description) {
         put(PROPERTY_DESC, description);
+    }
+
+    public ParseUser getUser() {
+        return getParseUser(PROPERTY_USER);
+    }
+
+    public void setUser(final ParseUser value) {
+        put(PROPERTY_USER, value);
+    }
+
+    public ParseGeoPoint getLocation() {
+        return getParseGeoPoint(PROPERTY_LOCATION);
+    }
+
+    public void setLocation(final ParseGeoPoint value) {
+        put(PROPERTY_LOCATION, value);
+    }
+
+    public int getPropertyReviewsCount() {
+        return getInt(PROPERTY_REVIEWS_COUNT);
+    }
+
+    public void setPropertyReviewsCount(final int propertyReviewsCount) {
+        put(PROPERTY_REVIEWS_COUNT, propertyReviewsCount);
+    }
+
+    public int getPropertyReviewStarsCount() {
+        return getInt(PROPERTY_REVIEW_STARS_COUNT);
+    }
+
+    public void setPropertyReviewStarsCount(final int propertyReviewStarsCount) {
+        put(PROPERTY_REVIEW_STARS_COUNT, propertyReviewStarsCount);
+    }
+
+    public static ParseQuery<SelfieSpot> getQuery() {
+        return ParseQuery.getQuery(SelfieSpot.class);
+    }
+
+    public static ParseQuery<SelfieSpot> getWhereWithinGeoBoxQuery(final ParseGeoPoint sw,
+                                                                   final ParseGeoPoint ne) {
+        final ParseQuery<SelfieSpot> query = getQuery();
+        query.whereWithinGeoBox(PROPERTY_LOCATION, sw, ne);
+        query.setLimit(DEFAULT_LIMIT);
+        return query;
+    }
+
+    @Override
+    public LatLng getPosition() {
+        final ParseGeoPoint location = getLocation();
+        return new LatLng(location.getLatitude(), location.getLongitude());
     }
 }

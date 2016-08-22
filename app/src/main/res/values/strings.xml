@@ -3,8 +3,25 @@
 
     <string name="facebook_desc">loginbtn</string>
 
-    <string name="facebook_app_id">902358409868580</string>
+    <!-- Selfie Spots Map -->
+    <string name="title_activity_selfie_spots_map">Selfie-Spots Map</string>
+    <string name="label_new_selfie">New Selfie</string>
     <string name="selfiespot">SelfieSpot</string>
+
+    <!-- Drawer -->
+    <string name="drawer_open">Open navigation drawer</string>
+    <string name="drawer_close">Close navigation drawer</string>
+    <string name="drawer_label_profile">Profile</string>
+    <string name="drawer_label_settings">Settings</string>
+    <string name="drawer_label_home">Home</string>
+
+    <!-- New Selfie Spot -->
+    <string name="hint_name">Name</string>
+    <string name="hint_description">Description</string>
+    <string name="hint_location">Location</string>
+    <string name="label_save_selfie">Save</string>
+    <string name="label_select_location">Select</string>
+    <string name="title_alert_location_picker">Pick Location</string>
+    <string name="error_name">Name is Required</string>
+    <string name="error_location">Location is required</string>
 </resources>
-
-
