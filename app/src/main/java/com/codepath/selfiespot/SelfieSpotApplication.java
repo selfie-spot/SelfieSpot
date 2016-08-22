@@ -8,6 +8,8 @@ import com.codepath.selfiespot.di.ApplicationComponent;
 import com.codepath.selfiespot.di.DaggerApplicationComponent;
 import com.codepath.selfiespot.di.modules.ApplicationModule;
 import com.codepath.selfiespot.models.SelfieSpot;
+import com.facebook.FacebookSdk;
+import com.facebook.appevents.AppEventsLogger;
 import com.facebook.stetho.Stetho;
 import com.parse.Parse;
 import com.parse.ParseACL;
@@ -24,6 +26,12 @@ public class SelfieSpotApplication extends Application {
         initParse();
         initDagger();
         initStetho();
+        initFacebook();
+    }
+
+    private void initFacebook() {
+        FacebookSdk.sdkInitialize(getApplicationContext());
+        AppEventsLogger.activateApp(this);
     }
 
     private void initDagger() {

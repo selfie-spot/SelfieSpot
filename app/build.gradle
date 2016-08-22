@@ -14,6 +14,7 @@ ext {
     PARSE_BOLTS_VERSION = "1.4.0"
     PARSE_FACEBOOK_UTILS ="1.10.4"
     STETHO_VERSION = "1.3.1"
+    FACEBOOK_ANDROID_SDK_VERSION ="4.14.1"
 }
 
 android {
@@ -41,6 +42,16 @@ android {
         it.buildConfigField 'String', 'PARSE_SERVER_URL', getString('ParseServerUrl')
         it.buildConfigField 'String', 'PARSE_KEY', getString('ParseKey')
     }
+
+    buildTypes.each {
+        it.buildConfigField 'String', 'FACEBOOK_APP', getString('facebook_app')
+        it.buildConfigField 'String', 'FACEBOOK_APP_ID', getString('facebook_app_id')
+
+    }
+}
+
+repositories {
+    mavenCentral()
 }
 
 dependencies {
@@ -73,6 +84,8 @@ dependencies {
     compile "com.parse.bolts:bolts-tasks:$PARSE_BOLTS_VERSION"
     compile "com.parse.bolts:bolts-applinks:$PARSE_BOLTS_VERSION"
     compile "com.parse:parsefacebookutils-v4-android:$PARSE_FACEBOOK_UTILS@aar"
+
+    compile "com.facebook.android:facebook-android-sdk:$FACEBOOK_ANDROID_SDK_VERSION"
 
     testCompile "junit:junit:$JUNIT_VERSION"
 }
