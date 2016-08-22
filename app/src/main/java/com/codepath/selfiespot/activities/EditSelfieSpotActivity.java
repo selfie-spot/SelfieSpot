@@ -166,13 +166,15 @@ public class EditSelfieSpotActivity extends AppCompatActivity {
             }
         });
 
-        if (mSelfieSpot != null) {
+        if (! TextUtils.isEmpty(mSelfieSpot.getName())) {
             mNameEditText.setText(mSelfieSpot.getName());
+        }
 
-            if (! TextUtils.isEmpty(mSelfieSpot.getDescription())) {
-                mDescEditText.setText(mSelfieSpot.getDescription());
-            }
+        if (! TextUtils.isEmpty(mSelfieSpot.getDescription())) {
+            mDescEditText.setText(mSelfieSpot.getDescription());
+        }
 
+        if (mSelfieSpot.getLocation() != null) {
             mLocationEditText.setText(mSelfieSpot.getLocation().toString());
         }
     }
@@ -225,8 +227,8 @@ public class EditSelfieSpotActivity extends AppCompatActivity {
     private void showMap() {
         LatLng position = null;
 
-        if (mSelfieSpot != null) {
-            position = new LatLng(position.latitude, position.longitude);
+        if (mSelfieSpot.getLocation() != null) {
+            position = new LatLng(mSelfieSpot.getLocation().getLatitude(), mSelfieSpot.getLocation().getLongitude());
         }
 
         final AlertLocationPickerMapFragment locationPickerMapFragment = AlertLocationPickerMapFragment.createInstance(position);

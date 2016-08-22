@@ -14,11 +14,11 @@ ext {
     PARSE_BOLTS_VERSION = "1.4.0"
     PARSE_FACEBOOK_UTILS = "1.10.4"
     STETHO_VERSION = "1.3.1"
-
     PLAY_SERVICES_VERSION = "9.4.0"
     PERMISSION_DISPATCHER_VERSION = "2.1.3"
     MULTIDEX_VERSION = "1.0.0"
     MAP_UTILS_VERSION = "0.4.3"
+    FACEBOOK_ANDROID_SDK_VERSION ="4.14.1"
 }
 
 android {
@@ -36,6 +36,7 @@ android {
 
         resValue "string", "PARSE_ID", getString('ParseId')
         resValue "string", "GOOGLE_MAPS_API_KEY", getString('GoogleMapsApiKey')
+        resValue "string", "FACEBOOK_APP_ID", getString('FacebookAppId')
     }
     buildTypes {
         release {
@@ -49,6 +50,10 @@ android {
         it.buildConfigField 'String', 'PARSE_SERVER_URL', getString('ParseServerUrl')
         it.buildConfigField 'String', 'PARSE_KEY', getString('ParseKey')
     }
+}
+
+repositories {
+    mavenCentral()
 }
 
 dependencies {
@@ -86,10 +91,12 @@ dependencies {
     compile "com.parse.bolts:bolts-applinks:$PARSE_BOLTS_VERSION"
     compile "com.parse:parsefacebookutils-v4-android:$PARSE_FACEBOOK_UTILS@aar"
 
-    compile "com.github.hotchemi:permissionsdispatcher:$PERMISSION_DISPATCHER_VERSION"
-    apt "com.github.hotchemi:permissionsdispatcher-processor:$PERMISSION_DISPATCHER_VERSION"
+    compile "com.facebook.android:facebook-android-sdk:$FACEBOOK_ANDROID_SDK_VERSION"
 
     compile "com.android.support:multidex:$MULTIDEX_VERSION"
+
+    compile "com.github.hotchemi:permissionsdispatcher:$PERMISSION_DISPATCHER_VERSION"
+    apt "com.github.hotchemi:permissionsdispatcher-processor:$PERMISSION_DISPATCHER_VERSION"
 
     testCompile "junit:junit:$JUNIT_VERSION"
 }

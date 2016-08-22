@@ -1,10 +1,12 @@
 <resources>
     <string name="app_name">SelfieSpot</string>
+
     <string name="facebook_desc">loginbtn</string>
 
     <!-- Selfie Spots Map -->
     <string name="title_activity_selfie_spots_map">Selfie-Spots Map</string>
     <string name="label_new_selfie">New Selfie</string>
+    <string name="selfiespot">SelfieSpot</string>
 
     <!-- Drawer -->
     <string name="drawer_open">Open navigation drawer</string>
