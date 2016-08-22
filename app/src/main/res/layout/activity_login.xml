@@ -20,12 +20,13 @@
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true" />
 
-    <com.facebook.login.widget.LoginButton
+    <Button
         android:id="@+id/login_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
         android:layout_marginBottom="115dp"
+        android:text="Login"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true" />
 

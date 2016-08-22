@@ -7,6 +7,7 @@ import android.widget.TextView;
 import com.codepath.selfiespot.R;
 import com.codepath.selfiespot.SelfieSpotApplication;
 import com.codepath.selfiespot.repositories.PreferencesDAO;
+import com.parse.ParseUser;
 
 import javax.inject.Inject;
 
@@ -23,7 +24,7 @@ public class MainActivity extends AppCompatActivity {
         SelfieSpotApplication.from(this).getComponent().inject(this);
         String name = getIntent().getStringExtra("name");
         tvUserInfo = (TextView) findViewById(R.id.tvUserInfo);
-        tvUserInfo.setText(name);
+        tvUserInfo.setText(ParseUser.getCurrentUser().getUsername());
 
 
 //        testParse();

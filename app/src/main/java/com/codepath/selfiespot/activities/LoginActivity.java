@@ -2,46 +2,34 @@ package com.codepath.selfiespot.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.Toast;
 
 import com.codepath.selfiespot.R;
 import com.facebook.AccessToken;
-import com.facebook.CallbackManager;
-import com.facebook.FacebookSdk;
 import com.facebook.GraphRequest;
 import com.facebook.GraphResponse;
 import com.facebook.HttpMethod;
-import com.facebook.appevents.AppEventsLogger;
-import com.facebook.login.widget.LoginButton;
 import com.parse.LogInCallback;
 import com.parse.ParseException;
 import com.parse.ParseFacebookUtils;
 import com.parse.ParseUser;
-import com.parse.SaveCallback;
 
 import org.json.JSONException;
 
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class LoginActivity extends AppCompatActivity {
-
-    LoginButton loginButton;
-    CallbackManager callbackManager;
-    ParseUser parseUser;
-    String name = null;
-    String email = null;
-
-    public static final List<String> mPermissions = new ArrayList<String>() {{
-        add("public_profile");
-        add("email");
-    }};
+    private static final String TAG = LoginActivity.class.getSimpleName();
+    private Button loginButton;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
         View decorView = getWindow().getDecorView();
@@ -49,124 +37,69 @@ public class LoginActivity extends AppCompatActivity {
         int uiOptions = View.SYSTEM_UI_FLAG_FULLSCREEN;
 
         decorView.setSystemUiVisibility(uiOptions);
-        android.support.v7.app.ActionBar actionBar = getSupportActionBar();
+        final ActionBar actionBar = getSupportActionBar();
         actionBar.hide();
 
-        ParseFacebookUtils.initialize(getApplicationContext());
-        FacebookSdk.sdkInitialize(getApplicationContext());
-        AppEventsLogger.activateApp(this);
-        callbackManager = CallbackManager.Factory.create();
-
-        loginButton = (LoginButton)findViewById(R.id.login_button);
-        //loginButton.setReadPermissions("user_status");
-        loginButton.setReadPermissions("public_profile");
+        loginButton = (Button) findViewById(R.id.login_button);
 
         loginButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
-                ParseFacebookUtils.logInWithReadPermissionsInBackground(LoginActivity.this, mPermissions, new LogInCallback() {
+                final List<String> permissions = Arrays.asList("public_profile", "email");
+                ParseFacebookUtils.logInWithReadPermissionsInBackground(LoginActivity.this, permissions, new LogInCallback() {
                     @Override
                     public void done(ParseUser user, ParseException e) {
                         if (e != null) {
-                            Log.d("MyApp", "Uh oh. Error occurred" + e.toString());
+                            Log.d(TAG, "Uh oh. Error occurred" + e.toString());
+                            Toast.makeText(LoginActivity.this, "Unable to login", Toast.LENGTH_SHORT).show();
+                            return;
                         }
-                        else if(user == null){
-                            Log.d("SelfiSpot", "The user cancelled the Facebook Login");
-                        }
-                        else if(user.isNew()){
-                            Log.d("SelfiSpot", "User signed up and logged in through Facebook!");
+
+                        if (user == null) {
+                            Log.d(TAG, "The user cancelled the Facebook Login");
+                            Toast.makeText(LoginActivity.this, "User cancelled login", Toast.LENGTH_SHORT).show();
+                            return;
+                        } else {
                             getUserDetailsFromFaceBook();
-                            Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-                            startActivity(intent);
+                            Log.d(TAG, "User signed up and logged in through Facebook!");
                         }
-                        else{
-                            Log.d("SelfiSpot", "User signed up and logged in through Facebook!");
-                                Log.d("MyApp", "User logged in through Facebook!");
-                            getUserDetailsFromParse();
-
-
-                        }
-
                     }
                 });
             }
         });
-
-       /* loginButton.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
-            @Override
-            public void onSuccess(LoginResult loginResult) {
-                Toast.makeText(LoginActivity.this, "SUCCESS", Toast.LENGTH_LONG).show();
-
-                    if(AccessToken.getCurrentAccessToken() != null){
-                        Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-                        startActivity(intent);
-                }
-            }
-
-            @Override
-            public void onCancel() {
-
-            }
-
-            @Override
-            public void onError(FacebookException error) {
-
-            }
-        });
-*/
-
-
     }
 
-    private void getUserDetailsFromParse() {
-        parseUser = ParseUser.getCurrentUser();
-        email = parseUser.getEmail();
-        name = parseUser.getUsername();
-
-        Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-        //intent.putExtra("email", email);
-        intent.putExtra("name", name);
+    private void navigateToMain() {
+        final Intent intent = new Intent(LoginActivity.this, MainActivity.class);
         startActivity(intent);
-
     }
 
     private void getUserDetailsFromFaceBook() {
-
-        Bundle params = new Bundle();
-        params.putString("params", name);
-
-       new GraphRequest(AccessToken.getCurrentAccessToken(), "/me", params, HttpMethod.GET, new GraphRequest.Callback() {
-           @Override
-           public void onCompleted(GraphResponse response) {
-
-               try {
-                   email = response.getJSONObject().getString("email");
-                   name = response.getJSONObject().getString("name");
-
-               } catch (JSONException e) {
-                   e.printStackTrace();
-               }
-
-               saveNewUser();
-           }
-       });
-
+        final Bundle parameters = new Bundle();
+        parameters.putString("fields", "id,name,email");
+        new GraphRequest(AccessToken.getCurrentAccessToken(), "/me", parameters, HttpMethod.GET, new GraphRequest.Callback() {
+            @Override
+            public void onCompleted(final GraphResponse response) {
+                try {
+                    final String email = response.getJSONObject().getString("email");
+                    final String name = response.getJSONObject().getString("name");
+                    saveNewUser(email, name);
+                    Toast.makeText(LoginActivity.this, "User logged-in & saved", Toast.LENGTH_SHORT).show();
+                    navigateToMain();
+                } catch (final JSONException e) {
+                    e.printStackTrace();
+                    Toast.makeText(LoginActivity.this, "Error retrieving facebook info", Toast.LENGTH_SHORT).show();
+                }
+            }
+        }).executeAsync();
     }
 
-    private void saveNewUser() {
-
-        parseUser = ParseUser.getCurrentUser();
+    private void saveNewUser(final String email, final String name) {
+        final ParseUser parseUser = ParseUser.getCurrentUser();
         parseUser.setEmail(email);
         parseUser.setUsername(name);
-        parseUser.saveInBackground(new SaveCallback() {
-            @Override
-            public void done(ParseException e) {
-                Toast.makeText(LoginActivity.this, "New User " + name + "", Toast.LENGTH_LONG).show();
-            }
-        });
+        parseUser.saveEventually();
     }
-
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {

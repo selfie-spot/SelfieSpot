@@ -8,13 +8,11 @@ import com.codepath.selfiespot.di.ApplicationComponent;
 import com.codepath.selfiespot.di.DaggerApplicationComponent;
 import com.codepath.selfiespot.di.modules.ApplicationModule;
 import com.codepath.selfiespot.models.SelfieSpot;
-import com.facebook.FacebookSdk;
-import com.facebook.appevents.AppEventsLogger;
 import com.facebook.stetho.Stetho;
 import com.parse.Parse;
 import com.parse.ParseACL;
+import com.parse.ParseFacebookUtils;
 import com.parse.ParseObject;
-import com.parse.ParseUser;
 import com.parse.interceptors.ParseLogInterceptor;
 
 public class SelfieSpotApplication extends Application {
@@ -26,12 +24,6 @@ public class SelfieSpotApplication extends Application {
         initParse();
         initDagger();
         initStetho();
-        initFacebook();
-    }
-
-    private void initFacebook() {
-        FacebookSdk.sdkInitialize(getApplicationContext());
-        AppEventsLogger.activateApp(this);
     }
 
     private void initDagger() {
@@ -54,11 +46,13 @@ public class SelfieSpotApplication extends Application {
                 .addNetworkInterceptor(new ParseLogInterceptor())
                 .build());
 
-        ParseUser.enableAutomaticUser();
+//        ParseUser.enableAutomaticUser();
         final ParseACL defaultACL = new ParseACL();
         // Optionally enable public read access.
         // defaultACL.setPublicReadAccess(true);
         ParseACL.setDefaultACL(defaultACL, true);
+
+        ParseFacebookUtils.initialize(getApplicationContext());
     }
 
     private void initStetho() {
