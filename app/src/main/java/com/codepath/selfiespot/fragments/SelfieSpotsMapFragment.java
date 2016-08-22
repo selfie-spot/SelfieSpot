@@ -1,8 +1,10 @@
 package com.codepath.selfiespot.fragments;
 
+import android.content.Intent;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.codepath.selfiespot.activities.EditSelfieSpotActivity;
 import com.codepath.selfiespot.models.SelfieSpot;
 import com.codepath.selfiespot.views.SelfieSpotItemRenderer;
 import com.google.android.gms.maps.GoogleMap;
@@ -75,18 +77,12 @@ public class SelfieSpotsMapFragment extends BaseMapFragment implements ClusterMa
         }
         // without this, pins are not displayed the first time
         mClusterManager.cluster();
-
-//        // get the map position and explicitly call setOnCameraChangeListener, instead of
-//        // googleMap.setOnCameraChangeListener(mClusterManager), as this is causing rendering
-//        // pins
-//        final CameraPosition cameraPosition = mMap.getCameraPosition();
-//        mClusterManager.onCameraChange(cameraPosition);
     }
 
     @Override
     public boolean onClusterItemClick(final SelfieSpot selfieSpot) {
-        Toast.makeText(getActivity(), "SelfieSpot clicked: " + selfieSpot.getName(),
-                Toast.LENGTH_SHORT).show();
+        final Intent intent = EditSelfieSpotActivity.createIntent(getActivity(), selfieSpot.getObjectId());
+        startActivity(intent);
         return true;
     }
 }

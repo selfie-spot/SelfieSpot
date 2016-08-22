@@ -66,7 +66,7 @@ public class SelfieSpotsMapActivity extends AppCompatActivity {
         mSelfieFab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(final View view) {
-                final Intent intent = EditSelfieSpotActivity.createIntent(SelfieSpotsMapActivity.this);
+                final Intent intent = EditSelfieSpotActivity.createIntent(SelfieSpotsMapActivity.this, null);
                 startActivity(intent);
             }
         });

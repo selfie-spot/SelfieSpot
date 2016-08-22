@@ -24,8 +24,10 @@ import com.codepath.selfiespot.fragments.AlertLocationPickerMapFragment;
 import com.codepath.selfiespot.models.SelfieSpot;
 import com.codepath.selfiespot.views.HideKeyboardEditTextFocusChangeListener;
 import com.google.android.gms.maps.model.LatLng;
+import com.parse.GetCallback;
 import com.parse.ParseException;
 import com.parse.ParseGeoPoint;
+import com.parse.ParseQuery;
 import com.parse.ParseUser;
 import com.parse.SaveCallback;
 
@@ -34,6 +36,7 @@ import butterknife.ButterKnife;
 
 public class EditSelfieSpotActivity extends AppCompatActivity {
     private static final String TAG = EditSelfieSpotActivity.class.getSimpleName();
+    private static final String EXTRA_SELFIE_SPOT_ID = EditSelfieSpotActivity.class.getSimpleName() + ":SELFIE_SPOT_ID";
 
     private static final String TAG_MAP_PICKER = "mapPicker";
 
@@ -64,8 +67,11 @@ public class EditSelfieSpotActivity extends AppCompatActivity {
     private HideKeyboardEditTextFocusChangeListener mHideKeyboardEditTextFocusChangeListener;
     private SelfieSpot mSelfieSpot;
 
-    public static Intent createIntent(final Context context) {
+    public static Intent createIntent(final Context context, final String selfieSpotId) {
         final Intent intent = new Intent(context, EditSelfieSpotActivity.class);
+        if (! TextUtils.isEmpty(selfieSpotId)) {
+            intent.putExtra(EXTRA_SELFIE_SPOT_ID, selfieSpotId);
+        }
         return intent;
     }
 
@@ -82,11 +88,32 @@ public class EditSelfieSpotActivity extends AppCompatActivity {
 
         mHideKeyboardEditTextFocusChangeListener = new HideKeyboardEditTextFocusChangeListener();
 
-        if (mSelfieSpot == null) {
-            mSelfieSpot = new SelfieSpot();
-        }
+        final String selfieSpotId = getIntent().getStringExtra(EXTRA_SELFIE_SPOT_ID);
 
-        initViews();
+        if (selfieSpotId != null) {
+            showBusy();
+            // retrieve SelfieSpot before initializing views
+            final ParseQuery<SelfieSpot> query = SelfieSpot.getQuery();
+            query.getInBackground(selfieSpotId, new GetCallback<SelfieSpot>() {
+                @Override
+                public void done(final SelfieSpot selfieSpot, final ParseException e) {
+                    if (e != null) {
+                        Toast.makeText(EditSelfieSpotActivity.this,
+                                "Unable to retrieve SelfieSpot", Toast.LENGTH_SHORT).show();
+                        Log.e(TAG, "Unable to retrieve SelfieSpot: " + selfieSpotId, e);
+                        finish();
+                    } else {
+                        hideBusy();
+                        mSelfieSpot = selfieSpot;
+                        initViews();
+                    }
+                }
+            });
+        } else {
+            // a new selfiespot, initialize views immediately
+            mSelfieSpot = new SelfieSpot();
+            initViews();
+        }
     }
 
     private void initViews() {
@@ -138,6 +165,16 @@ public class EditSelfieSpotActivity extends AppCompatActivity {
                 onSaveSelfieSpot();
             }
         });
+
+        if (mSelfieSpot != null) {
+            mNameEditText.setText(mSelfieSpot.getName());
+
+            if (! TextUtils.isEmpty(mSelfieSpot.getDescription())) {
+                mDescEditText.setText(mSelfieSpot.getDescription());
+            }
+
+            mLocationEditText.setText(mSelfieSpot.getLocation().toString());
+        }
     }
 
     private void onSaveSelfieSpot() {
@@ -186,7 +223,13 @@ public class EditSelfieSpotActivity extends AppCompatActivity {
     }
 
     private void showMap() {
-        final AlertLocationPickerMapFragment locationPickerMapFragment = AlertLocationPickerMapFragment.createInstance(null);
+        LatLng position = null;
+
+        if (mSelfieSpot != null) {
+            position = new LatLng(position.latitude, position.longitude);
+        }
+
+        final AlertLocationPickerMapFragment locationPickerMapFragment = AlertLocationPickerMapFragment.createInstance(position);
         locationPickerMapFragment.setLocationPickedListener(new AlertLocationPickerMapFragment.LocationPickedListener() {
             @Override
             public void onLocationPicked(final LatLng location) {
