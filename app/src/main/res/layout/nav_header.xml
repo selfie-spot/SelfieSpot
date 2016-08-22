@@ -13,9 +13,9 @@
         android:layout_marginTop="@dimen/space_content"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:textColor="@color/primary_dark"
         android:gravity="center"
         android:textSize="@dimen/text_drawer_title"
-        android:textColor="@android:color/white"
         android:textStyle="bold"/>
 
 </LinearLayout>

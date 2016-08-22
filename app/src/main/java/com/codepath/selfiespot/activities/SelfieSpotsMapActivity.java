@@ -13,9 +13,11 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.TextView;
 
 import com.codepath.selfiespot.R;
 import com.codepath.selfiespot.repositories.PreferencesDAO;
+import com.parse.ParseUser;
 
 import javax.inject.Inject;
 
@@ -89,6 +91,7 @@ public class SelfieSpotsMapActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(final MenuItem item) {
         if (mDrawerToggle.onOptionsItemSelected(item)) {
+            populateLoggedInUserDetails();
             return true;
         }
         return false;
@@ -98,6 +101,12 @@ public class SelfieSpotsMapActivity extends AppCompatActivity {
         final MenuItem homeMenuItem = mDrawer.getMenu().getItem(INDEX_HOME);
         homeMenuItem.setChecked(true);
         setTitle(homeMenuItem.getTitle());
+    }
+
+    private void populateLoggedInUserDetails() {
+        final View headerLayout = mDrawer.getHeaderView(0);
+        final TextView profileNameTextView = (TextView) headerLayout.findViewById(R.id.tv_profile_name);
+        profileNameTextView.setText(ParseUser.getCurrentUser().getUsername());
     }
 
     private ActionBarDrawerToggle setupDrawerToggle() {
