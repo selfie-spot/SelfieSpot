@@ -74,7 +74,7 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void navigateToMain() {
-        final Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+        final Intent intent = SelfieSpotsMapActivity.createIntent(this);
         startActivity(intent);
         finish();
     }

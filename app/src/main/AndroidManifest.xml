@@ -44,8 +44,6 @@
             android:label="@string/app_name"
             android:theme="@android:style/Theme.Translucent.NoTitleBar"/>
 
-        <activity android:name=".activities.MainActivity"/>
-
         <meta-data
             android:name="com.facebook.sdk.PERMISSIONS"
             android:value="email" />
