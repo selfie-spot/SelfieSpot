@@ -1,7 +1,10 @@
 <resources>
     <string name="app_name">SelfieSpot</string>
+
     <string name="facebook_desc">loginbtn</string>
 
+    <string name="facebook_app_id">902358409868580</string>
+    <string name="selfiespot">SelfieSpot</string>
 </resources>
 
 
