@@ -72,6 +72,8 @@ public class SelfieSpotsMapActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+
+        populateLoggedInUserDetails();
     }
 
     @Override
@@ -91,7 +93,6 @@ public class SelfieSpotsMapActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(final MenuItem item) {
         if (mDrawerToggle.onOptionsItemSelected(item)) {
-            populateLoggedInUserDetails();
             return true;
         }
         return false;
