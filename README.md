@@ -4,6 +4,9 @@
 Crowd sourced app that shows the selfie points on the map for travelers and photographers.
 This app shows selfie points or locations on the map marked by previous travelers and photographers. Users are allowed to drop/add selfie point pins, rate the location, add pictures and share it with friends using Facebook and Instagram.
 
+### Week 1 Walkthrough
+![Video Walkthrough](demos/selfiespot_demo_week1.gif)
+
 ## User Stories
 
 **required** functionality:
