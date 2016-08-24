@@ -1,8 +1,12 @@
 package com.codepath.selfiespot.activities;
 
+import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TextInputEditText;
@@ -17,8 +21,11 @@ import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.afollestad.materialcamera.MaterialCamera;
+import com.bumptech.glide.Glide;
 import com.codepath.selfiespot.R;
 import com.codepath.selfiespot.fragments.AlertLocationPickerMapFragment;
 import com.codepath.selfiespot.models.SelfieSpot;
@@ -26,19 +33,30 @@ import com.codepath.selfiespot.views.HideKeyboardEditTextFocusChangeListener;
 import com.google.android.gms.maps.model.LatLng;
 import com.parse.GetCallback;
 import com.parse.ParseException;
+import com.parse.ParseFile;
 import com.parse.ParseGeoPoint;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
 import com.parse.SaveCallback;
 
+import java.io.File;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import permissions.dispatcher.NeedsPermission;
+import permissions.dispatcher.RuntimePermissions;
 
+@RuntimePermissions
 public class EditSelfieSpotActivity extends AppCompatActivity {
+    private final static int REQUEST_CODE_CAMERA = 2;
+
     private static final String TAG = EditSelfieSpotActivity.class.getSimpleName();
     private static final String EXTRA_SELFIE_SPOT_ID = EditSelfieSpotActivity.class.getSimpleName() + ":SELFIE_SPOT_ID";
 
     private static final String TAG_MAP_PICKER = "mapPicker";
+
+    @BindView(R.id.iv_image)
+    ImageView mImageView;
 
     @BindView(R.id.tie_name)
     TextInputEditText mNameEditText;
@@ -116,6 +134,27 @@ public class EditSelfieSpotActivity extends AppCompatActivity {
         }
     }
 
+    @Override
+    protected void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == REQUEST_CODE_CAMERA) {
+            if (resultCode == RESULT_OK) {
+                Log.d(TAG, "Saved to: " + data.getDataString());
+                final String imageUrl = data.getDataString();
+                final ParseFile parseFile = new ParseFile(new File(imageUrl));
+                mSelfieSpot.setPhotoFile(parseFile);
+                showImage(imageUrl);
+            } else {
+                if(data != null) {
+                    final Exception e = (Exception) data.getSerializableExtra(MaterialCamera.ERROR_EXTRA);
+                    Log.e(TAG, "Error retrieving camera", e);
+                    Toast.makeText(this, "Error retrieving image", Toast.LENGTH_SHORT).show();
+                }
+            }
+        }
+    }
+
     private void initViews() {
         mNameEditText.setOnFocusChangeListener(mHideKeyboardEditTextFocusChangeListener);
         mNameEditText.addTextChangedListener(new TextWatcher() {
@@ -177,6 +216,54 @@ public class EditSelfieSpotActivity extends AppCompatActivity {
         if (mSelfieSpot.getLocation() != null) {
             mLocationEditText.setText(mSelfieSpot.getLocation().toString());
         }
+
+        if (mSelfieSpot.getPhotoFile() != null) {
+            showImage(mSelfieSpot.getPhotoFile().getUrl());
+        } else {
+            mImageView.setImageResource(R.drawable.ic_add_a_photo);
+        }
+
+        mImageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(final View view) {
+                EditSelfieSpotActivityPermissionsDispatcher.addPhotoWithCheck(EditSelfieSpotActivity.this);
+            }
+        });
+    }
+
+    @Override
+    public void onRequestPermissionsResult(final int requestCode, final String[] permissions, final int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        EditSelfieSpotActivityPermissionsDispatcher.onRequestPermissionsResult(this, requestCode, grantResults);
+    }
+
+    @NeedsPermission({Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE})
+    void addPhoto() {
+        new MaterialCamera(this)
+                .saveDir(Environment.getExternalStorageDirectory())
+                .stillShot()
+                .start(REQUEST_CODE_CAMERA);
+    }
+
+    private void showImage(final String url) {
+        Glide.clear(mImageView);
+
+        //TODO - use image width & height
+        Glide.with(this)
+                .load(url)
+                .fitCenter()
+                .placeholder(R.drawable.ic_progress_indeterminate)
+                .error(R.drawable.ic_error)
+                .into(mImageView);
+    }
+
+    private void getImageSize(final Uri uri){
+        BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inJustDecodeBounds = true;
+        BitmapFactory.decodeFile(new File(uri.getPath()).getAbsolutePath(), options);
+        int imageHeight = options.outHeight;
+        int imageWidth = options.outWidth;
+
     }
 
     private void onSaveSelfieSpot() {
