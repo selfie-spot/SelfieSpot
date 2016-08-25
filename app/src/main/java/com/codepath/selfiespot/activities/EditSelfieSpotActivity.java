@@ -21,14 +21,13 @@ import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
 import android.widget.FrameLayout;
-import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.afollestad.materialcamera.MaterialCamera;
-import com.bumptech.glide.Glide;
 import com.codepath.selfiespot.R;
 import com.codepath.selfiespot.fragments.AlertLocationPickerMapFragment;
 import com.codepath.selfiespot.models.SelfieSpot;
+import com.codepath.selfiespot.views.DynamicHeightImageView;
 import com.codepath.selfiespot.views.HideKeyboardEditTextFocusChangeListener;
 import com.google.android.gms.maps.model.LatLng;
 import com.parse.GetCallback;
@@ -38,6 +37,7 @@ import com.parse.ParseGeoPoint;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
 import com.parse.SaveCallback;
+import com.squareup.picasso.Picasso;
 
 import java.io.File;
 
@@ -48,15 +48,15 @@ import permissions.dispatcher.RuntimePermissions;
 
 @RuntimePermissions
 public class EditSelfieSpotActivity extends AppCompatActivity {
-    private final static int REQUEST_CODE_CAMERA = 2;
-
     private static final String TAG = EditSelfieSpotActivity.class.getSimpleName();
+
+    private final static int REQUEST_CODE_CAMERA = 2;
     private static final String EXTRA_SELFIE_SPOT_ID = EditSelfieSpotActivity.class.getSimpleName() + ":SELFIE_SPOT_ID";
 
     private static final String TAG_MAP_PICKER = "mapPicker";
 
     @BindView(R.id.iv_image)
-    ImageView mImageView;
+    DynamicHeightImageView mImageView;
 
     @BindView(R.id.tie_name)
     TextInputEditText mNameEditText;
@@ -142,9 +142,7 @@ public class EditSelfieSpotActivity extends AppCompatActivity {
             if (resultCode == RESULT_OK) {
                 Log.d(TAG, "Saved to: " + data.getDataString());
                 final String imageUrl = data.getDataString();
-                final ParseFile parseFile = new ParseFile(new File(imageUrl));
-                mSelfieSpot.setPhotoFile(parseFile);
-                showImage(imageUrl);
+                setMedia(imageUrl);
             } else {
                 if(data != null) {
                     final Exception e = (Exception) data.getSerializableExtra(MaterialCamera.ERROR_EXTRA);
@@ -217,8 +215,8 @@ public class EditSelfieSpotActivity extends AppCompatActivity {
             mLocationEditText.setText(mSelfieSpot.getLocation().toString());
         }
 
-        if (mSelfieSpot.getPhotoFile() != null) {
-            showImage(mSelfieSpot.getPhotoFile().getUrl());
+        if (mSelfieSpot.getMediaFile() != null) {
+            showImage(mSelfieSpot.getMediaFile().getUrl(), mSelfieSpot.getMediaWidth(), mSelfieSpot.getMediaHeight());
         } else {
             mImageView.setImageResource(R.drawable.ic_add_a_photo);
         }
@@ -239,31 +237,49 @@ public class EditSelfieSpotActivity extends AppCompatActivity {
 
     @NeedsPermission({Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE})
     void addPhoto() {
+        final File directory = new File(Environment.getExternalStorageDirectory(), "selfie_spots");
+
+        if (! directory.exists()) {
+            directory.mkdir();
+        }
+
         new MaterialCamera(this)
-                .saveDir(Environment.getExternalStorageDirectory())
+                .saveDir(directory)
                 .stillShot()
                 .start(REQUEST_CODE_CAMERA);
     }
 
-    private void showImage(final String url) {
-        Glide.clear(mImageView);
+    private void setMedia(final String imageUrl) {
+        final File file = new File(imageUrl.replace("file:///", ""));
+        final ParseFile parseFile = new ParseFile(file);
+        final int[] dimensions = getImageSize(Uri.parse(imageUrl));
+        mSelfieSpot.setMediaFile(parseFile);
+        mSelfieSpot.setMediaWidth(dimensions[0]);
+        mSelfieSpot.setMediaHeight(dimensions[1]);
+        showImage(imageUrl, dimensions[0], dimensions[1]);
+        Log.d(TAG, String.format("%s captured, width: %d, height: %d", file.getAbsolutePath(), dimensions[0], dimensions[1]));
+    }
+
+    private void showImage(final String url, final int width, final int height) {
+        mImageView.setAdjustViewBounds(true);
+
+        mImageView.setHeightRatio((float) height / (float) width);
 
         //TODO - use image width & height
-        Glide.with(this)
+        Picasso.with(this)
                 .load(url)
-                .fitCenter()
                 .placeholder(R.drawable.ic_progress_indeterminate)
                 .error(R.drawable.ic_error)
                 .into(mImageView);
     }
 
-    private void getImageSize(final Uri uri){
+    private int[] getImageSize(final Uri uri){
         BitmapFactory.Options options = new BitmapFactory.Options();
         options.inJustDecodeBounds = true;
         BitmapFactory.decodeFile(new File(uri.getPath()).getAbsolutePath(), options);
         int imageHeight = options.outHeight;
         int imageWidth = options.outWidth;
-
+        return new int[]{imageWidth, imageHeight};
     }
 
     private void onSaveSelfieSpot() {

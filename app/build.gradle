@@ -6,7 +6,8 @@ ext {
     BUTTERKNIFE_VERSION = "8.2.1"
     DAGGER_VERSION = "2.4"
     JUNIT_VERSION = "4.12"
-    GLIDE_VERSION = "3.7.0"
+    PICASSO_VERSION = "2.5.2"
+    OK_HTTP_VERSION = "3.4.1";
     GSON_VERSION = "2.7"
     PARCELER_VERSION = "1.1.5"
     PARSE_VERSION = "1.13.1"
@@ -78,7 +79,7 @@ dependencies {
     apt "org.parceler:parceler:$PARCELER_VERSION"
     compile "org.parceler:parceler-api:$PARCELER_VERSION"
 
-    compile "com.github.bumptech.glide:glide:$GLIDE_VERSION"
+    compile "com.squareup.picasso:picasso:$PICASSO_VERSION"
 
     compile "com.jakewharton:butterknife:$BUTTERKNIFE_VERSION"
     apt "com.jakewharton:butterknife-compiler:$BUTTERKNIFE_VERSION"

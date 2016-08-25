@@ -18,6 +18,8 @@ public class SelfieSpot extends ParseObject implements ClusterItem {
     private static final String PROPERTY_USER = "user";
     private static final String PROPERTY_LOCATION = "loc";
     private static final String PROPERTY_PICTURE = "pic";
+    private static final String PROPERTY_WIDTH = "w";
+    private static final String PROPERTY_HEIGHT = "h";
     private static final String PROPERTY_REVIEWS_COUNT = "reviews_count";
     private static final String PROPERTY_REVIEW_STARS_COUNT = "review_stars_count";
 
@@ -78,12 +80,28 @@ public class SelfieSpot extends ParseObject implements ClusterItem {
         return ParseQuery.getQuery(SelfieSpot.class);
     }
 
-    public ParseFile getPhotoFile() {
+    public ParseFile getMediaFile() {
         return getParseFile(PROPERTY_PICTURE);
     }
 
-    public void setPhotoFile(final ParseFile file) {
-        put(PROPERTY_PICTURE, file);
+    public void setMediaFile(final ParseFile mediaFile) {
+        put(PROPERTY_PICTURE, mediaFile);
+    }
+
+    public int getMediaWidth() {
+        return getInt(PROPERTY_WIDTH);
+    }
+
+    public void setMediaWidth(final int width) {
+        put(PROPERTY_WIDTH, width);
+    }
+
+    public int getMediaHeight() {
+        return getInt(PROPERTY_HEIGHT);
+    }
+
+    public void setMediaHeight(final int height) {
+        put(PROPERTY_HEIGHT, height);
     }
 
     public static ParseQuery<SelfieSpot> getWhereWithinGeoBoxQuery(final ParseGeoPoint sw,
