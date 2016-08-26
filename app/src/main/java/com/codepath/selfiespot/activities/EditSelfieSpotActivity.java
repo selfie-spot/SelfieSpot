@@ -3,10 +3,10 @@ package com.codepath.selfiespot.activities;
 import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TextInputEditText;
@@ -27,6 +27,7 @@ import com.afollestad.materialcamera.MaterialCamera;
 import com.codepath.selfiespot.R;
 import com.codepath.selfiespot.fragments.AlertLocationPickerMapFragment;
 import com.codepath.selfiespot.models.SelfieSpot;
+import com.codepath.selfiespot.util.ImageUtil;
 import com.codepath.selfiespot.views.DynamicHeightImageView;
 import com.codepath.selfiespot.views.HideKeyboardEditTextFocusChangeListener;
 import com.google.android.gms.maps.model.LatLng;
@@ -87,7 +88,7 @@ public class EditSelfieSpotActivity extends AppCompatActivity {
 
     public static Intent createIntent(final Context context, final String selfieSpotId) {
         final Intent intent = new Intent(context, EditSelfieSpotActivity.class);
-        if (! TextUtils.isEmpty(selfieSpotId)) {
+        if (!TextUtils.isEmpty(selfieSpotId)) {
             intent.putExtra(EXTRA_SELFIE_SPOT_ID, selfieSpotId);
         }
         return intent;
@@ -144,7 +145,7 @@ public class EditSelfieSpotActivity extends AppCompatActivity {
                 final String imageUrl = data.getDataString();
                 setMedia(imageUrl);
             } else {
-                if(data != null) {
+                if (data != null) {
                     final Exception e = (Exception) data.getSerializableExtra(MaterialCamera.ERROR_EXTRA);
                     Log.e(TAG, "Error retrieving camera", e);
                     Toast.makeText(this, "Error retrieving image", Toast.LENGTH_SHORT).show();
@@ -203,11 +204,11 @@ public class EditSelfieSpotActivity extends AppCompatActivity {
             }
         });
 
-        if (! TextUtils.isEmpty(mSelfieSpot.getName())) {
+        if (!TextUtils.isEmpty(mSelfieSpot.getName())) {
             mNameEditText.setText(mSelfieSpot.getName());
         }
 
-        if (! TextUtils.isEmpty(mSelfieSpot.getDescription())) {
+        if (!TextUtils.isEmpty(mSelfieSpot.getDescription())) {
             mDescEditText.setText(mSelfieSpot.getDescription());
         }
 
@@ -237,11 +238,7 @@ public class EditSelfieSpotActivity extends AppCompatActivity {
 
     @NeedsPermission({Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE})
     void addPhoto() {
-        final File directory = new File(Environment.getExternalStorageDirectory(), "selfie_spots");
-
-        if (! directory.exists()) {
-            directory.mkdir();
-        }
+        final File directory = ImageUtil.getStorageDir();
 
         new MaterialCamera(this)
                 .saveDir(directory)
@@ -250,15 +247,20 @@ public class EditSelfieSpotActivity extends AppCompatActivity {
     }
 
     private void setMedia(final String imageUrl) {
-        final File file = new File(imageUrl.replace("file:///", ""));
-        final ParseFile parseFile = new ParseFile(file);
-        final int[] dimensions = getImageSize(Uri.parse(imageUrl));
+        final int[] actualDimensions = ImageUtil.getImageSize(Uri.parse(imageUrl));
+
+        final int[] optimizedDimensions = ImageUtil.getResizedImageSize(actualDimensions);
+        String optimizedFilePath = getOptimizedFilePath(imageUrl, optimizedDimensions);
+
+        final ParseFile parseFile = new ParseFile(new File(stripFilePrefix(optimizedFilePath)));
+
         mSelfieSpot.setMediaFile(parseFile);
-        mSelfieSpot.setMediaWidth(dimensions[0]);
-        mSelfieSpot.setMediaHeight(dimensions[1]);
-        showImage(imageUrl, dimensions[0], dimensions[1]);
-        Log.d(TAG, String.format("%s captured, width: %d, height: %d", file.getAbsolutePath(), dimensions[0], dimensions[1]));
+        mSelfieSpot.setMediaWidth(optimizedDimensions[0]);
+        mSelfieSpot.setMediaHeight(optimizedDimensions[1]);
+        showImage(imageUrl, optimizedDimensions[0], optimizedDimensions[1]);
+        Log.d(TAG, String.format("%s captured, width: %d, height: %d", optimizedFilePath, optimizedDimensions[0], optimizedDimensions[1]));
     }
+
 
     private void showImage(final String url, final int width, final int height) {
         mImageView.setAdjustViewBounds(true);
@@ -273,13 +275,25 @@ public class EditSelfieSpotActivity extends AppCompatActivity {
                 .into(mImageView);
     }
 
-    private int[] getImageSize(final Uri uri){
-        BitmapFactory.Options options = new BitmapFactory.Options();
-        options.inJustDecodeBounds = true;
-        BitmapFactory.decodeFile(new File(uri.getPath()).getAbsolutePath(), options);
-        int imageHeight = options.outHeight;
-        int imageWidth = options.outWidth;
-        return new int[]{imageWidth, imageHeight};
+    private String getOptimizedFilePath(final String path, final int[] optimizedDimensions) {
+        final Bitmap rawTakenImage = BitmapFactory.decodeFile(stripFilePrefix(path));
+        final Bitmap resizedImage = Bitmap.createScaledBitmap(rawTakenImage, optimizedDimensions[0], optimizedDimensions[1], true);
+
+        // if same, just return the given path
+        if (resizedImage == rawTakenImage) {
+            return path;
+        }
+
+        final Uri resizedImagePath = ImageUtil.savePicture(this, resizedImage);
+        return resizedImagePath.toString();
+    }
+
+    private String stripFilePrefix(final String path) {
+        final String PREFIX = "file:///";
+        if (path.startsWith(PREFIX)) {
+            return path.replace(PREFIX, "");
+        }
+        return path;
     }
 
     private void onSaveSelfieSpot() {
