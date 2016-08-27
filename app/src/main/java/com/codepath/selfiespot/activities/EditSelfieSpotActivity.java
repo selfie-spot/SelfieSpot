@@ -8,19 +8,16 @@ import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.TextInputEditText;
-import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.text.Editable;
-import android.text.InputType;
 import android.text.TextUtils;
-import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.afollestad.materialcamera.MaterialCamera;
@@ -28,7 +25,6 @@ import com.codepath.selfiespot.R;
 import com.codepath.selfiespot.fragments.AlertLocationPickerMapFragment;
 import com.codepath.selfiespot.models.SelfieSpot;
 import com.codepath.selfiespot.util.ImageUtil;
-import com.codepath.selfiespot.views.DynamicHeightImageView;
 import com.codepath.selfiespot.views.HideKeyboardEditTextFocusChangeListener;
 import com.google.android.gms.maps.model.LatLng;
 import com.parse.GetCallback;
@@ -57,25 +53,13 @@ public class EditSelfieSpotActivity extends AppCompatActivity {
     private static final String TAG_MAP_PICKER = "mapPicker";
 
     @BindView(R.id.iv_image)
-    DynamicHeightImageView mImageView;
+    ImageView mImageView;
 
-    @BindView(R.id.tie_name)
-    TextInputEditText mNameEditText;
+    @BindView(R.id.tv_name)
+    EditText mNameTextView;
 
-    @BindView(R.id.til_name)
-    TextInputLayout mNameTextInputLayout;
-
-    @BindView(R.id.tie_description)
-    TextInputEditText mDescEditText;
-
-    @BindView(R.id.tie_location)
-    TextInputEditText mLocationEditText;
-
-    @BindView(R.id.til_location)
-    TextInputLayout mLocationTextInputLayout;
-
-    @BindView(R.id.fab_save_selfie)
-    FloatingActionButton mSaveButton;
+    @BindView(R.id.btn_create)
+    Button mCreateButton;
 
     @BindView(R.id.toolbar)
     Toolbar mToolbar;
@@ -155,49 +139,7 @@ public class EditSelfieSpotActivity extends AppCompatActivity {
     }
 
     private void initViews() {
-        mNameEditText.setOnFocusChangeListener(mHideKeyboardEditTextFocusChangeListener);
-        mNameEditText.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(final CharSequence s, final int start, final int count, final int after) {
-                // no-op
-            }
-
-            @Override
-            public void onTextChanged(final CharSequence s, final int start, final int before, final int count) {
-                // no-op
-            }
-
-            @Override
-            public void afterTextChanged(final Editable s) {
-                if (mNameTextInputLayout.isErrorEnabled() && !TextUtils.isEmpty(s.toString())) {
-                    mNameTextInputLayout.setErrorEnabled(false);
-                }
-            }
-        });
-
-        mDescEditText.setOnFocusChangeListener(mHideKeyboardEditTextFocusChangeListener);
-
-        mLocationEditText.setInputType(InputType.TYPE_NULL);
-
-        // this is required once the focus is obtained
-        mLocationEditText.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                showMap();
-            }
-        });
-
-        // this is required the first time focus is obtained
-        mLocationEditText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(final View v, final boolean hasFocus) {
-                if (hasFocus) {
-                    showMap();
-                }
-            }
-        });
-
-        mSaveButton.setOnClickListener(new View.OnClickListener() {
+        mCreateButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 onSaveSelfieSpot();
@@ -205,15 +147,7 @@ public class EditSelfieSpotActivity extends AppCompatActivity {
         });
 
         if (!TextUtils.isEmpty(mSelfieSpot.getName())) {
-            mNameEditText.setText(mSelfieSpot.getName());
-        }
-
-        if (!TextUtils.isEmpty(mSelfieSpot.getDescription())) {
-            mDescEditText.setText(mSelfieSpot.getDescription());
-        }
-
-        if (mSelfieSpot.getLocation() != null) {
-            mLocationEditText.setText(mSelfieSpot.getLocation().toString());
+            mNameTextView.setText(mSelfieSpot.getName());
         }
 
         if (mSelfieSpot.getMediaFile() != null) {
@@ -265,8 +199,6 @@ public class EditSelfieSpotActivity extends AppCompatActivity {
     private void showImage(final String url, final int width, final int height) {
         mImageView.setAdjustViewBounds(true);
 
-        mImageView.setHeightRatio((float) height / (float) width);
-
         //TODO - use image width & height
         Picasso.with(this)
                 .load(url)
@@ -297,22 +229,21 @@ public class EditSelfieSpotActivity extends AppCompatActivity {
     }
 
     private void onSaveSelfieSpot() {
-        final String updatedName = mNameEditText.getText().toString();
+        final String updatedName = mNameTextView.getText().toString();
 
         if (TextUtils.isEmpty(updatedName)) {
-            mNameTextInputLayout.setError(getString(R.string.error_name));
+            mNameTextView.setError(getString(R.string.error_name));
             return;
         }
 
         if (mSelfieSpot.getLocation() == null) {
-            mLocationTextInputLayout.setError(getString(R.string.error_location));
+            // TODO - indicate error
+            // mLocationTextInputLayout.setError(getString(R.string.error_location));
             return;
         }
 
         mSelfieSpot.setName(updatedName.trim());
 
-        final String updatedDescription = mDescEditText.getText().toString();
-        mSelfieSpot.setDescription(updatedDescription);
         mSelfieSpot.setUser(ParseUser.getCurrentUser());
         showBusy();
 
@@ -333,12 +264,12 @@ public class EditSelfieSpotActivity extends AppCompatActivity {
 
     private void showBusy() {
         mProgressFrameLayout.setVisibility(View.VISIBLE);
-        mSaveButton.hide();
+        mCreateButton.setVisibility(View.GONE);
     }
 
     private void hideBusy() {
         mProgressFrameLayout.setVisibility(View.GONE);
-        mSaveButton.show();
+        mCreateButton.setVisibility(View.VISIBLE);
     }
 
     private void showMap() {
@@ -361,8 +292,8 @@ public class EditSelfieSpotActivity extends AppCompatActivity {
     }
 
     private void setLocation(final LatLng location) {
-        mLocationEditText.setText(location.toString());
-        mLocationTextInputLayout.setErrorEnabled(false);
+//        mLocationEditText.setText(location.toString());
+//        mLocationTextInputLayout.setErrorEnabled(false);
         mSelfieSpot.setLocation(new ParseGeoPoint(location.latitude, location.longitude));
     }
 }
