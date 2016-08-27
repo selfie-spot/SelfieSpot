@@ -67,6 +67,9 @@ public class EditSelfieSpotActivity extends AppCompatActivity {
     @BindView(R.id.fl_progress_holder)
     FrameLayout mProgressFrameLayout;
 
+    @BindView(R.id.iv_location)
+    ImageView mLocationImageView;
+
     private HideKeyboardEditTextFocusChangeListener mHideKeyboardEditTextFocusChangeListener;
     private SelfieSpot mSelfieSpot;
 
@@ -162,6 +165,13 @@ public class EditSelfieSpotActivity extends AppCompatActivity {
                 EditSelfieSpotActivityPermissionsDispatcher.addPhotoWithCheck(EditSelfieSpotActivity.this);
             }
         });
+
+        mLocationImageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(final View view) {
+                showMap();
+            }
+        });
     }
 
     @Override
@@ -237,8 +247,12 @@ public class EditSelfieSpotActivity extends AppCompatActivity {
         }
 
         if (mSelfieSpot.getLocation() == null) {
-            // TODO - indicate error
-            // mLocationTextInputLayout.setError(getString(R.string.error_location));
+            ImageUtil.animateImageView(this, mLocationImageView, getResources().getDrawable(R.drawable.ic_place_error));
+            return;
+        }
+
+        if (mSelfieSpot.getMediaFile() == null) {
+            ImageUtil.animateImageView(this, mImageView, getResources().getDrawable(R.drawable.ic_add_a_photo_error));
             return;
         }
 
@@ -292,8 +306,7 @@ public class EditSelfieSpotActivity extends AppCompatActivity {
     }
 
     private void setLocation(final LatLng location) {
-//        mLocationEditText.setText(location.toString());
-//        mLocationTextInputLayout.setErrorEnabled(false);
+        mLocationImageView.setImageResource(R.drawable.ic_place_populated);
         mSelfieSpot.setLocation(new ParseGeoPoint(location.latitude, location.longitude));
     }
 }

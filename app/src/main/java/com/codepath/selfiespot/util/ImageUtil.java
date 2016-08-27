@@ -4,8 +4,12 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Environment;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
+import android.widget.ImageView;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -25,6 +29,40 @@ public class ImageUtil {
         int imageHeight = options.outHeight;
         int imageWidth = options.outWidth;
         return new int[]{imageWidth, imageHeight};
+    }
+
+    public static void animateImageView(final Context c, final ImageView v, final Drawable newDrawable) {
+        final Animation animOut = AnimationUtils.loadAnimation(c, android.R.anim.fade_out);
+        final Animation animIn = AnimationUtils.loadAnimation(c, android.R.anim.fade_in);
+        animOut.setAnimationListener(new Animation.AnimationListener() {
+            @Override
+            public void onAnimationStart(Animation animation) {
+            }
+
+            @Override
+            public void onAnimationRepeat(Animation animation) {
+            }
+
+            @Override
+            public void onAnimationEnd(Animation animation) {
+                v.setImageDrawable(newDrawable);
+                animIn.setAnimationListener(new Animation.AnimationListener() {
+                    @Override
+                    public void onAnimationStart(final Animation animation) {
+                    }
+
+                    @Override
+                    public void onAnimationRepeat(final Animation animation) {
+                    }
+
+                    @Override
+                    public void onAnimationEnd(final Animation animation) {
+                    }
+                });
+                v.startAnimation(animIn);
+            }
+        });
+        v.startAnimation(animOut);
     }
 
     public static int[] getResizedImageSize(final int[] actualDimensions) {
