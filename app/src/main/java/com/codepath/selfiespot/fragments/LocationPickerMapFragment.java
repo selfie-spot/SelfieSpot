@@ -63,6 +63,12 @@ public class LocationPickerMapFragment extends BaseMapFragment implements Google
         drawMarker(position);
     }
 
+    // animate to the current location
+    @Override
+    protected boolean animateCameraToCurrentLocation() {
+        return true;
+    }
+
     private void drawMarker(final LatLng position) {
         if (mCurrentMarker != null) {
             mCurrentMarker.remove();

@@ -159,8 +159,12 @@ public class BaseMapFragment extends SupportMapFragment implements GoogleApiClie
         final Location location = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
         if (location != null) {
             final LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
-            final CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(latLng, 17);
-            mMap.animateCamera(cameraUpdate);
+
+            if (animateCameraToCurrentLocation()) {
+                final CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(latLng, 17);
+                mMap.animateCamera(cameraUpdate);
+            }
+
             onLastLocationFound(latLng);
         }
     }
@@ -168,6 +172,12 @@ public class BaseMapFragment extends SupportMapFragment implements GoogleApiClie
     // hook to enable subclasses to react when last location is found the first time
     protected void onLastLocationFound(final LatLng latLng) {
         // no-op
+    }
+
+    // indicates if the camera should be animated to current location, false by default, subclasses
+    // can override this setting
+    protected boolean animateCameraToCurrentLocation() {
+        return false;
     }
 
     /*
