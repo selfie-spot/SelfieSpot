@@ -16,7 +16,7 @@
     <string name="drawer_label_home">Home</string>
 
     <!-- New Selfie Spot -->
-    <string name="hint_name">Name</string>
+    <string name="hint_name">Pick a Name..</string>
     <string name="hint_description">Description</string>
     <string name="hint_location">Location</string>
     <string name="label_save_selfie">Save</string>

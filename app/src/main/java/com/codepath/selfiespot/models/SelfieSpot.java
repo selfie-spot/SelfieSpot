@@ -3,6 +3,7 @@ package com.codepath.selfiespot.models;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.maps.android.clustering.ClusterItem;
 import com.parse.ParseClassName;
+import com.parse.ParseFile;
 import com.parse.ParseGeoPoint;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
@@ -49,6 +50,9 @@ public class SelfieSpot extends ParseObject implements ClusterItem {
     private static final String PROPERTY_DESC = "desc";
     private static final String PROPERTY_USER = "user";
     private static final String PROPERTY_LOCATION = "loc";
+    private static final String PROPERTY_PICTURE = "pic";
+    private static final String PROPERTY_WIDTH = "w";
+    private static final String PROPERTY_HEIGHT = "h";
     private static final String PROPERTY_REVIEWS_COUNT = "reviews_count";
     private static final String PROPERTY_REVIEW_STARS_COUNT = "review_stars_count";
 
@@ -107,6 +111,30 @@ public class SelfieSpot extends ParseObject implements ClusterItem {
 
     public static ParseQuery<SelfieSpot> getQuery() {
         return ParseQuery.getQuery(SelfieSpot.class);
+    }
+
+    public ParseFile getMediaFile() {
+        return getParseFile(PROPERTY_PICTURE);
+    }
+
+    public void setMediaFile(final ParseFile mediaFile) {
+        put(PROPERTY_PICTURE, mediaFile);
+    }
+
+    public int getMediaWidth() {
+        return getInt(PROPERTY_WIDTH);
+    }
+
+    public void setMediaWidth(final int width) {
+        put(PROPERTY_WIDTH, width);
+    }
+
+    public int getMediaHeight() {
+        return getInt(PROPERTY_HEIGHT);
+    }
+
+    public void setMediaHeight(final int height) {
+        put(PROPERTY_HEIGHT, height);
     }
 
     public static ParseQuery<SelfieSpot> getWhereWithinGeoBoxQuery(final ParseGeoPoint sw,
