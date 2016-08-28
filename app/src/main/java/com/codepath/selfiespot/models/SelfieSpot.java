@@ -11,7 +11,7 @@ import com.parse.ParseUser;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
+import java.util.Collection;
 
 /*
 {
@@ -139,24 +139,17 @@ public class SelfieSpot extends ParseObject implements ClusterItem {
         put(PROPERTY_HEIGHT, height);
     }
 
-    public List<Tag> getTags() {
-        final List<String> tagsText = getList(PROPERTY_TAGS);
-        final List<Tag> tags = new ArrayList<>();
-        for (final String tag : tagsText) {
-            tags.add(Tag.valueOf(tag));
-        }
+    public Collection<String> getTags() {
+        final Collection<String> tags = getList(PROPERTY_TAGS);
         return tags;
     }
 
-    public void addTags(final List<Tag> tags) {
-        final List<String> tagsText = getList(PROPERTY_TAGS);
-        for (final Tag tag : tags) {
-            tagsText.add(tag.name());
-        }
-        addAllUnique(PROPERTY_TAGS, tagsText);
+    public void setTags(final Collection<String> tags) {
+        remove(PROPERTY_TAGS);
+        addAllUnique(PROPERTY_TAGS, tags);
     }
 
-    public void removeTag(final Tag tag) {
+    public void removeTag(final String tag) {
         removeAll(PROPERTY_TAGS, Arrays.asList(tag));
     }
 
