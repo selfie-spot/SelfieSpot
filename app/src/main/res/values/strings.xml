@@ -24,4 +24,10 @@
     <string name="title_alert_location_picker">Pick Location</string>
     <string name="error_name">Name is Required</string>
     <string name="error_location">Location is required</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello I am MySelfiesFragment</string>
+    <string name="tvSelfiSpotNameDefVal">Golden Gate Bridge</string>
+    <string name="tvSelfieSpotDecDefVal">Possibly the most beautiful, certainly the most photographed, bridge in the world</string>
+    <string name="selfiespot_image">SelfieSpot Image</string>
 </resources>

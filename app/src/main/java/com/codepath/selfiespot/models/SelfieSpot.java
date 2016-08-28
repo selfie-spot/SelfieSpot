@@ -9,6 +9,39 @@ import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
 
+import java.util.ArrayList;
+import java.util.List;
+
+/*
+{
+    "results": [
+        {
+            "objectId": "bTaejW3RKS",
+            "name": "Name17",
+            "loc": {
+                "__type": "GeoPoint",
+                "latitude": 28.3481967,
+                "longitude": -81.5140857
+            },
+            "user": {
+                "__type": "Pointer",
+                "className": "_User",
+                "objectId": "dGM5nCf9aB"
+            },
+            "desc": "",
+            "createdAt": "2016-08-21T19:36:47.718Z",
+            "updatedAt": "2016-08-22T22:11:57.955Z",
+            "ACL": {
+                "dGM5nCf9aB": {
+                    "read": true,
+                    "write": true
+                }
+            }
+        },
+      }
+
+  */
+
 @ParseClassName("SelfieSpot")
 public class SelfieSpot extends ParseObject implements ClusterItem {
     public static final int DEFAULT_LIMIT = 100;
@@ -117,4 +150,31 @@ public class SelfieSpot extends ParseObject implements ClusterItem {
         final ParseGeoPoint location = getLocation();
         return new LatLng(location.getLatitude(), location.getLongitude());
     }
+
+    public static ParseQuery<SelfieSpot> getMySelfieSpot(final ParseUser parseUser, int limit){
+        final ArrayList<SelfieSpot> selfieSpots = new ArrayList<>();
+        final ParseQuery<SelfieSpot> query = ParseQuery.getQuery("SelfieSpot");
+        query.include("user");
+        query.setLimit(limit);
+        return query;
+    }
+
+
+    public static SelfieSpot convertSelfieSpot(SelfieSpot selfieSpot){
+        SelfieSpot selfiespot = new SelfieSpot();
+        selfiespot.setName(selfiespot.getName());
+        selfiespot.setDescription(selfiespot.getDescription());
+        return selfiespot;
+    }
+
+
+    public static List<SelfieSpot> convertSelfieSpots(List<SelfieSpot> selfieSpots) {
+        List<SelfieSpot> simpleSelfieSpots = new ArrayList<>();
+
+        for(SelfieSpot selfiespot : selfieSpots ){
+            simpleSelfieSpots.add(convertSelfieSpot(selfiespot));
+        }
+        return simpleSelfieSpots;
+    }
+
 }

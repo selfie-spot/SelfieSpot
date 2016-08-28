@@ -131,7 +131,8 @@ public class SelfieSpotsMapActivity extends AppCompatActivity {
                 break;
             }
             case R.id.nav_profile: {
-                // no-op
+               final Intent intent = ProfileActivity.createIntent(this);
+                startActivity(intent);
                 break;
             }
             case R.id.nav_settings: {
