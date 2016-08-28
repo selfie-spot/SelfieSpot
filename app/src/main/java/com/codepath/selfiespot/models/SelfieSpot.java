@@ -10,6 +10,7 @@ import com.parse.ParseQuery;
 import com.parse.ParseUser;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /*
@@ -55,6 +56,7 @@ public class SelfieSpot extends ParseObject implements ClusterItem {
     private static final String PROPERTY_HEIGHT = "h";
     private static final String PROPERTY_REVIEWS_COUNT = "reviews_count";
     private static final String PROPERTY_REVIEW_STARS_COUNT = "review_stars_count";
+    private static final String PROPERTY_TAGS = "tags";
 
     // empty constructor required
     public SelfieSpot() {
@@ -137,18 +139,39 @@ public class SelfieSpot extends ParseObject implements ClusterItem {
         put(PROPERTY_HEIGHT, height);
     }
 
-    public static ParseQuery<SelfieSpot> getWhereWithinGeoBoxQuery(final ParseGeoPoint sw,
-                                                                   final ParseGeoPoint ne) {
-        final ParseQuery<SelfieSpot> query = getQuery();
-        query.whereWithinGeoBox(PROPERTY_LOCATION, sw, ne);
-        query.setLimit(DEFAULT_LIMIT);
-        return query;
+    public List<Tag> getTags() {
+        final List<String> tagsText = getList(PROPERTY_TAGS);
+        final List<Tag> tags = new ArrayList<>();
+        for (final String tag : tagsText) {
+            tags.add(Tag.valueOf(tag));
+        }
+        return tags;
+    }
+
+    public void addTags(final List<Tag> tags) {
+        final List<String> tagsText = getList(PROPERTY_TAGS);
+        for (final Tag tag : tags) {
+            tagsText.add(tag.name());
+        }
+        addAllUnique(PROPERTY_TAGS, tagsText);
+    }
+
+    public void removeTag(final Tag tag) {
+        removeAll(PROPERTY_TAGS, Arrays.asList(tag));
     }
 
     @Override
     public LatLng getPosition() {
         final ParseGeoPoint location = getLocation();
         return new LatLng(location.getLatitude(), location.getLongitude());
+    }
+
+    public static ParseQuery<SelfieSpot> getWhereWithinGeoBoxQuery(final ParseGeoPoint sw,
+                                                                   final ParseGeoPoint ne) {
+        final ParseQuery<SelfieSpot> query = getQuery();
+        query.whereWithinGeoBox(PROPERTY_LOCATION, sw, ne);
+        query.setLimit(DEFAULT_LIMIT);
+        return query;
     }
 
     public static ParseQuery<SelfieSpot> getMySelfieSpot(final ParseUser parseUser, int limit){
@@ -158,23 +181,4 @@ public class SelfieSpot extends ParseObject implements ClusterItem {
         query.setLimit(limit);
         return query;
     }
-
-
-    public static SelfieSpot convertSelfieSpot(SelfieSpot selfieSpot){
-        SelfieSpot selfiespot = new SelfieSpot();
-        selfiespot.setName(selfiespot.getName());
-        selfiespot.setDescription(selfiespot.getDescription());
-        return selfiespot;
-    }
-
-
-    public static List<SelfieSpot> convertSelfieSpots(List<SelfieSpot> selfieSpots) {
-        List<SelfieSpot> simpleSelfieSpots = new ArrayList<>();
-
-        for(SelfieSpot selfiespot : selfieSpots ){
-            simpleSelfieSpots.add(convertSelfieSpot(selfiespot));
-        }
-        return simpleSelfieSpots;
-    }
-
 }
