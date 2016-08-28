@@ -18,7 +18,13 @@ ext {
     PERMISSION_DISPATCHER_VERSION = "2.1.3"
     MULTIDEX_VERSION = "1.0.0"
     MAP_UTILS_VERSION = "0.4.3"
-    FACEBOOK_ANDROID_SDK_VERSION ="4.14.1"
+    FACEBOOK_ANDROID_SDK_VERSION = "4.14.1"
+
+    PAGERSLIDINGTABSTRIP = "1.0.1"
+    SUPPORT="24.2.0"
+    RECYCLERVIEWV7="24.2.0"
+
+
 }
 
 android {
@@ -98,7 +104,15 @@ dependencies {
     compile "com.github.hotchemi:permissionsdispatcher:$PERMISSION_DISPATCHER_VERSION"
     apt "com.github.hotchemi:permissionsdispatcher-processor:$PERMISSION_DISPATCHER_VERSION"
 
+    compile "com.astuetz:pagerslidingtabstrip:$PAGERSLIDINGTABSTRIP"
+
+
     testCompile "junit:junit:$JUNIT_VERSION"
+
+    compile "com.android.support:support-v4:$SUPPORT"
+    compile "com.android.support:recyclerview-v7:$RECYCLERVIEWV7"
+
+
 }
 
 def getString(String keyName) {
