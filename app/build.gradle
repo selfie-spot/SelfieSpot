@@ -22,10 +22,7 @@ ext {
     FACEBOOK_ANDROID_SDK_VERSION ="4.14.1"
     MATERIAL_CAMERA_VERSION = "0.3.0"
     FACEBOOK_ANDROID_SDK_VERSION = "4.14.1"
-
     PAGERSLIDINGTABSTRIP = "1.0.1"
-    SUPPORT="24.2.0"
-    RECYCLERVIEWV7="24.2.0"
 }
 
 android {
@@ -73,6 +70,8 @@ dependencies {
     compile "com.android.support:percent:$APPCOMPAT_VERSION"
     compile "com.android.support:design:$APPCOMPAT_VERSION"
     compile "com.android.support:support-v4:$APPCOMPAT_VERSION"
+    compile "com.android.support:support-v4:$APPCOMPAT_VERSION"
+    compile "com.android.support:recyclerview-v7:$APPCOMPAT_VERSION"
 
     compile "com.google.android.gms:play-services-maps:$PLAY_SERVICES_VERSION"
     compile "com.google.android.gms:play-services-location:$PLAY_SERVICES_VERSION"
@@ -108,13 +107,7 @@ dependencies {
 
     compile "com.astuetz:pagerslidingtabstrip:$PAGERSLIDINGTABSTRIP"
 
-
     testCompile "junit:junit:$JUNIT_VERSION"
-
-    compile "com.android.support:support-v4:$SUPPORT"
-    compile "com.android.support:recyclerview-v7:$RECYCLERVIEWV7"
-
-
 }
 
 def getString(String keyName) {
