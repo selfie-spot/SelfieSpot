@@ -22,8 +22,8 @@ import butterknife.ButterKnife;
 public class SelfieSpotItemRenderer extends DefaultClusterRenderer<SelfieSpot> {
     private final IconGenerator mIconGenerator;
 
-    @BindView(R.id.tv_rating)
-    TextView mRatingTextView;
+    @BindView(R.id.tv_likes)
+    TextView mLikesTextView;
 
     public SelfieSpotItemRenderer(final Context context, final GoogleMap map,
                                   final ClusterManager<SelfieSpot> clusterManager) {
@@ -40,13 +40,7 @@ public class SelfieSpotItemRenderer extends DefaultClusterRenderer<SelfieSpot> {
 
     @Override
     protected void onBeforeClusterItemRendered(final SelfieSpot selfieSpot, final MarkerOptions markerOptions) {
-        float rating = 0;
-
-        if (selfieSpot.getPropertyReviewsCount() > 0) {
-            rating = (float) selfieSpot.getPropertyReviewStarsCount() / (float) selfieSpot.getPropertyReviewsCount();
-        }
-
-        mRatingTextView.setText(Float.toString(rating));
+        mLikesTextView.setText(Integer.toString(selfieSpot.getLikesCount()));
         final Bitmap icon = mIconGenerator.makeIcon();
         markerOptions.icon(BitmapDescriptorFactory.fromBitmap(icon)).title(selfieSpot.getName());
     }

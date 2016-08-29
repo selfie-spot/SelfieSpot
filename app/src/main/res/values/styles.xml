@@ -6,6 +6,7 @@
         <item name="colorPrimary">@color/primary</item>
         <item name="colorPrimaryDark">@color/primary_dark</item>
         <item name="colorAccent">@color/accent</item>
+        <item name="android:textViewStyle">@style/RobotoTextViewStyle</item>
     </style>
 
     <style name="Dialog.FullScreen" parent="Theme.AppCompat.Light.Dialog">
@@ -23,6 +24,10 @@
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">1dp</item>
         <item name="android:background">?android:attr/listDivider</item>
+    </style>
+
+    <style name="RobotoTextViewStyle" parent="android:Widget.TextView">
+        <item name="android:fontFamily">sans-serif-light</item>
     </style>
 
 </resources>

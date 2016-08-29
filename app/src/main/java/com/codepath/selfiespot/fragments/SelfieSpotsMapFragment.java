@@ -5,7 +5,7 @@ import android.os.CountDownTimer;
 import android.util.Log;
 import android.widget.Toast;
 
-import com.codepath.selfiespot.activities.EditSelfieSpotActivity;
+import com.codepath.selfiespot.activities.TempDetailSelfieSpotActivity;
 import com.codepath.selfiespot.models.SelfieSpot;
 import com.codepath.selfiespot.views.SelfieSpotItemRenderer;
 import com.google.android.gms.maps.GoogleMap;
@@ -61,9 +61,7 @@ public class SelfieSpotsMapFragment extends BaseMapFragment implements ClusterMa
         googleMap.setOnCameraIdleListener(new GoogleMap.OnCameraIdleListener() {
             @Override
             public void onCameraIdle() {
-                final float zoomLevel = googleMap.getCameraPosition().zoom;
-                if (zoomLevel < MIN_ZOOM_LEVEL) {
-                    Log.d(TAG, "Zoom level too high: " + zoomLevel);
+                if (! retrieveSelfieSpots()) {
                     clearAll();
                     return;
                 }
@@ -77,6 +75,14 @@ public class SelfieSpotsMapFragment extends BaseMapFragment implements ClusterMa
                 mCountDownTimer.start();
             }
         });
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (mMap != null && retrieveSelfieSpots()) {
+            doQuery();
+        }
     }
 
     private void doQuery() {
@@ -132,9 +138,18 @@ public class SelfieSpotsMapFragment extends BaseMapFragment implements ClusterMa
         mMap.clear();
     }
 
+    private boolean retrieveSelfieSpots() {
+        final float zoomLevel = mMap.getCameraPosition().zoom;
+        final boolean retrieve = zoomLevel >= MIN_ZOOM_LEVEL;
+        if (! retrieve) {
+            Log.d(TAG, "Zoom level too high: " + zoomLevel);
+        }
+        return retrieve;
+    }
+
     @Override
     public boolean onClusterItemClick(final SelfieSpot selfieSpot) {
-        final Intent intent = EditSelfieSpotActivity.createIntent(getActivity(), selfieSpot.getObjectId());
+        final Intent intent = TempDetailSelfieSpotActivity.createIntent(getActivity(), selfieSpot.getObjectId());
         startActivity(intent);
         return true;
     }

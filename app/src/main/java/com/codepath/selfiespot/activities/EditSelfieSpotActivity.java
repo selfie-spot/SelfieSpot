@@ -2,6 +2,7 @@ package com.codepath.selfiespot.activities;
 
 import android.Manifest;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -9,6 +10,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
@@ -24,8 +26,9 @@ import com.afollestad.materialcamera.MaterialCamera;
 import com.codepath.selfiespot.R;
 import com.codepath.selfiespot.fragments.AlertLocationPickerMapFragment;
 import com.codepath.selfiespot.models.SelfieSpot;
+import com.codepath.selfiespot.models.Tag;
+import com.codepath.selfiespot.util.CollectionUtils;
 import com.codepath.selfiespot.util.ImageUtil;
-import com.codepath.selfiespot.views.HideKeyboardEditTextFocusChangeListener;
 import com.google.android.gms.maps.model.LatLng;
 import com.parse.GetCallback;
 import com.parse.ParseException;
@@ -37,6 +40,9 @@ import com.parse.SaveCallback;
 import com.squareup.picasso.Picasso;
 
 import java.io.File;
+import java.io.Serializable;
+import java.util.HashSet;
+import java.util.Set;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -47,7 +53,10 @@ import permissions.dispatcher.RuntimePermissions;
 public class EditSelfieSpotActivity extends AppCompatActivity {
     private static final String TAG = EditSelfieSpotActivity.class.getSimpleName();
 
-    private final static int REQUEST_CODE_CAMERA = 2;
+    // state "keys"
+    private static final String STATE_DATA = "selfieSpotData";
+
+    private static final int REQUEST_CODE_CAMERA = 2;
     private static final String EXTRA_SELFIE_SPOT_ID = EditSelfieSpotActivity.class.getSimpleName() + ":SELFIE_SPOT_ID";
 
     private static final String TAG_MAP_PICKER = "mapPicker";
@@ -70,8 +79,13 @@ public class EditSelfieSpotActivity extends AppCompatActivity {
     @BindView(R.id.iv_location)
     ImageView mLocationImageView;
 
-    private HideKeyboardEditTextFocusChangeListener mHideKeyboardEditTextFocusChangeListener;
+    @BindView(R.id.iv_tag)
+    ImageView mTagImageView;
+
     private SelfieSpot mSelfieSpot;
+
+    // "transient fields" to be persisted across configuration changes
+    private SelfieSpotData mSelfieSpotData;
 
     public static Intent createIntent(final Context context, final String selfieSpotId) {
         final Intent intent = new Intent(context, EditSelfieSpotActivity.class);
@@ -92,10 +106,11 @@ public class EditSelfieSpotActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
 
-        mHideKeyboardEditTextFocusChangeListener = new HideKeyboardEditTextFocusChangeListener();
+        if (savedInstanceState != null) {
+            mSelfieSpotData = (SelfieSpotData) savedInstanceState.getSerializable(STATE_DATA);
+        }
 
         final String selfieSpotId = getIntent().getStringExtra(EXTRA_SELFIE_SPOT_ID);
-
         if (selfieSpotId != null) {
             showBusy();
             // retrieve SelfieSpot before initializing views
@@ -111,13 +126,17 @@ public class EditSelfieSpotActivity extends AppCompatActivity {
                     } else {
                         hideBusy();
                         mSelfieSpot = selfieSpot;
+                        if (mSelfieSpotData == null) {
+                            mSelfieSpotData = convert(selfieSpot);
+                        }
                         initViews();
                     }
                 }
             });
         } else {
-            // a new selfiespot, initialize views immediately
-            mSelfieSpot = new SelfieSpot();
+            if (mSelfieSpotData == null) {
+                mSelfieSpotData = new SelfieSpotData();
+            }
             initViews();
         }
     }
@@ -141,24 +160,45 @@ public class EditSelfieSpotActivity extends AppCompatActivity {
         }
     }
 
-    private void initViews() {
-        mCreateButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                onSaveSelfieSpot();
-            }
-        });
+    @Override
+    protected void onSaveInstanceState(final Bundle outState) {
+        super.onSaveInstanceState(outState);
 
-        if (!TextUtils.isEmpty(mSelfieSpot.getName())) {
-            mNameTextView.setText(mSelfieSpot.getName());
+        // grab the name
+        mSelfieSpotData.currentName = mNameTextView.getText().toString();
+
+        outState.putSerializable(STATE_DATA, mSelfieSpotData);
+    }
+
+    private void initViews() {
+        // tags
+        if (CollectionUtils.isEmpty(mSelfieSpotData.currentTags)) {
+            mTagImageView.setImageDrawable(getResources().getDrawable(R.drawable.ic_tag));
+        } else {
+            mTagImageView.setImageDrawable(getResources().getDrawable(R.drawable.ic_tag_populated));
         }
 
-        if (mSelfieSpot.getMediaFile() != null) {
-            showImage(mSelfieSpot.getMediaFile().getUrl(), mSelfieSpot.getMediaWidth(), mSelfieSpot.getMediaHeight());
+        // name
+        if (! TextUtils.isEmpty(mSelfieSpotData.currentName)) {
+            mNameTextView.setText(mSelfieSpotData.currentName);
+        }
+
+        // image
+        if (! TextUtils.isEmpty(mSelfieSpotData.currentImagePath)) {
+            showImage(mSelfieSpotData.currentImagePath, mSelfieSpotData.currentImageWidth,
+                    mSelfieSpotData.currentImageHeight);
         } else {
             mImageView.setImageResource(R.drawable.ic_add_a_photo);
         }
 
+        // location
+        if (mSelfieSpotData.currentLocationLat != null && mSelfieSpotData.currentLocationLong != null) {
+            mLocationImageView.setImageDrawable(getResources().getDrawable(R.drawable.ic_place_populated));
+        } else {
+            mLocationImageView.setImageDrawable(getResources().getDrawable(R.drawable.ic_place_normal));
+        }
+
+        // listeners
         mImageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(final View view) {
@@ -170,6 +210,20 @@ public class EditSelfieSpotActivity extends AppCompatActivity {
             @Override
             public void onClick(final View view) {
                 showMap();
+            }
+        });
+
+        mTagImageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(final View view) {
+                showTags();
+            }
+        });
+
+        mCreateButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onSaveSelfieSpot();
             }
         });
     }
@@ -192,17 +246,16 @@ public class EditSelfieSpotActivity extends AppCompatActivity {
 
     private void setMedia(final String imageUrl) {
         final int[] actualDimensions = ImageUtil.getImageSize(Uri.parse(imageUrl));
-
         final int[] optimizedDimensions = ImageUtil.getResizedImageSize(actualDimensions);
-        String optimizedFilePath = getOptimizedFilePath(imageUrl, optimizedDimensions);
 
-        final ParseFile parseFile = new ParseFile(new File(stripFilePrefix(optimizedFilePath)));
+        mSelfieSpotData.currentImagePath = getOptimizedFilePath(imageUrl, optimizedDimensions);
+        mSelfieSpotData.currentImageWidth = optimizedDimensions[0];
+        mSelfieSpotData.currentImageHeight = optimizedDimensions[1];
 
-        mSelfieSpot.setMediaFile(parseFile);
-        mSelfieSpot.setMediaWidth(optimizedDimensions[0]);
-        mSelfieSpot.setMediaHeight(optimizedDimensions[1]);
-        showImage(imageUrl, optimizedDimensions[0], optimizedDimensions[1]);
-        Log.d(TAG, String.format("%s captured, width: %d, height: %d", optimizedFilePath, optimizedDimensions[0], optimizedDimensions[1]));
+        showImage(mSelfieSpotData.currentImagePath, mSelfieSpotData.currentImageWidth,
+                mSelfieSpotData.currentImageHeight);
+        Log.d(TAG, String.format("%s captured, width: %d, height: %d", mSelfieSpotData.currentImagePath,
+                mSelfieSpotData.currentImageWidth, mSelfieSpotData.currentImageHeight));
     }
 
 
@@ -239,6 +292,7 @@ public class EditSelfieSpotActivity extends AppCompatActivity {
     }
 
     private void onSaveSelfieSpot() {
+        // validation
         final String updatedName = mNameTextView.getText().toString();
 
         if (TextUtils.isEmpty(updatedName)) {
@@ -246,19 +300,35 @@ public class EditSelfieSpotActivity extends AppCompatActivity {
             return;
         }
 
-        if (mSelfieSpot.getLocation() == null) {
+        if (mSelfieSpotData.currentLocationLong == null || mSelfieSpotData.currentLocationLat == null) {
             ImageUtil.animateImageView(this, mLocationImageView, getResources().getDrawable(R.drawable.ic_place_error));
             return;
         }
 
-        if (mSelfieSpot.getMediaFile() == null) {
+        if (mSelfieSpotData.currentImagePath == null) {
             ImageUtil.animateImageView(this, mImageView, getResources().getDrawable(R.drawable.ic_add_a_photo_error));
             return;
         }
 
-        mSelfieSpot.setName(updatedName.trim());
+        // populate latest data
+        if (mSelfieSpot == null) {
+            mSelfieSpot = new SelfieSpot();
+        }
 
+        mSelfieSpot.setName(updatedName.trim());
         mSelfieSpot.setUser(ParseUser.getCurrentUser());
+        mSelfieSpot.setLocation(new ParseGeoPoint(mSelfieSpotData.currentLocationLat, mSelfieSpotData.currentLocationLong));
+
+        if (mSelfieSpot.getMediaFile() == null ||
+                ! mSelfieSpotData.currentImagePath.equals(mSelfieSpot.getMediaFile().getUrl())) {
+            final ParseFile parseFile = new ParseFile(new File(stripFilePrefix(mSelfieSpotData.currentImagePath)));
+            mSelfieSpot.setMediaFile(parseFile);
+            mSelfieSpot.setMediaWidth(mSelfieSpotData.currentImageWidth);
+            mSelfieSpot.setMediaHeight(mSelfieSpotData.currentImageHeight);
+        }
+
+        mSelfieSpot.setTags(mSelfieSpotData.currentTags);
+
         showBusy();
 
         mSelfieSpot.saveInBackground(new SaveCallback() {
@@ -289,8 +359,8 @@ public class EditSelfieSpotActivity extends AppCompatActivity {
     private void showMap() {
         LatLng position = null;
 
-        if (mSelfieSpot.getLocation() != null) {
-            position = new LatLng(mSelfieSpot.getLocation().getLatitude(), mSelfieSpot.getLocation().getLongitude());
+        if (mSelfieSpotData.currentLocationLat != null && mSelfieSpotData.currentLocationLong != null) {
+            position = new LatLng(mSelfieSpotData.currentLocationLat, mSelfieSpotData.currentLocationLong);
         }
 
         final AlertLocationPickerMapFragment locationPickerMapFragment = AlertLocationPickerMapFragment.createInstance(position);
@@ -305,8 +375,90 @@ public class EditSelfieSpotActivity extends AppCompatActivity {
         locationPickerMapFragment.show(getSupportFragmentManager(), TAG_MAP_PICKER);
     }
 
+    private void showTags() {
+        final AlertDialog.Builder builder = new AlertDialog.Builder(this);
+
+        final String[] allTags = Tag.getAllTagsAsStringArray();
+        final boolean[] checkedOptions = getSelectedTags(allTags);
+
+        builder.setMultiChoiceItems(allTags, checkedOptions, new DialogInterface.OnMultiChoiceClickListener() {
+            @Override
+            public void onClick(final DialogInterface dialogInterface, final int which, final boolean isChecked) {
+                final String item = allTags[which];
+                updateTag(item, isChecked);
+            }
+        });
+        builder.show();
+    }
+
+    private boolean[] getSelectedTags(final String[] allTags) {
+        final boolean[] selected = new boolean[allTags.length];
+        final Set<String> selectedTags = mSelfieSpotData.currentTags;
+
+        for (int i = 0; i < allTags.length; i++) {
+            selected[i] = selectedTags.contains(allTags[i]);
+        }
+
+        return selected;
+    }
+
+    private void updateTag(final String tag, final boolean selected) {
+        if (selected) {
+            mSelfieSpotData.currentTags.add(tag);
+        } else {
+            mSelfieSpotData.currentTags.remove(tag);
+        }
+
+        // update the tags icon now that a tag was added/removed..
+        if (CollectionUtils.isEmpty(mSelfieSpotData.currentTags)) {
+            mTagImageView.setImageDrawable(getResources().getDrawable(R.drawable.ic_tag));
+        } else {
+            mTagImageView.setImageDrawable(getResources().getDrawable(R.drawable.ic_tag_populated));
+        }
+    }
+
     private void setLocation(final LatLng location) {
         mLocationImageView.setImageResource(R.drawable.ic_place_populated);
-        mSelfieSpot.setLocation(new ParseGeoPoint(location.latitude, location.longitude));
+        mSelfieSpotData.currentLocationLat = location.latitude;
+        mSelfieSpotData.currentLocationLong = location.longitude;
+    }
+
+    private SelfieSpotData convert(final SelfieSpot selfieSpot) {
+        final SelfieSpotData data = new SelfieSpotData();
+        data.currentName = selfieSpot.getName();
+
+        if (CollectionUtils.isEmpty(selfieSpot.getTags())) {
+            data.currentTags = new HashSet<>();
+        } else {
+            data.currentTags = new HashSet<>(selfieSpot.getTags());
+        }
+
+        data.currentImagePath = selfieSpot.getMediaFile().getUrl();
+        data.currentImageWidth = selfieSpot.getMediaWidth();
+        data.currentImageHeight = selfieSpot.getMediaHeight();
+        data.currentLocationLat = selfieSpot.getPosition().latitude;
+        data.currentLocationLong = selfieSpot.getPosition().longitude;
+
+        return data;
+    }
+
+    // "transient" instance to be persisted across configuration changes, this is required because
+    // SelfieSpot (& ParseObject) do NOT implement Parcelable/Serializable
+    static class SelfieSpotData implements Serializable {
+        static final long serialVersionUID = 1L;
+
+        String currentName;
+
+        // media
+        String currentImagePath;
+        int currentImageWidth;
+        int currentImageHeight;
+
+        // location
+        Double currentLocationLat;
+        Double currentLocationLong;
+
+        // tags
+        Set<String> currentTags = new HashSet<>();
     }
 }

@@ -72,8 +72,8 @@
 
                 <ImageView
                     android:id="@+id/iv_location"
-                    android:layout_width="32dp"
-                    android:layout_height="32dp"
+                    android:layout_width="@dimen/detail_action_width"
+                    android:layout_height="@dimen/detail_action_height"
                     android:src="@drawable/ic_place_normal"/>
             </FrameLayout>
 
@@ -85,8 +85,8 @@
 
                 <ImageView
                     android:id="@+id/iv_tag"
-                    android:layout_width="32dp"
-                    android:layout_height="32dp"
+                    android:layout_width="@dimen/detail_action_width"
+                    android:layout_height="@dimen/detail_action_height"
                     android:src="@drawable/ic_tag"/>
             </FrameLayout>
 
