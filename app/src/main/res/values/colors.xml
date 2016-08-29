@@ -13,6 +13,7 @@
 
     <color name="fab_new_selfie_background">@color/accent</color>
     <color name="star_gold">#ffd700</color>
+    <color name="thumbs_up_gold">#ffd700</color>
 
     <color name="action_create_disabled">@color/primary_light</color>
     <color name="action_create_enabled">@color/primary</color>

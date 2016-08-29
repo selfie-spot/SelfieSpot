@@ -61,9 +61,7 @@ public class SelfieSpotsMapFragment extends BaseMapFragment implements ClusterMa
         googleMap.setOnCameraIdleListener(new GoogleMap.OnCameraIdleListener() {
             @Override
             public void onCameraIdle() {
-                final float zoomLevel = googleMap.getCameraPosition().zoom;
-                if (zoomLevel < MIN_ZOOM_LEVEL) {
-                    Log.d(TAG, "Zoom level too high: " + zoomLevel);
+                if (! retrieveSelfieSpots()) {
                     clearAll();
                     return;
                 }
@@ -77,6 +75,14 @@ public class SelfieSpotsMapFragment extends BaseMapFragment implements ClusterMa
                 mCountDownTimer.start();
             }
         });
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (mMap != null && retrieveSelfieSpots()) {
+            doQuery();
+        }
     }
 
     private void doQuery() {
@@ -130,6 +136,15 @@ public class SelfieSpotsMapFragment extends BaseMapFragment implements ClusterMa
         mClusterManager.clearItems();
         mMarkersReference.clear();
         mMap.clear();
+    }
+
+    private boolean retrieveSelfieSpots() {
+        final float zoomLevel = mMap.getCameraPosition().zoom;
+        final boolean retrieve = zoomLevel >= MIN_ZOOM_LEVEL;
+        if (! retrieve) {
+            Log.d(TAG, "Zoom level too high: " + zoomLevel);
+        }
+        return retrieve;
     }
 
     @Override
