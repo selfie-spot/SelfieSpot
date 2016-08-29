@@ -4,11 +4,13 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:paddingTop="@dimen/space_content"
     android:clipToPadding="false">
 
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:paddingBottom="50dp"
         android:paddingLeft="@dimen/space_content"
         android:paddingRight="@dimen/space_content">
 
@@ -21,6 +23,9 @@
                 android:id="@+id/tv_name"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:textSize="20sp"
+                android:textColor="@android:color/black"
+                android:textStyle="bold"
                 android:ellipsize="end"
                 android:lines="1"
                 android:maxLines="1"
@@ -30,35 +35,34 @@
                 android:id="@+id/tv_author"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/tv_name"
+                android:layout_marginLeft="@dimen/space_content"
+                android:layout_marginBottom="@dimen/space_content"
+                android:textSize="12sp"
                 tools:text="by John Doe"/>
 
             <com.codepath.selfiespot.views.DynamicHeightImageView
                 android:id="@+id/iv_image"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_below="@id/tv_author"
+                android:layout_marginBottom="@dimen/space_content"
                 android:adjustViewBounds="true"/>
 
             <TextView
                 android:id="@+id/tv_time"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/space_content"
-                android:layout_below="@id/iv_image"/>
+                android:layout_marginBottom="@dimen/space_content"/>
 
             <View
                 android:id="@+id/divider_time"
                 style="@style/Divider"
-                android:layout_below="@id/tv_time"
-                android:layout_marginBottom="@dimen/detail_divider_margin"
-                android:layout_marginTop="@dimen/detail_divider_margin"/>
+                android:layout_marginBottom="@dimen/detail_divider_margin"/>
 
             <TextView
                 android:id="@+id/tv_likes"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/iv_image"/>
+                android:layout_marginBottom="@dimen/space_content"/>
 
         </LinearLayout>
     </ScrollView>
@@ -66,10 +70,8 @@
     <LinearLayout
         android:id="@+id/ll_action_container"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="50dp"
         android:layout_alignParentBottom="true"
-        android:paddingTop="@dimen/space_content"
-        android:paddingBottom="@dimen/space_content"
         android:elevation="8dp"
         android:background="@android:color/white"
         android:orientation="horizontal">
@@ -79,13 +81,15 @@
             android:layout_width="@dimen/detail_action_width"
             android:layout_height="@dimen/detail_action_height"
             android:layout_weight="1"
-            android:src="@drawable/ic_like"/>
+            android:layout_gravity="center"
+            android:src="@drawable/ic_thumb_up"/>
 
         <ImageView
             android:id="@+id/iv_bookmark_action"
             android:layout_width="@dimen/detail_action_width"
             android:layout_height="@dimen/detail_action_height"
             android:layout_weight="1"
+            android:layout_gravity="center"
             android:src="@drawable/ic_bookmark"/>
 
         <ImageView
@@ -93,6 +97,7 @@
             android:layout_width="@dimen/detail_action_width"
             android:layout_height="@dimen/detail_action_height"
             android:layout_weight="1"
+            android:layout_gravity="center"
             android:src="@drawable/ic_share"/>
     </LinearLayout>
 

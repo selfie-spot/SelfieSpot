@@ -39,7 +39,7 @@ public class TempDetailSelfieSpotActivity extends AppCompatActivity {
 
     private static final String EXTRA_SELFIE_SPOT_ID = TempDetailSelfieSpotActivity.class.getSimpleName() + ":SELFIE_SPOT_ID";
 
-    private static final int ROUND_TRANSFORMATION_RADIUS = 10;
+    private static final int ROUND_TRANSFORMATION_RADIUS = 20;
     private static final int ROUND_TRANSFORMATION_MARGIN = 5;
 
     @BindView(R.id.iv_image)
@@ -111,13 +111,13 @@ public class TempDetailSelfieSpotActivity extends AppCompatActivity {
         mNameTextView.setText(mSelfieSpot.getName());
 
         try {
-            mAuthorTextView.setText(mSelfieSpot.getUser().fetchIfNeeded().getUsername());
+            mAuthorTextView.setText(String.format(getResources().getString(R.string.text_by), mSelfieSpot.getUser().fetchIfNeeded().getUsername()));
         } catch (final ParseException e) {
             Log.w(TAG, "Unable to retrieve username", e);
         }
 
         mImageView.setHeightRatio(
-                (float) mSelfieSpot.getMediaHeight() / (float) mSelfieSpot.getMediaHeight());
+                (float) mSelfieSpot.getMediaHeight() / (float) mSelfieSpot.getMediaWidth());
         Picasso.with(this)
                 .load(mSelfieSpot.getMediaFile().getUrl())
                 .fit()
@@ -173,7 +173,7 @@ public class TempDetailSelfieSpotActivity extends AppCompatActivity {
                     return;
                 }
 
-                setLikeIcon(! CollectionUtils.isEmpty(objects));
+                setLikeIcon(! CollectionUtils.isEmpty(objects), mSelfieSpot.getLikesCount());
 
                 // for the time being only enable the listener if not bookmarked
                 // TODO - add ability to toggle likes i.e., if likes, user should have
@@ -189,7 +189,7 @@ public class TempDetailSelfieSpotActivity extends AppCompatActivity {
                                         Toast.makeText(TempDetailSelfieSpotActivity.this, "Unable to like", Toast.LENGTH_SHORT).show();
                                         return;
                                     }
-                                    setLikeIcon(true);
+                                    setLikeIcon(true, mSelfieSpot.getLikesCount() + 1);
                                     mLikeImageView.setOnClickListener(null);
                                 }
                             });
@@ -208,12 +208,13 @@ public class TempDetailSelfieSpotActivity extends AppCompatActivity {
         }
     }
 
-    private void setLikeIcon(final boolean liked) {
+    private void setLikeIcon(final boolean liked, final int count) {
         if (liked) {
-            mLikeImageView.setImageDrawable(getResources().getDrawable(R.drawable.ic_like_active));
+            mLikeImageView.setImageDrawable(getResources().getDrawable(R.drawable.ic_thumb_up_active));
         } else {
-            mLikeImageView.setImageDrawable(getResources().getDrawable(R.drawable.ic_like));
+            mLikeImageView.setImageDrawable(getResources().getDrawable(R.drawable.ic_thumb_up));
         }
+        mLikesTextView.setText(ViewUtils.getSpannedText(this, getString(R.string.text_likes), count));
     }
 
     private void showBusy() {

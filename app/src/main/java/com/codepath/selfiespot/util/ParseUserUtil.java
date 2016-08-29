@@ -18,17 +18,27 @@ public class ParseUserUtil {
 
     private static final String PROPERTY_RELATION_BOOKMARKS = "bookmarks";
     private static final String PROPERTY_RELATION_LIKES = "likes";
+    private static final String PROPERTY_OBJECT_ID = "objectId";
+    private static final String CLASS_USER = "_User";
 
     public static void isBookmarked(final ParseUser user, final SelfieSpot selfieSpot, final FindCallback<SelfieSpot> callback) {
-        final ParseRelation<SelfieSpot> bookmarks = user.getRelation(PROPERTY_RELATION_BOOKMARKS);
-        final ParseQuery<SelfieSpot> alreadyBookmarkedQuery = bookmarks.getQuery().whereEqualTo(PROPERTY_RELATION_BOOKMARKS, selfieSpot);
-        alreadyBookmarkedQuery.findInBackground(callback);
+        // relations are weird, require this type of "hack" to query relations
+        final ParseQuery<SelfieSpot> query = ParseQuery.getQuery(CLASS_USER);
+
+        query.whereEqualTo(PROPERTY_OBJECT_ID, user.getObjectId())
+                .whereEqualTo(PROPERTY_RELATION_BOOKMARKS, selfieSpot);
+
+        query.findInBackground(callback);
     }
 
     public static void isLiked(final ParseUser user, final SelfieSpot selfieSpot, final FindCallback<SelfieSpot> callback) {
-        final ParseRelation<SelfieSpot> likes = user.getRelation(PROPERTY_RELATION_LIKES);
-        final ParseQuery<SelfieSpot> alreadyLikedQuery = likes.getQuery().whereEqualTo(PROPERTY_RELATION_LIKES, selfieSpot);
-        alreadyLikedQuery.findInBackground(callback);
+        // relations are weird, require this type of "hack" to query relations
+        final ParseQuery<SelfieSpot> query = ParseQuery.getQuery(CLASS_USER);
+
+        query.whereEqualTo(PROPERTY_OBJECT_ID, user.getObjectId())
+                .whereEqualTo(PROPERTY_RELATION_LIKES, selfieSpot);
+
+        query.findInBackground(callback);
     }
 
     public static void bookmarkSelfieSpot(final ParseUser user, final SelfieSpot selfieSpot, final SaveCallback callback) {
@@ -41,7 +51,7 @@ public class ParseUserUtil {
                     return;
                 }
 
-                if (! CollectionUtils.isEmpty(objects)) {
+                if (!CollectionUtils.isEmpty(objects)) {
                     Log.w(TAG, "Already bookmarked: " + selfieSpot.getObjectId());
                     return;
                 }
@@ -65,7 +75,7 @@ public class ParseUserUtil {
                     return;
                 }
 
-                if (! CollectionUtils.isEmpty(objects)) {
+                if (!CollectionUtils.isEmpty(objects)) {
                     Log.w(TAG, "Already liked: " + selfieSpot.getObjectId());
                     return;
                 }
