@@ -9,7 +9,6 @@ import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 
@@ -176,11 +175,9 @@ public class SelfieSpot extends ParseObject implements ClusterItem {
         return query;
     }
 
-    public static ParseQuery<SelfieSpot> getMySelfieSpot(final ParseUser parseUser, int limit){
-        final ArrayList<SelfieSpot> selfieSpots = new ArrayList<>();
-        final ParseQuery<SelfieSpot> query = ParseQuery.getQuery("SelfieSpot");
-        query.include("user");
-        query.setLimit(limit);
+    public static ParseQuery<SelfieSpot> getMySelfieSpots(final ParseUser parseUser) {
+        final ParseQuery<SelfieSpot> query = SelfieSpot.getQuery();
+        query.whereEqualTo(PROPERTY_USER, parseUser);
         return query;
     }
 }

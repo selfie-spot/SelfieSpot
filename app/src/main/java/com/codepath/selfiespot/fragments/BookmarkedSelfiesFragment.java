@@ -15,6 +15,7 @@ import android.view.ViewGroup;
 import com.codepath.selfiespot.R;
 import com.codepath.selfiespot.activities.TempDetailSelfieSpotActivity;
 import com.codepath.selfiespot.models.SelfieSpot;
+import com.codepath.selfiespot.util.ParseUserUtil;
 import com.codepath.selfiespot.views.adapters.SelfieSpotAdapter;
 import com.codepath.selfiespot.views.adapters.SelfieSpotItemCallback;
 import com.parse.FindCallback;
@@ -29,9 +30,9 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 /**
- * Fragment to show the selfie spots created by logged-in user.
+ * Fragment to show bookmarked selfie spots.
  */
-public class MySelfiesFragment extends Fragment implements SelfieSpotItemCallback {
+public class BookmarkedSelfiesFragment extends Fragment implements SelfieSpotItemCallback {
     private static final String TAG = MySelfiesFragment.class.getSimpleName();
 
     @BindView(R.id.rvMySelfieSpot)
@@ -41,14 +42,14 @@ public class MySelfiesFragment extends Fragment implements SelfieSpotItemCallbac
 
     // TODO - support for pagination
 
-    public static MySelfiesFragment createInstance() {
-        return new MySelfiesFragment();
+    public static BookmarkedSelfiesFragment createInstance() {
+        return new BookmarkedSelfiesFragment();
     }
 
     @Override
     public View onCreateView(final LayoutInflater inflater, final ViewGroup container,
                              final Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_my_selfies, container, false);
+        return inflater.inflate(R.layout.fragment_bookmarked_selfies, container, false);
     }
 
     @Override
@@ -60,6 +61,7 @@ public class MySelfiesFragment extends Fragment implements SelfieSpotItemCallbac
         rvSelfieSpot.setAdapter(mSelfieSpotAdapter);
         final LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
         rvSelfieSpot.setLayoutManager(linearLayoutManager);
+
     }
 
     @Override
@@ -69,16 +71,16 @@ public class MySelfiesFragment extends Fragment implements SelfieSpotItemCallbac
     }
 
     private void retrieveData() {
-        final ParseQuery<SelfieSpot> query = SelfieSpot.getMySelfieSpots(ParseUser.getCurrentUser());
+        final ParseQuery<SelfieSpot> query = ParseUserUtil.getBookmarksQuery(ParseUser.getCurrentUser());
         query.findInBackground(new FindCallback<SelfieSpot>() {
             @Override
             public void done(final List<SelfieSpot> selfieSpotsobjects, final ParseException e) {
                 if(e == null) {
-                    Log.d(TAG, "Retrieved My SelfieSpots: " + selfieSpotsobjects.size());
+                    Log.d(TAG, "Retrieved Bookmarks SelfieSpots: " + selfieSpotsobjects.size());
                     mSelfieSpotAdapter.addSelfieSpots(selfieSpotsobjects);
                 }
                 else{
-                    Log.e(TAG, "Unable to retrieve My SelfieSpots", e);
+                    Log.e(TAG, "Unable to retrieve Bookmarked SelfieSpots", e);
                 }
             }
         });

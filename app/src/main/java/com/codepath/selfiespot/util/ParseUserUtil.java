@@ -21,6 +21,11 @@ public class ParseUserUtil {
     private static final String PROPERTY_OBJECT_ID = "objectId";
     private static final String CLASS_USER = "_User";
 
+    public static ParseQuery<SelfieSpot> getBookmarksQuery(final ParseUser parseUser) {
+        final ParseRelation<SelfieSpot> relation = parseUser.getRelation(PROPERTY_RELATION_BOOKMARKS);
+        return relation.getQuery();
+    }
+
     public static void isBookmarked(final ParseUser user, final SelfieSpot selfieSpot, final FindCallback<SelfieSpot> callback) {
         // relations are weird, require this type of "hack" to query relations
         final ParseQuery<SelfieSpot> query = ParseQuery.getQuery(CLASS_USER);

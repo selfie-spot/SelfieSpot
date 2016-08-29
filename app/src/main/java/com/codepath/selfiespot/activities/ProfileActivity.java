@@ -13,7 +13,7 @@ import android.support.v7.widget.Toolbar;
 import com.astuetz.PagerSlidingTabStrip;
 import com.codepath.selfiespot.R;
 import com.codepath.selfiespot.fragments.MySelfiesFragment;
-import com.codepath.selfiespot.fragments.SavedSelfiesFragment;
+import com.codepath.selfiespot.fragments.BookmarkedSelfiesFragment;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -35,7 +35,7 @@ public class ProfileActivity extends AppCompatActivity {
     }
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile);
 
@@ -50,9 +50,10 @@ public class ProfileActivity extends AppCompatActivity {
     }
 
 
-    public class SelfieSpotsPagerAdapter extends FragmentPagerAdapter {
-
-        final int PAGE_COUNT = 2;
+    class SelfieSpotsPagerAdapter extends FragmentPagerAdapter {
+        private final int PAGE_COUNT = 2;
+        private final int POSITION_MY_SELFIES = 0;
+        private final int POSITION_BOOKMARK_SELFIES = 1;
         private String tabTitles[] = new String[] {"My Selfies", "Saved Selfies"};
 
         public SelfieSpotsPagerAdapter(FragmentManager fm) {
@@ -60,14 +61,16 @@ public class ProfileActivity extends AppCompatActivity {
         }
 
         @Override
-        public Fragment getItem(int position) {
-            if (position == 0) {
-                return new MySelfiesFragment();
-            } else if (position == 1) {
-                return new SavedSelfiesFragment();
-            } else {
-                return null;
+        public Fragment getItem(final int position) {
+            switch (position) {
+                case POSITION_MY_SELFIES: {
+                    return MySelfiesFragment.createInstance();
+                }
+                case POSITION_BOOKMARK_SELFIES: {
+                    return BookmarkedSelfiesFragment.createInstance();
+                }
             }
+            throw new IllegalStateException("Invalid position: " + position);
         }
 
         @Override
@@ -77,8 +80,7 @@ public class ProfileActivity extends AppCompatActivity {
 
         @Override
         public int getCount() {
-            return tabTitles.length;
+            return PAGE_COUNT;
         }
     }
-
 }

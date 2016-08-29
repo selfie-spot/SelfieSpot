@@ -19,39 +19,26 @@ import butterknife.ButterKnife;
 
 
 public class SelfieSpotAdapter extends RecyclerView.Adapter<SelfieSpotAdapter.ViewHolder> {
-
     private List<SelfieSpot> mSelfieSpots;
-    private Context mContext;
 
-
-    public SelfieSpotAdapter(Context mContext, List<SelfieSpot> mSelfieSpots) {
-        this.mContext = mContext;
+    public SelfieSpotAdapter(final List<SelfieSpot> mSelfieSpots) {
         this.mSelfieSpots = mSelfieSpots;
     }
 
-    private Context getContext(){
-        return mContext;
-    }
-
     @Override
-    public SelfieSpotAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        Context context = parent.getContext();
-        LayoutInflater inflater = LayoutInflater.from(context);
+    public SelfieSpotAdapter.ViewHolder onCreateViewHolder(final ViewGroup parent, final int viewType) {
+        final Context context = parent.getContext();
+        final LayoutInflater inflater = LayoutInflater.from(context);
 
-        View  selfiespotview = inflater.inflate(R.layout.item_selfiespot, parent, false);
-        ViewHolder viewHolder = new ViewHolder(selfiespotview);
+        final View selfiespotview = inflater.inflate(R.layout.item_selfiespot, parent, false);
+        final ViewHolder viewHolder = new ViewHolder(selfiespotview);
         return viewHolder;
     }
 
     @Override
-    public void onBindViewHolder(ViewHolder holder, int position) {
-        SelfieSpot  selfieSpot = mSelfieSpots.get(position);
-
-        TextView tvSelfieSpotName = holder.tvSelfieSpotName;
-        tvSelfieSpotName.setText(selfieSpot.getName());
-
-        TextView tvSelfieSpotDesc = holder.tvSelfieSpotDesc;
-        tvSelfieSpotDesc.setText(selfieSpot.getDescription());
+    public void onBindViewHolder(final ViewHolder holder, final int position) {
+        final SelfieSpot selfieSpot = mSelfieSpots.get(position);
+        holder.bind(selfieSpot);
     }
 
     @Override
@@ -59,8 +46,7 @@ public class SelfieSpotAdapter extends RecyclerView.Adapter<SelfieSpotAdapter.Vi
         return mSelfieSpots.size();
     }
 
-
-    public void addSelfieSpots(List<SelfieSpot> selfieSpots){
+    public void addSelfieSpots(final List<SelfieSpot> selfieSpots){
         mSelfieSpots.addAll(selfieSpots);
         notifyDataSetChanged();
     }
@@ -68,22 +54,25 @@ public class SelfieSpotAdapter extends RecyclerView.Adapter<SelfieSpotAdapter.Vi
     public static class ViewHolder extends RecyclerView.ViewHolder {
 
         @BindView(R.id.ivSelfieSpotImage)
-        public ImageView ivSelfieSpotImage;
+        ImageView ivSelfieSpotImage;
 
         @BindView(R.id.tvSelfieSpotName)
-        public TextView tvSelfieSpotName;
+        TextView tvSelfieSpotName;
 
         @BindView(R.id.tvSelfieSpotDesc)
-        public TextView tvSelfieSpotDesc;
+        TextView tvSelfieSpotDesc;
 
         @BindView(R.id.rbSelfieSpotRatingBar)
-        public RatingBar rbSelfieSpotRatingBar;
+        RatingBar rbSelfieSpotRatingBar;
 
-        public ViewHolder(View itemView) {
+        public ViewHolder(final View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
         }
 
-
+        public void bind(final SelfieSpot selfieSpot) {
+            tvSelfieSpotName.setText(selfieSpot.getName());
+            tvSelfieSpotDesc.setText(selfieSpot.getDescription());
+        }
     }
 }
