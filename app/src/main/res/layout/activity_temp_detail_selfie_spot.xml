@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:clipToPadding="false">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:paddingLeft="@dimen/space_content"
+        android:paddingRight="@dimen/space_content">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/tv_name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:lines="1"
+                android:maxLines="1"
+                tools:text="Image Title 1"/>
+
+            <TextView
+                android:id="@+id/tv_author"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/tv_name"
+                tools:text="by John Doe"/>
+
+            <com.codepath.selfiespot.views.DynamicHeightImageView
+                android:id="@+id/iv_image"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_below="@id/tv_author"
+                android:adjustViewBounds="true"/>
+
+            <TextView
+                android:id="@+id/tv_time"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/space_content"
+                android:layout_below="@id/iv_image"/>
+
+            <View
+                android:id="@+id/divider_time"
+                style="@style/Divider"
+                android:layout_below="@id/tv_time"
+                android:layout_marginBottom="@dimen/detail_divider_margin"
+                android:layout_marginTop="@dimen/detail_divider_margin"/>
+
+            <TextView
+                android:id="@+id/tv_likes"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/iv_image"/>
+
+        </LinearLayout>
+    </ScrollView>
+
+    <LinearLayout
+        android:id="@+id/ll_action_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:paddingTop="@dimen/space_content"
+        android:paddingBottom="@dimen/space_content"
+        android:elevation="8dp"
+        android:background="@android:color/white"
+        android:orientation="horizontal">
+
+        <ImageView
+            android:id="@+id/iv_like_action"
+            android:layout_width="@dimen/detail_action_width"
+            android:layout_height="@dimen/detail_action_height"
+            android:layout_weight="1"
+            android:src="@drawable/ic_like"/>
+
+        <ImageView
+            android:id="@+id/iv_bookmark_action"
+            android:layout_width="@dimen/detail_action_width"
+            android:layout_height="@dimen/detail_action_height"
+            android:layout_weight="1"
+            android:src="@drawable/ic_bookmark"/>
+
+        <ImageView
+            android:id="@+id/iv_share_action"
+            android:layout_width="@dimen/detail_action_width"
+            android:layout_height="@dimen/detail_action_height"
+            android:layout_weight="1"
+            android:src="@drawable/ic_share"/>
+    </LinearLayout>
+
+    <!-- do we need this framelayout? -->
+    <FrameLayout
+        android:id="@+id/fl_progress_holder"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentBottom="true"
+        android:alpha="0.4"
+        android:animateLayoutChanges="true"
+        android:clickable="true"
+        android:background="#000000"
+        android:visibility="gone">
+
+        <ProgressBar
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentTop="true"
+            android:layout_gravity="center"
+            android:indeterminate="true"
+            android:indeterminateDrawable="@drawable/ic_progress_indeterminate"/>
+
+    </FrameLayout>
+</RelativeLayout>

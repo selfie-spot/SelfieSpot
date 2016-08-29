@@ -57,6 +57,7 @@ public class SelfieSpot extends ParseObject implements ClusterItem {
     private static final String PROPERTY_REVIEWS_COUNT = "reviews_count";
     private static final String PROPERTY_REVIEW_STARS_COUNT = "review_stars_count";
     private static final String PROPERTY_TAGS = "tags";
+    private static final String PROPERTY_LIKES = "likes";
 
     // empty constructor required
     public SelfieSpot() {
@@ -151,6 +152,14 @@ public class SelfieSpot extends ParseObject implements ClusterItem {
 
     public void removeTag(final String tag) {
         removeAll(PROPERTY_TAGS, Arrays.asList(tag));
+    }
+
+    public int getLikesCount() {
+        return getInt(PROPERTY_LIKES);
+    }
+
+    public void like() {
+        increment(PROPERTY_LIKES);
     }
 
     @Override

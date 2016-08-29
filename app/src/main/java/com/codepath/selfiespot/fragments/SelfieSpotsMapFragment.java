@@ -5,7 +5,7 @@ import android.os.CountDownTimer;
 import android.util.Log;
 import android.widget.Toast;
 
-import com.codepath.selfiespot.activities.EditSelfieSpotActivity;
+import com.codepath.selfiespot.activities.TempDetailSelfieSpotActivity;
 import com.codepath.selfiespot.models.SelfieSpot;
 import com.codepath.selfiespot.views.SelfieSpotItemRenderer;
 import com.google.android.gms.maps.GoogleMap;
@@ -134,7 +134,7 @@ public class SelfieSpotsMapFragment extends BaseMapFragment implements ClusterMa
 
     @Override
     public boolean onClusterItemClick(final SelfieSpot selfieSpot) {
-        final Intent intent = EditSelfieSpotActivity.createIntent(getActivity(), selfieSpot.getObjectId());
+        final Intent intent = TempDetailSelfieSpotActivity.createIntent(getActivity(), selfieSpot.getObjectId());
         startActivity(intent);
         return true;
     }

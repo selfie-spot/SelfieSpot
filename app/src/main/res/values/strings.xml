@@ -30,4 +30,6 @@
     <string name="tvSelfiSpotNameDefVal">Golden Gate Bridge</string>
     <string name="tvSelfieSpotDecDefVal">Possibly the most beautiful, certainly the most photographed, bridge in the world</string>
     <string name="selfiespot_image">SelfieSpot Image</string>
+
+    <string name="text_likes">LIKES</string>
 </resources>

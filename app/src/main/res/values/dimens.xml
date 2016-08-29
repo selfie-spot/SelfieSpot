@@ -16,4 +16,11 @@
     <dimen name="loading_indicator_width">40dp</dimen>
     <dimen name="loading_indicator_inner_radius">15dp</dimen>
     <dimen name="loading_indicator_thickness">3dp</dimen>
+
+    <dimen name="detail_action_height">32dp</dimen>
+    <dimen name="detail_action_width">32dp</dimen>
+
+    <dimen name="detail_divider_margin">12dp</dimen>
+    <color name="detail_text_likes">#292F33</color>
+
 </resources>
