@@ -7,8 +7,8 @@ This app shows selfie points or locations on the map marked by previous traveler
 ### Week 2 Walkthrough
 
 - [x] Implemented profile view to display:
-		* Selfies created by the logged-in user
-		* Selfies liked by the logged-in user
+	- Selfies created by the logged-in user
+	- Selfies liked by the logged-in user
 - [x] Replaced rating (1 - 5) with likes
 - [x] Added ability to like a selfie-spot
 - [x] Added ability to bookmark a selfie-spot
