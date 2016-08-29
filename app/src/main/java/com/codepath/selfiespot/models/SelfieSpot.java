@@ -173,6 +173,7 @@ public class SelfieSpot extends ParseObject implements ClusterItem {
 
         for(SelfieSpot selfiespot : selfieSpots ){
             simpleSelfieSpots.add(convertSelfieSpot(selfiespot));
+            selfiespot.getObjectId();
         }
         return simpleSelfieSpots;
     }

@@ -65,6 +65,17 @@ public class SelfieSpotAdapter extends RecyclerView.Adapter<SelfieSpotAdapter.Vi
         notifyDataSetChanged();
     }
 
+    //Attaching Click Handlers using Listeners
+    private static OnItemClickListener listener;
+
+    public interface OnItemClickListener{
+        void onItemClick(View itemView, int position);
+    }
+
+    public void setOnItemClickListener(OnItemClickListener listener){
+        this.listener = listener;
+    }
+
     public static class ViewHolder extends RecyclerView.ViewHolder {
 
         @BindView(R.id.ivSelfieSpotImage)
@@ -79,10 +90,21 @@ public class SelfieSpotAdapter extends RecyclerView.Adapter<SelfieSpotAdapter.Vi
         @BindView(R.id.rbSelfieSpotRatingBar)
         public RatingBar rbSelfieSpotRatingBar;
 
-        public ViewHolder(View itemView) {
+        public ViewHolder(final View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
+
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    if(listener != null){
+                        listener.onItemClick(itemView, getLayoutPosition());
+                    }
+                }
+            });
+
         }
+
 
 
     }

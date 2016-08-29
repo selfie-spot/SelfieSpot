@@ -4,7 +4,6 @@ package com.codepath.selfiespot.fragments;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -15,6 +14,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.codepath.selfiespot.R;
+import com.codepath.selfiespot.activities.SelfieSpotDetailActivity;
 import com.codepath.selfiespot.models.SelfieSpot;
 import com.codepath.selfiespot.views.EndlessRecyclerViewScrollListener;
 import com.codepath.selfiespot.views.adapters.SelfieSpotAdapter;
@@ -45,6 +45,7 @@ public class MySelfiesFragment extends Fragment implements SelfieSpotItemCallbac
     RecyclerView rvSelfieSpot;
     private Unbinder unbinder;
     int limit = 20;
+    SelfieSpot selfieSpot;
 
     private EndlessRecyclerViewScrollListener mEndlessRecyclerViewScrollListener;
 
@@ -69,13 +70,13 @@ public class MySelfiesFragment extends Fragment implements SelfieSpotItemCallbac
         unbinder = ButterKnife.bind(this, v);
 
         mSelfieSpotAdapter = new SelfieSpotAdapter(getContext(), selfieSpots);
-        rvSelfieSpot.setAdapter(mSelfieSpotAdapter);
+
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
         rvSelfieSpot.setLayoutManager(linearLayoutManager);
         rvSelfieSpot.addOnScrollListener(new EndlessRecyclerViewScrollListener(linearLayoutManager) {
             @Override
             public void onLoadMore(int page, int totalItemsCount) {
-                populateData(limit += 20);
+               // populateData(limit += 20);
             }
         });
         return v;
@@ -89,9 +90,26 @@ public class MySelfiesFragment extends Fragment implements SelfieSpotItemCallbac
 
 
     @Override
-    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+    public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         populateData(limit);
+        rvSelfieSpot.setAdapter(mSelfieSpotAdapter);
+        mSelfieSpotAdapter.setOnItemClickListener(new SelfieSpotAdapter.OnItemClickListener() {
+
+
+            @Override
+            public void onItemClick(View itemView, int position) {
+
+                //String objectId = selfieSpot.getObjectId();
+                //ParseObject SelfiePoint = ParseObject.create(selfieSpot.getObjectId()); //.get(position);
+
+                //String id = selfieSpot.getObjectId(); //.get(position).name;*/
+                final Intent intent = SelfieSpotDetailActivity.createIntent(getActivity(), "PGAD5HFLbx");
+                //final Intent intent = SelfieSpotDetailActivity.createIntent(getActivity(), "selfieSpot.getObjectId()");
+                startActivity(intent);
+
+            }
+        });
 
     }
 
