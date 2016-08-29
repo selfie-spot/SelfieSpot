@@ -53,7 +53,6 @@ public class SelfieSpotApplication extends Application {
                 .addNetworkInterceptor(new ParseLogInterceptor())
                 .build());
 
-//        ParseUser.enableAutomaticUser();
         final ParseACL defaultACL = new ParseACL();
         // Optionally enable public read access.
         defaultACL.setPublicReadAccess(true);

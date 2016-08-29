@@ -153,6 +153,7 @@ public class TempDetailSelfieSpotActivity extends AppCompatActivity {
                                 public void done(final ParseException e) {
                                     if (e != null) {
                                         Toast.makeText(TempDetailSelfieSpotActivity.this, "Unable to add bookmark", Toast.LENGTH_SHORT).show();
+                                        Log.e(TAG, "Unable to bookmark: " + mSelfieSpot.getObjectId(), e);
                                         return;
                                     }
                                     setBookmarkIcon(true);
@@ -185,11 +186,12 @@ public class TempDetailSelfieSpotActivity extends AppCompatActivity {
                             ParseUserUtil.likeSelfieSpot(ParseUser.getCurrentUser(), mSelfieSpot, new SaveCallback() {
                                 @Override
                                 public void done(final ParseException e) {
-                                    if (e == null) {
+                                    if (e != null) {
                                         Toast.makeText(TempDetailSelfieSpotActivity.this, "Unable to like", Toast.LENGTH_SHORT).show();
+                                        Log.e(TAG, "Unable to like: " + mSelfieSpot.getObjectId(), e);
                                         return;
                                     }
-                                    setLikeIcon(true, mSelfieSpot.getLikesCount() + 1);
+                                    setLikeIcon(true, mSelfieSpot.getLikesCount());
                                     mLikeImageView.setOnClickListener(null);
                                 }
                             });
