@@ -14,15 +14,18 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.codepath.selfiespot.R;
+import com.codepath.selfiespot.fragments.AlertLocationMapFragment;
 import com.codepath.selfiespot.models.SelfieSpot;
 import com.codepath.selfiespot.util.CollectionUtils;
 import com.codepath.selfiespot.util.DateUtils;
 import com.codepath.selfiespot.util.ParseUserUtil;
 import com.codepath.selfiespot.util.ViewUtils;
 import com.codepath.selfiespot.views.DynamicHeightImageView;
+import com.google.android.gms.maps.model.LatLng;
 import com.parse.FindCallback;
 import com.parse.GetCallback;
 import com.parse.ParseException;
+import com.parse.ParseGeoPoint;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
 import com.parse.SaveCallback;
@@ -65,6 +68,9 @@ public class TempDetailSelfieSpotActivity extends AppCompatActivity {
 
     @BindView(R.id.iv_like_action)
     ImageView mLikeImageView;
+
+    @BindView(R.id.iv_map_action)
+    ImageView mMapImageView;
 
     @BindView(R.id.iv_share_action)
     ImageView mShareImageView;
@@ -198,6 +204,16 @@ public class TempDetailSelfieSpotActivity extends AppCompatActivity {
                         }
                     });
                 }
+            }
+        });
+
+        mMapImageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(final View view) {
+                final ParseGeoPoint location = mSelfieSpot.getLocation();
+                final AlertLocationMapFragment mapFragment =
+                        AlertLocationMapFragment.createInstance(new LatLng(location.getLatitude(), location.getLongitude()));
+                mapFragment.show(getSupportFragmentManager(), "map");
             }
         });
     }
