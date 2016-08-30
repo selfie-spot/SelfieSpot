@@ -1,10 +1,14 @@
 package com.codepath.selfiespot.fragments;
 
 import android.content.Intent;
+import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.util.Log;
+import android.view.View;
+import android.widget.FrameLayout;
 import android.widget.Toast;
 
+import com.codepath.selfiespot.R;
 import com.codepath.selfiespot.activities.TempDetailSelfieSpotActivity;
 import com.codepath.selfiespot.models.SelfieSpot;
 import com.codepath.selfiespot.views.SelfieSpotItemRenderer;
@@ -32,6 +36,14 @@ public class SelfieSpotsMapFragment extends BaseMapFragment implements ClusterMa
     private ParseQuery<SelfieSpot> mCurrentQuery;
 
     private CountDownTimer mCountDownTimer;
+
+    FrameLayout mLoadingContainer;
+
+    @Override
+    public void onActivityCreated(final Bundle bundle) {
+        super.onActivityCreated(bundle);
+        mLoadingContainer = (FrameLayout) getActivity().findViewById(R.id.fl_progress_holder);
+    }
 
     @Override
     @SuppressWarnings({"MissingPermission"})
@@ -81,6 +93,7 @@ public class SelfieSpotsMapFragment extends BaseMapFragment implements ClusterMa
     public void onResume() {
         super.onResume();
         if (mMap != null && retrieveSelfieSpots()) {
+            clearAll();
             doQuery();
         }
     }
@@ -90,6 +103,8 @@ public class SelfieSpotsMapFragment extends BaseMapFragment implements ClusterMa
         if (mCurrentQuery != null) {
             mCurrentQuery.cancel();
         }
+
+        showBusy();
 
         final LatLngBounds latLngBounds = mMap.getProjection().getVisibleRegion().latLngBounds;
         final ParseGeoPoint sw = new ParseGeoPoint(latLngBounds.southwest.latitude, latLngBounds.southwest.longitude);
@@ -108,6 +123,7 @@ public class SelfieSpotsMapFragment extends BaseMapFragment implements ClusterMa
                     Log.e(TAG, "Unable to retrieve selfie-spots", e);
                     Toast.makeText(getActivity(), "Unable to retrieve selfie-spots", Toast.LENGTH_SHORT).show();
                 }
+                hideBusy();
             }
         });
     }
@@ -130,6 +146,14 @@ public class SelfieSpotsMapFragment extends BaseMapFragment implements ClusterMa
         }
         // without this, pins are not displayed the first time
         mClusterManager.cluster();
+    }
+
+    private void showBusy() {
+        mLoadingContainer.setVisibility(View.VISIBLE);
+    }
+
+    private void hideBusy() {
+        mLoadingContainer.setVisibility(View.GONE);
     }
 
     private void clearAll() {

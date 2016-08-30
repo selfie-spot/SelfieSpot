@@ -348,7 +348,7 @@ public class EditSelfieSpotActivity extends AppCompatActivity {
 
     private void showBusy() {
         mProgressFrameLayout.setVisibility(View.VISIBLE);
-        mCreateButton.setVisibility(View.GONE);
+        mCreateButton.setVisibility(View.INVISIBLE);
     }
 
     private void hideBusy() {
