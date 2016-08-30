@@ -23,7 +23,6 @@ ext {
     FACEBOOK_ANDROID_SDK_VERSION ="4.14.1"
     MATERIAL_CAMERA_VERSION = "0.3.0"
     FACEBOOK_ANDROID_SDK_VERSION = "4.14.1"
-    PAGERSLIDINGTABSTRIP = "1.0.1"
 }
 
 android {
@@ -106,8 +105,6 @@ dependencies {
     compile "com.afollestad:material-camera:$MATERIAL_CAMERA_VERSION"
     compile "com.github.hotchemi:permissionsdispatcher:$PERMISSION_DISPATCHER_VERSION"
     apt "com.github.hotchemi:permissionsdispatcher-processor:$PERMISSION_DISPATCHER_VERSION"
-
-    compile "com.astuetz:pagerslidingtabstrip:$PAGERSLIDINGTABSTRIP"
 
     testCompile "junit:junit:$JUNIT_VERSION"
 }
