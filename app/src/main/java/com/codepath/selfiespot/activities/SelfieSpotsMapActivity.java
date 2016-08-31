@@ -6,6 +6,7 @@ import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
+import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
@@ -13,6 +14,7 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.FrameLayout;
 import android.widget.TextView;
 
 import com.codepath.selfiespot.R;
@@ -42,6 +44,9 @@ public class SelfieSpotsMapActivity extends AppCompatActivity {
     @BindView(R.id.fab_selfie)
     FloatingActionButton mSelfieFab;
 
+    @BindView(R.id.fl_fab_container)
+    FrameLayout mSelfieFabContainer;
+
     private ActionBarDrawerToggle mDrawerToggle;
 
     @Inject
@@ -69,12 +74,22 @@ public class SelfieSpotsMapActivity extends AppCompatActivity {
         mSelfieFab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(final View view) {
-                final Intent intent = EditSelfieSpotActivity.createIntent(SelfieSpotsMapActivity.this, null);
-                startActivity(intent);
+                openCreateSelfieSpot();
             }
         });
 
         populateLoggedInUserDetails();
+    }
+
+    private void openCreateSelfieSpot() {
+        mSelfieFabContainer.setBackgroundResource(R.drawable.circular_button);
+        final Intent intent = EditSelfieSpotActivity.createIntent(SelfieSpotsMapActivity.this, null);
+
+        final int cx = (mSelfieFab.getWidth() / 2);
+        final int cy = (mSelfieFab.getHeight() / 2);
+
+        final ActivityOptionsCompat compat = ActivityOptionsCompat.makeClipRevealAnimation(mSelfieFab, cx, cy, mSelfieFab.getWidth(), mSelfieFab.getHeight());
+        startActivity(intent, compat.toBundle());
     }
 
     @Override
@@ -113,6 +128,7 @@ public class SelfieSpotsMapActivity extends AppCompatActivity {
     @Override
     protected void onPause() {
         super.onPause();
+        mSelfieFabContainer.setBackground(null);
         mSelfieFab.hide();
     }
 
