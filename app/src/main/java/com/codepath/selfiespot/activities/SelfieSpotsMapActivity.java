@@ -28,6 +28,7 @@ public class SelfieSpotsMapActivity extends AppCompatActivity {
     private static final String TAG = SelfieSpotsMapActivity.class.getSimpleName();
 
     private static final int INDEX_HOME = 0;
+    private static final int DURATION_FAB_DELAY = 600; // millis
 
     @BindView(R.id.drawer_layout)
     DrawerLayout mDrawerLayout;
@@ -96,6 +97,23 @@ public class SelfieSpotsMapActivity extends AppCompatActivity {
             return true;
         }
         return false;
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        mSelfieFab.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                mSelfieFab.show();
+            }
+        }, DURATION_FAB_DELAY);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        mSelfieFab.hide();
     }
 
     private void setHomeInfo() {

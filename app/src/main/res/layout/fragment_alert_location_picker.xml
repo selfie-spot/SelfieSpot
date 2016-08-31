@@ -19,6 +19,7 @@
         android:layout_width="wrap_content"
         android:src="@drawable/ic_check"
         android:text="@string/label_select_location"
+        android:backgroundTint="@color/accent"
         app:borderWidth="0dp"
         app:elevation="@dimen/fab_elevation"/>
 
