@@ -15,9 +15,11 @@ import java.util.List;
 
 public class SelfieSpotAdapter extends RecyclerView.Adapter<SelfieSpotViewHolder> {
     private List<SelfieSpot> mSelfieSpots;
+    private final SelfieSpotItemCallback mItemCallback;
 
-    public SelfieSpotAdapter(final List<SelfieSpot> mSelfieSpots) {
+    public SelfieSpotAdapter(final List<SelfieSpot> mSelfieSpots, final SelfieSpotItemCallback itemCallback) {
         this.mSelfieSpots = mSelfieSpots;
+        this.mItemCallback = itemCallback;
     }
 
     @Override
@@ -26,7 +28,7 @@ public class SelfieSpotAdapter extends RecyclerView.Adapter<SelfieSpotViewHolder
         final LayoutInflater inflater = LayoutInflater.from(context);
 
         final View selfiespotview = inflater.inflate(R.layout.item_selfiespot, parent, false);
-        final SelfieSpotViewHolder viewHolder = new SelfieSpotViewHolder(selfiespotview);
+        final SelfieSpotViewHolder viewHolder = new SelfieSpotViewHolder(selfiespotview, mItemCallback);
         return viewHolder;
     }
 

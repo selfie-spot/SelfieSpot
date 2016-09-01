@@ -9,6 +9,7 @@ import com.codepath.selfiespot.R;
 import com.codepath.selfiespot.models.SelfieSpot;
 import com.codepath.selfiespot.util.ViewUtils;
 import com.codepath.selfiespot.views.DynamicHeightImageView;
+import com.codepath.selfiespot.views.adapters.SelfieSpotItemCallback;
 import com.parse.ParseException;
 import com.squareup.picasso.Picasso;
 
@@ -22,6 +23,9 @@ public class SelfieSpotViewHolder extends RecyclerView.ViewHolder {
     private static final int ROUND_TRANSFORMATION_RADIUS = 10;
     private static final int ROUND_TRANSFORMATION_MARGIN = 0;
 
+    final SelfieSpotItemCallback mCallback;
+    private SelfieSpot mSelfieSpot;
+
     @BindView(R.id.iv_image)
     DynamicHeightImageView mImageView;
 
@@ -34,12 +38,24 @@ public class SelfieSpotViewHolder extends RecyclerView.ViewHolder {
     @BindView(R.id.tv_author)
     TextView mAuthorTextView;
 
-    public SelfieSpotViewHolder(final View itemView) {
+    private View.OnClickListener mOnClickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(final View view) {
+            mCallback.onSelfieSpotSelected(mSelfieSpot);
+        }
+    };
+
+    public SelfieSpotViewHolder(final View itemView,
+                                final SelfieSpotItemCallback callback) {
         super(itemView);
+        itemView.setOnClickListener(mOnClickListener);
+        mCallback = callback;
         ButterKnife.bind(this, itemView);
     }
 
     public void bind(final SelfieSpot selfieSpot) {
+        mSelfieSpot = selfieSpot;
+
         mNameTextView.setText(selfieSpot.getName());
         mLikesTextView.setText(ViewUtils.getSpannedText(itemView.getContext(),
                 itemView.getContext().getResources().getString(R.string.text_likes), selfieSpot.getLikesCount()));

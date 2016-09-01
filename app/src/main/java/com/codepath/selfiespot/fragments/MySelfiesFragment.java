@@ -57,7 +57,7 @@ public class MySelfiesFragment extends Fragment implements SelfieSpotItemCallbac
         super.onViewCreated(view, savedInstanceState);
         ButterKnife.bind(this, view);
 
-        mSelfieSpotAdapter = new SelfieSpotAdapter(new ArrayList<SelfieSpot>());
+        mSelfieSpotAdapter = new SelfieSpotAdapter(new ArrayList<SelfieSpot>(), this);
         rvSelfieSpot.setAdapter(mSelfieSpotAdapter);
         mLayoutManager = new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
         mLayoutManager.setGapStrategy(StaggeredGridLayoutManager.GAP_HANDLING_NONE);
