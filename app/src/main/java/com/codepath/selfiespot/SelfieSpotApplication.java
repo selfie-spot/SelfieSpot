@@ -39,11 +39,7 @@ public class SelfieSpotApplication extends Application {
     private void initPicasso() {
         final Picasso.Builder builder = new Picasso.Builder(this);
         builder.downloader(new OkHttp3Downloader(this,Integer.MAX_VALUE));
-
         final Picasso built = builder.build();
-        built.setIndicatorsEnabled(true);
-        built.setLoggingEnabled(true);
-
         Picasso.setSingletonInstance(built);
     }
 
@@ -57,14 +53,12 @@ public class SelfieSpotApplication extends Application {
         // init classes
         ParseObject.registerSubclass(SelfieSpot.class);
 
-        // Enable Local Datastore.
-        Parse.enableLocalDatastore(this);
-
         Parse.initialize(new Parse.Configuration.Builder(this)
                 .applicationId(BuildConfig.PARSE_ID)
                 .clientKey(BuildConfig.PARSE_KEY)
                 .server(BuildConfig.PARSE_SERVER_URL)
                 .addNetworkInterceptor(new ParseLogInterceptor())
+                .enableLocalDataStore()
                 .build());
 
         final ParseACL defaultACL = new ParseACL();

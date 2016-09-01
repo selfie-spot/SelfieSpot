@@ -96,6 +96,7 @@ public class TempDetailSelfieSpotActivity extends AppCompatActivity {
         showBusy();
         // retrieve SelfieSpot before initializing views
         final ParseQuery<SelfieSpot> query = SelfieSpot.getQuery();
+        query.fromLocalDatastore();
         query.getInBackground(selfieSpotId, new GetCallback<SelfieSpot>() {
             @Override
             public void done(final SelfieSpot selfieSpot, final ParseException e) {

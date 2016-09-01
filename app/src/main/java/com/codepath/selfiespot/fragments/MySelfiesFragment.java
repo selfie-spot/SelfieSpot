@@ -17,8 +17,10 @@ import com.codepath.selfiespot.activities.TempDetailSelfieSpotActivity;
 import com.codepath.selfiespot.models.SelfieSpot;
 import com.codepath.selfiespot.views.adapters.SelfieSpotAdapter;
 import com.codepath.selfiespot.views.adapters.SelfieSpotItemCallback;
+import com.parse.DeleteCallback;
 import com.parse.FindCallback;
 import com.parse.ParseException;
+import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
 
@@ -33,6 +35,7 @@ import butterknife.ButterKnife;
  */
 public class MySelfiesFragment extends Fragment implements SelfieSpotItemCallback {
     private static final String TAG = MySelfiesFragment.class.getSimpleName();
+    private static final String PIN_LABEL_MY_SELFIES = MySelfiesFragment.class.getSimpleName() + ":MY_SELFIES";
 
     @BindView(R.id.rvMySelfieSpot)
     RecyclerView rvSelfieSpot;
@@ -77,7 +80,14 @@ public class MySelfiesFragment extends Fragment implements SelfieSpotItemCallbac
             public void done(final List<SelfieSpot> selfieSpotsobjects, final ParseException e) {
                 if(e == null) {
                     Log.d(TAG, "Retrieved My SelfieSpots: " + selfieSpotsobjects.size());
-                    mSelfieSpotAdapter.addSelfieSpots(selfieSpotsobjects);
+                    // cache according to the recommended pattern - https://parseplatform.github.io//docs/android/guide/#caching-query-results
+                    ParseObject.unpinAllInBackground(PIN_LABEL_MY_SELFIES, new DeleteCallback() {
+                        @Override
+                        public void done(final ParseException e) {
+                            mSelfieSpotAdapter.addSelfieSpots(selfieSpotsobjects);
+                            ParseObject.pinAllInBackground(PIN_LABEL_MY_SELFIES, selfieSpotsobjects);
+                        }
+                    });
                 }
                 else{
                     Log.e(TAG, "Unable to retrieve My SelfieSpots", e);
