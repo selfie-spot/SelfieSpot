@@ -94,6 +94,14 @@
             android:src="@drawable/ic_bookmark"/>
 
         <ImageView
+            android:id="@+id/iv_map_action"
+            android:layout_width="@dimen/detail_action_width"
+            android:layout_height="@dimen/detail_action_height"
+            android:layout_weight="1"
+            android:layout_gravity="center"
+            android:src="@drawable/ic_place_normal"/>
+
+        <ImageView
             android:id="@+id/iv_share_action"
             android:layout_width="@dimen/detail_action_width"
             android:layout_height="@dimen/detail_action_height"

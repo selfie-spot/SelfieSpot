@@ -3,6 +3,8 @@ package com.codepath.selfiespot.fragments;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 
+import com.google.android.gms.maps.CameraUpdate;
+import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
@@ -42,6 +44,7 @@ public class LocationPickerMapFragment extends BaseMapFragment implements Google
 
         if (mInitialPosition != null) {
             onMapClick(mInitialPosition);
+            animateCamera(mInitialPosition);
         }
 
         googleMap.setOnMapClickListener(this);
@@ -50,8 +53,9 @@ public class LocationPickerMapFragment extends BaseMapFragment implements Google
     @Override
     protected void onLastLocationFound(final LatLng latLng) {
         // if a position has not been selected yet, mark the current location
-        if (mCurrentMarker == null) {
+        if (mInitialPosition == null) {
             onMapClick(latLng);
+            animateCamera(latLng);
         }
     }
 
@@ -63,10 +67,9 @@ public class LocationPickerMapFragment extends BaseMapFragment implements Google
         drawMarker(position);
     }
 
-    // animate to the current location
-    @Override
-    protected boolean animateCameraToCurrentLocation() {
-        return true;
+    private void animateCamera(final LatLng position) {
+        final CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(position, 17);
+        mMap.animateCamera(cameraUpdate);
     }
 
     private void drawMarker(final LatLng position) {
