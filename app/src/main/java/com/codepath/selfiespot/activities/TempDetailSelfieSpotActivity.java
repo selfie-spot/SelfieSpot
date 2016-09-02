@@ -31,6 +31,8 @@ import com.parse.ParseUser;
 import com.parse.SaveCallback;
 import com.squareup.picasso.Picasso;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import butterknife.BindView;
@@ -59,6 +61,12 @@ public class TempDetailSelfieSpotActivity extends AppCompatActivity {
 
     @BindView(R.id.tv_likes)
     TextView mLikesTextView;
+
+    @BindView(R.id.tv_tags)
+    TextView mTagsTextView;
+
+    @BindView(R.id.divider_likes)
+    View mLikesDivider;
 
     @BindView(R.id.fl_progress_holder)
     FrameLayout mProgressFrameLayout;
@@ -217,6 +225,12 @@ public class TempDetailSelfieSpotActivity extends AppCompatActivity {
                 mapFragment.show(getSupportFragmentManager(), "map");
             }
         });
+
+        if (! CollectionUtils.isEmpty(mSelfieSpot.getTags())) {
+            mTagsTextView.setText(getTagsText(mSelfieSpot.getTags()));
+            mTagsTextView.setVisibility(View.VISIBLE);
+            mLikesDivider.setVisibility(View.VISIBLE);
+        }
     }
 
     private void setBookmarkIcon(final boolean bookmarked) {
@@ -234,6 +248,15 @@ public class TempDetailSelfieSpotActivity extends AppCompatActivity {
             mLikeImageView.setImageDrawable(getResources().getDrawable(R.drawable.ic_thumb_up));
         }
         mLikesTextView.setText(ViewUtils.getSpannedText(this, getString(R.string.text_likes), count));
+    }
+
+    private String getTagsText(final Collection<String> tags) {
+        final List<String> tagsWithHash = new ArrayList<>();
+        for (final String tag : tags) {
+            tagsWithHash.add("#" + tag);
+        }
+
+        return TextUtils.join(" ", tagsWithHash);
     }
 
     private void showBusy() {
