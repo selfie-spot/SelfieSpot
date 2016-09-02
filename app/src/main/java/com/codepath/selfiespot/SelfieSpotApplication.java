@@ -10,13 +10,11 @@ import com.codepath.selfiespot.di.DaggerApplicationComponent;
 import com.codepath.selfiespot.di.modules.ApplicationModule;
 import com.codepath.selfiespot.models.SelfieSpot;
 import com.facebook.stetho.Stetho;
-import com.jakewharton.picasso.OkHttp3Downloader;
 import com.parse.Parse;
 import com.parse.ParseACL;
 import com.parse.ParseFacebookUtils;
 import com.parse.ParseObject;
 import com.parse.interceptors.ParseLogInterceptor;
-import com.squareup.picasso.Picasso;
 
 public class SelfieSpotApplication extends Application {
     private ApplicationComponent mComponent;
@@ -33,14 +31,6 @@ public class SelfieSpotApplication extends Application {
         initParse();
         initDagger();
         initStetho();
-        initPicasso();
-    }
-
-    private void initPicasso() {
-        final Picasso.Builder builder = new Picasso.Builder(this);
-        builder.downloader(new OkHttp3Downloader(this,Integer.MAX_VALUE));
-        final Picasso built = builder.build();
-        Picasso.setSingletonInstance(built);
     }
 
     private void initDagger() {
@@ -55,10 +45,10 @@ public class SelfieSpotApplication extends Application {
 
         Parse.initialize(new Parse.Configuration.Builder(this)
                 .applicationId(BuildConfig.PARSE_ID)
-                .clientKey(BuildConfig.PARSE_KEY)
+//                .clientKey(BuildConfig.PARSE_KEY)
                 .server(BuildConfig.PARSE_SERVER_URL)
                 .addNetworkInterceptor(new ParseLogInterceptor())
-//                .enableLocalDataStore()
+                .enableLocalDataStore()
                 .build());
 
         final ParseACL defaultACL = new ParseACL();

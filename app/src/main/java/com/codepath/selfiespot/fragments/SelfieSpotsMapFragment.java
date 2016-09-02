@@ -15,9 +15,11 @@ import com.codepath.selfiespot.views.SelfieSpotItemRenderer;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.maps.android.clustering.ClusterManager;
+import com.parse.DeleteCallback;
 import com.parse.FindCallback;
 import com.parse.ParseException;
 import com.parse.ParseGeoPoint;
+import com.parse.ParseObject;
 import com.parse.ParseQuery;
 
 import java.util.HashSet;
@@ -26,6 +28,8 @@ import java.util.Set;
 
 public class SelfieSpotsMapFragment extends BaseMapFragment implements ClusterManager.OnClusterItemClickListener<SelfieSpot> {
     private static final String TAG = SelfieSpotsMapFragment.class.getSimpleName();
+    private static final String PIN_LABEL_SELFIES = MySelfiesFragment.class.getSimpleName() + ":SELFIES";
+
     private static final int MIN_ZOOM_LEVEL = 12;
     private static final int COUNTDOWN_TIME = 1000;
 
@@ -43,6 +47,18 @@ public class SelfieSpotsMapFragment extends BaseMapFragment implements ClusterMa
     public void onActivityCreated(final Bundle bundle) {
         super.onActivityCreated(bundle);
         mLoadingContainer = (FrameLayout) getActivity().findViewById(R.id.fl_progress_holder);
+
+        // unpin all the previously pinned objects
+        ParseObject.unpinAllInBackground(PIN_LABEL_SELFIES, new DeleteCallback() {
+            @Override
+            public void done(final ParseException e) {
+                if (e != null) {
+                    Log.w(TAG, "Error unpinning: " + PIN_LABEL_SELFIES);
+                } else {
+                    Log.d(TAG, "Unpinned: " + PIN_LABEL_SELFIES);
+                }
+            }
+        });
     }
 
     @Override
@@ -118,6 +134,7 @@ public class SelfieSpotsMapFragment extends BaseMapFragment implements ClusterMa
             public void done(final List<SelfieSpot> selfieSpots, final ParseException e) {
                 if (e == null) {
                     Log.d(TAG, "Retrieved selfie-spots: " + selfieSpots.size());
+                    ParseObject.pinAllInBackground(PIN_LABEL_SELFIES, selfieSpots);
                     addMarkers(selfieSpots);
                 } else {
                     Log.e(TAG, "Unable to retrieve selfie-spots", e);
@@ -158,6 +175,7 @@ public class SelfieSpotsMapFragment extends BaseMapFragment implements ClusterMa
 
     private void clearAll() {
         mClusterManager.clearItems();
+        mClusterManager.cluster();
         mMarkersReference.clear();
         mMap.clear();
     }
