@@ -58,7 +58,7 @@ public class SelfieSpotApplication extends Application {
                 .clientKey(BuildConfig.PARSE_KEY)
                 .server(BuildConfig.PARSE_SERVER_URL)
                 .addNetworkInterceptor(new ParseLogInterceptor())
-                .enableLocalDataStore()
+//                .enableLocalDataStore()
                 .build());
 
         final ParseACL defaultACL = new ParseACL();
