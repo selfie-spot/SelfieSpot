@@ -18,6 +18,7 @@ public class ParseUserUtil {
 
     private static final String PROPERTY_RELATION_BOOKMARKS = "bookmarks";
     private static final String PROPERTY_RELATION_LIKES = "likes";
+    private static final String PROPERTY_RELATION_SHARE = "share";
     private static final String PROPERTY_OBJECT_ID = "objectId";
     private static final String CLASS_USER = "_User";
 
@@ -45,6 +46,18 @@ public class ParseUserUtil {
 
         query.findInBackground(callback);
     }
+
+    public static void isShareded(final ParseUser user, final SelfieSpot selfieSpot, final FindCallback<SelfieSpot> callback) {
+        // relations are weird, require this type of "hack" to query relations
+        final ParseQuery<SelfieSpot> query = ParseQuery.getQuery(CLASS_USER);
+
+        query.whereEqualTo(PROPERTY_OBJECT_ID, user.getObjectId())
+                .whereEqualTo(PROPERTY_RELATION_SHARE, selfieSpot);
+
+        query.findInBackground(callback);
+    }
+
+
 
     public static void bookmarkSelfieSpot(final ParseUser user, final SelfieSpot selfieSpot, final SaveCallback callback) {
         isBookmarked(user, selfieSpot, new FindCallback<SelfieSpot>() {
@@ -93,4 +106,31 @@ public class ParseUserUtil {
             }
         });
     }
+
+    public static void isShareded(final ParseUser user, final SelfieSpot selfieSpot, final SaveCallback callback) {
+         isShareded(user, selfieSpot, new FindCallback<SelfieSpot>() {
+            @Override
+            public void done(final List<SelfieSpot> objects, final ParseException e) {
+                if (e != null) {
+                    Log.w(TAG, "Unable to determine if the user liked");
+                    callback.done(e);
+                    return;
+                }
+
+                if (!CollectionUtils.isEmpty(objects)) {
+                    Log.w(TAG, "Already liked: " + selfieSpot.getObjectId());
+                    return;
+                }
+
+                final ParseRelation<SelfieSpot> share = user.getRelation(PROPERTY_RELATION_SHARE);
+                share.add(selfieSpot);
+                user.saveInBackground(callback);
+
+
+                ParseUser.saveAllInBackground(Arrays.asList(selfieSpot, user), callback);
+            }
+        });
+    }
+
+
 }

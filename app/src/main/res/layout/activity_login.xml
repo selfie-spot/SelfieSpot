@@ -23,11 +23,14 @@
     <Button
         android:id="@+id/login_button"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="30dp"
         android:layout_gravity="center_horizontal"
         android:layout_marginBottom="115dp"
         android:text="Login"
         android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true" />
+        android:layout_centerHorizontal="true"
+        android:background="@color/primary"
+        android:textColor="@color/icons"
+        android:textAllCaps="true"/>
 
 </RelativeLayout>

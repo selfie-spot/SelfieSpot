@@ -57,6 +57,7 @@ public class SelfieSpot extends ParseObject implements ClusterItem {
     private static final String PROPERTY_REVIEW_STARS_COUNT = "review_stars_count";
     private static final String PROPERTY_TAGS = "tags";
     private static final String PROPERTY_LIKES = "likes";
+    private static final String PROPERTY_SHARE = "share";
 
     // empty constructor required
     public SelfieSpot() {
@@ -160,6 +161,12 @@ public class SelfieSpot extends ParseObject implements ClusterItem {
     public void like() {
         increment(PROPERTY_LIKES);
     }
+
+
+    public boolean share() {
+        return true;
+    }
+
 
     @Override
     public LatLng getPosition() {

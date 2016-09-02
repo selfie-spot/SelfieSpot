@@ -20,6 +20,9 @@ import com.codepath.selfiespot.util.DateUtils;
 import com.codepath.selfiespot.util.ParseUserUtil;
 import com.codepath.selfiespot.util.ViewUtils;
 import com.codepath.selfiespot.views.DynamicHeightImageView;
+import com.facebook.FacebookSdk;
+import com.facebook.share.model.ShareLinkContent;
+import com.facebook.share.widget.ShareDialog;
 import com.parse.FindCallback;
 import com.parse.GetCallback;
 import com.parse.ParseException;
@@ -131,6 +134,7 @@ public class TempDetailSelfieSpotActivity extends AppCompatActivity {
         mLikesTextView.setText(ViewUtils.getSpannedText(this, getString(R.string.text_likes),
                 mSelfieSpot.getLikesCount()));
 
+
         ParseUserUtil.isBookmarked(ParseUser.getCurrentUser(), mSelfieSpot, new FindCallback<SelfieSpot>() {
             @Override
             public void done(final List<SelfieSpot> objects, final ParseException e) {
@@ -200,7 +204,64 @@ public class TempDetailSelfieSpotActivity extends AppCompatActivity {
                 }
             }
         });
+
+        ParseUserUtil.isShareded(ParseUser.getCurrentUser(), mSelfieSpot, new FindCallback<SelfieSpot>() {
+
+            @Override
+            public void done(List<SelfieSpot> objects, ParseException e) {
+                if (e != null) {
+                    Toast.makeText(TempDetailSelfieSpotActivity.this, "Unable to determine if shared", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                setShareIcon(! CollectionUtils.isEmpty(objects));
+
+                if (CollectionUtils.isEmpty(objects)) {
+                    mShareImageView.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            ParseUserUtil.isShareded(ParseUser.getCurrentUser(), mSelfieSpot, new SaveCallback() {
+                                @Override
+                                public void done(ParseException e) {
+                                    if(e != null){
+                                        Toast.makeText(TempDetailSelfieSpotActivity.this, "Unable to share", Toast.LENGTH_SHORT).show();
+                                        Log.e(TAG, "Unable to share: " + mSelfieSpot.getObjectId(), e);
+                                        return;
+                                    }
+
+                                    setupFacebookShareIntent();
+
+                                    setShareIcon(true);
+                                    mShareImageView.setOnClickListener(null);
+                                }
+                            });
+
+                        }
+                    });
+                }
+
+            }
+        });
+
     }
+
+
+    public void setupFacebookShareIntent() {
+        ShareDialog shareDialog;
+        FacebookSdk.sdkInitialize(getApplicationContext());
+        shareDialog = new ShareDialog(this);
+
+        ShareLinkContent linkContent = new ShareLinkContent.Builder()
+                .setContentTitle(mSelfieSpot.getName())
+                /*.setContentDescription(
+                        "\"Body Of Test Post\"")
+                .setContentUrl(Uri.parse("http://someurl.com/here"))*/
+                .build();
+
+        shareDialog.show(linkContent);
+    }
+
+
 
     private void setBookmarkIcon(final boolean bookmarked) {
         if (bookmarked) {
@@ -217,6 +278,16 @@ public class TempDetailSelfieSpotActivity extends AppCompatActivity {
             mLikeImageView.setImageDrawable(getResources().getDrawable(R.drawable.ic_thumb_up));
         }
         mLikesTextView.setText(ViewUtils.getSpannedText(this, getString(R.string.text_likes), count));
+    }
+
+    private void setShareIcon(final boolean shared){
+        if(shared){
+            mShareImageView.setImageDrawable(getResources().getDrawable(R.drawable.ic_share_active));
+        }
+        else{
+            mShareImageView.setImageDrawable(getResources().getDrawable(R.drawable.ic_share));
+        }
+
     }
 
     private void showBusy() {

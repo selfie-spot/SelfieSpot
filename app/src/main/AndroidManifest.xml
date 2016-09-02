@@ -51,6 +51,10 @@
             android:label="@string/app_name"
             android:theme="@android:style/Theme.Translucent.NoTitleBar" />
 
+        <provider android:authorities="com.facebook.app.FacebookContentProvider902358409868580"
+            android:name="com.facebook.FacebookContentProvider"
+            android:exported="true"/>
+
         <!-- Camera activities -->
         <activity
             android:name="com.afollestad.materialcamera.CaptureActivity"
