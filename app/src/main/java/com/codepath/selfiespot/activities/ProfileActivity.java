@@ -3,6 +3,7 @@ package com.codepath.selfiespot.activities;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -10,10 +11,12 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.widget.TextView;
 
 import com.codepath.selfiespot.R;
 import com.codepath.selfiespot.fragments.BookmarkedSelfiesFragment;
 import com.codepath.selfiespot.fragments.MySelfiesFragment;
+import com.parse.ParseUser;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -28,6 +31,12 @@ public class ProfileActivity extends AppCompatActivity {
 
     @BindView(R.id.toolbar)
     Toolbar mToolbar;
+
+    @BindView(R.id.tvUserName)
+    TextView mUserName;
+
+    @BindView(R.id.collapsingToolbar)
+    CollapsingToolbarLayout mCollapsingToolbar;
 
     public static Intent createIntent(final Context context) {
         final Intent intent = new Intent(context, ProfileActivity.class);
@@ -46,6 +55,8 @@ public class ProfileActivity extends AppCompatActivity {
 
         mViewPager.setAdapter(new SelfieSpotsPagerAdapter(getSupportFragmentManager()));
         mTabLayout.setupWithViewPager(mViewPager);
+        mCollapsingToolbar.setTitle("Profile");
+        mUserName.setText(ParseUser.getCurrentUser().getUsername());
     }
 
     class SelfieSpotsPagerAdapter extends FragmentPagerAdapter {
