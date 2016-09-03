@@ -23,6 +23,8 @@ ext {
     FACEBOOK_ANDROID_SDK_VERSION ="4.14.1"
     FACEBOOK_ANDROID_SDK_VERSION = "4.14.1"
     OKHTTP_VERSION = "2.7.5"
+    ANIMATED_CIRCLE_LOADING_VERSION = "1.1.5"
+    EASY_IMAGE_VERSION = "1.2.4"
 }
 
 android {
@@ -54,10 +56,6 @@ android {
         it.buildConfigField 'String', 'PARSE_SERVER_URL', getString('ParseServerUrl')
         it.buildConfigField 'String', 'PARSE_KEY', getString('ParseKey')
     }
-}
-
-repositories {
-    mavenCentral()
 }
 
 dependencies {
@@ -108,7 +106,8 @@ dependencies {
     apt "com.github.hotchemi:permissionsdispatcher-processor:$PERMISSION_DISPATCHER_VERSION"
 
     compile "com.squareup.okhttp:okhttp:$OKHTTP_VERSION"
-    compile 'com.github.jkwiecien:EasyImage:1.2.4'
+    compile "com.github.jkwiecien:EasyImage:$EASY_IMAGE_VERSION"
+    compile "com.github.jlmd:AnimatedCircleLoadingView:$ANIMATED_CIRCLE_LOADING_VERSION@aar"
 
     testCompile "junit:junit:$JUNIT_VERSION"
 }

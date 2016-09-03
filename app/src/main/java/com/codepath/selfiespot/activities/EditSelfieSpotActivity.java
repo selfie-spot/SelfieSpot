@@ -29,6 +29,7 @@ import com.codepath.selfiespot.models.SelfieSpot;
 import com.codepath.selfiespot.models.Tag;
 import com.codepath.selfiespot.util.CollectionUtils;
 import com.codepath.selfiespot.util.ImageUtil;
+import com.github.jlmd.animatedcircleloadingview.AnimatedCircleLoadingView;
 import com.google.android.gms.maps.model.LatLng;
 import com.parse.GetCallback;
 import com.parse.ParseException;
@@ -76,6 +77,9 @@ public class EditSelfieSpotActivity extends AppCompatActivity {
 
     @BindView(R.id.fl_progress_holder)
     FrameLayout mProgressFrameLayout;
+
+    @BindView(R.id.circle_loading_view)
+    AnimatedCircleLoadingView mAnimatedCircleLoadingView;
 
     @BindView(R.id.iv_location)
     ImageView mLocationImageView;
@@ -227,6 +231,27 @@ public class EditSelfieSpotActivity extends AppCompatActivity {
                 onSaveSelfieSpot();
             }
         });
+
+        // set the listener, note that mAnimatedCircleLoadingView is gone by default, without this,
+        // we will not have a way to set this listener (as the listener is set the very first time
+        // the view is visible
+        mAnimatedCircleLoadingView.setAnimationListener(new AnimatedCircleLoadingView.AnimationListener() {
+            @Override
+            public void onAnimationEnd(final boolean success) {
+                mAnimatedCircleLoadingView.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (success) {
+                            finish();
+                        } else {
+                            hideBusy();
+                            mAnimatedCircleLoadingView.resetLoading();
+                        }
+                    }
+                }, 700);
+            }
+        });
+        mAnimatedCircleLoadingView.setVisibility(View.VISIBLE);
     }
 
     @Override
@@ -328,13 +353,13 @@ public class EditSelfieSpotActivity extends AppCompatActivity {
         mSelfieSpot.saveInBackground(new SaveCallback() {
             @Override
             public void done(final ParseException e) {
+                // TODO - determine if activity is visible before doing anything view related
+
                 if (e == null) {
-                    Toast.makeText(EditSelfieSpotActivity.this, "Saved SelfieSpot", Toast.LENGTH_SHORT).show();
-                    finish();
+                    mAnimatedCircleLoadingView.stopOk();
                 } else {
-                    Log.e(TAG, "Error saving SelfieSpot", e);
-                    hideBusy();
-                    Toast.makeText(EditSelfieSpotActivity.this, "Error saving SelfieSpot", Toast.LENGTH_SHORT).show();
+                    mAnimatedCircleLoadingView.stopFailure();
+                    Toast.makeText(EditSelfieSpotActivity.this, "Error saving SelfieSpot", Toast.LENGTH_LONG).show();
                 }
             }
         });
@@ -342,12 +367,11 @@ public class EditSelfieSpotActivity extends AppCompatActivity {
 
     private void showBusy() {
         mProgressFrameLayout.setVisibility(View.VISIBLE);
-        mCreateButton.setVisibility(View.INVISIBLE);
+        mAnimatedCircleLoadingView.startIndeterminate();
     }
 
     private void hideBusy() {
         mProgressFrameLayout.setVisibility(View.GONE);
-        mCreateButton.setVisibility(View.VISIBLE);
     }
 
     private void showMap() {
