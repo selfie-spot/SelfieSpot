@@ -32,11 +32,11 @@ public class ProfileActivity extends AppCompatActivity {
     @BindView(R.id.toolbar)
     Toolbar mToolbar;
 
-    @BindView(R.id.tv_user_name)
+    @BindView(R.id.tvUserName)
     TextView mUserName;
 
-    @BindView(R.id.collapsing_toolbar)
-    CollapsingToolbarLayout mcollapsing_toolbar;
+    @BindView(R.id.collapsingToolbar)
+    CollapsingToolbarLayout mCollapsingToolbar;
 
     public static Intent createIntent(final Context context) {
         final Intent intent = new Intent(context, ProfileActivity.class);
@@ -55,7 +55,7 @@ public class ProfileActivity extends AppCompatActivity {
 
         mViewPager.setAdapter(new SelfieSpotsPagerAdapter(getSupportFragmentManager()));
         mTabLayout.setupWithViewPager(mViewPager);
-        mcollapsing_toolbar.setTitle("Profile");
+        mCollapsingToolbar.setTitle("Profile");
         mUserName.setText(ParseUser.getCurrentUser().getUsername());
     }
 
