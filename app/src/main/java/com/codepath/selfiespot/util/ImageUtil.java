@@ -95,7 +95,7 @@ public class ImageUtil {
         // Saving the bitmap
         try {
             final ByteArrayOutputStream out = new ByteArrayOutputStream();
-            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, out);
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 75, out);
 
             final FileOutputStream stream = new FileOutputStream(mediaFile);
             stream.write(out.toByteArray());

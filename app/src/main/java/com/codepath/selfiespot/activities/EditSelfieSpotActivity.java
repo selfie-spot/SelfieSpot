@@ -22,13 +22,14 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.Toast;
 
-import com.afollestad.materialcamera.MaterialCamera;
+import com.bumptech.glide.Glide;
 import com.codepath.selfiespot.R;
 import com.codepath.selfiespot.fragments.AlertLocationPickerMapFragment;
 import com.codepath.selfiespot.models.SelfieSpot;
 import com.codepath.selfiespot.models.Tag;
 import com.codepath.selfiespot.util.CollectionUtils;
 import com.codepath.selfiespot.util.ImageUtil;
+import com.github.jlmd.animatedcircleloadingview.AnimatedCircleLoadingView;
 import com.google.android.gms.maps.model.LatLng;
 import com.parse.GetCallback;
 import com.parse.ParseException;
@@ -37,7 +38,6 @@ import com.parse.ParseGeoPoint;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
 import com.parse.SaveCallback;
-import com.squareup.picasso.Picasso;
 
 import java.io.File;
 import java.io.Serializable;
@@ -48,6 +48,8 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import permissions.dispatcher.NeedsPermission;
 import permissions.dispatcher.RuntimePermissions;
+import pl.aprilapps.easyphotopicker.DefaultCallback;
+import pl.aprilapps.easyphotopicker.EasyImage;
 
 @RuntimePermissions
 public class EditSelfieSpotActivity extends AppCompatActivity {
@@ -75,6 +77,9 @@ public class EditSelfieSpotActivity extends AppCompatActivity {
 
     @BindView(R.id.fl_progress_holder)
     FrameLayout mProgressFrameLayout;
+
+    @BindView(R.id.circle_loading_view)
+    AnimatedCircleLoadingView mAnimatedCircleLoadingView;
 
     @BindView(R.id.iv_location)
     ImageView mLocationImageView;
@@ -145,19 +150,19 @@ public class EditSelfieSpotActivity extends AppCompatActivity {
     protected void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if (requestCode == REQUEST_CODE_CAMERA) {
-            if (resultCode == RESULT_OK) {
-                Log.d(TAG, "Saved to: " + data.getDataString());
-                final String imageUrl = data.getDataString();
-                setMedia(imageUrl);
-            } else {
-                if (data != null) {
-                    final Exception e = (Exception) data.getSerializableExtra(MaterialCamera.ERROR_EXTRA);
-                    Log.e(TAG, "Error retrieving camera", e);
-                    Toast.makeText(this, "Error retrieving image", Toast.LENGTH_SHORT).show();
-                }
+        EasyImage.handleActivityResult(requestCode, resultCode, data, this, new DefaultCallback() {
+            @Override
+            public void onImagePickerError(final Exception e, final EasyImage.ImageSource source, final int type) {
+                Log.e(TAG, "Error retrieving camera", e);
+                Toast.makeText(EditSelfieSpotActivity.this, "Error retrieving image", Toast.LENGTH_SHORT).show();
             }
-        }
+
+            @Override
+            public void onImagePicked(final File imageFile, final EasyImage.ImageSource source, final int type) {
+                //Handle the image
+                setMedia(imageFile.getPath());
+            }
+        });
     }
 
     @Override
@@ -226,6 +231,27 @@ public class EditSelfieSpotActivity extends AppCompatActivity {
                 onSaveSelfieSpot();
             }
         });
+
+        // set the listener, note that mAnimatedCircleLoadingView is gone by default, without this,
+        // we will not have a way to set this listener (as the listener is set the very first time
+        // the view is visible
+        mAnimatedCircleLoadingView.setAnimationListener(new AnimatedCircleLoadingView.AnimationListener() {
+            @Override
+            public void onAnimationEnd(final boolean success) {
+                mAnimatedCircleLoadingView.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (success) {
+                            finish();
+                        } else {
+                            hideBusy();
+                            mAnimatedCircleLoadingView.resetLoading();
+                        }
+                    }
+                }, 700);
+            }
+        });
+        mAnimatedCircleLoadingView.setVisibility(View.VISIBLE);
     }
 
     @Override
@@ -236,12 +262,7 @@ public class EditSelfieSpotActivity extends AppCompatActivity {
 
     @NeedsPermission({Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE})
     void addPhoto() {
-        final File directory = ImageUtil.getStorageDir();
-
-        new MaterialCamera(this)
-                .saveDir(directory)
-                .stillShot()
-                .start(REQUEST_CODE_CAMERA);
+        EasyImage.openChooserWithGallery(this, "Pick an Image", 0);
     }
 
     private void setMedia(final String imageUrl) {
@@ -261,9 +282,7 @@ public class EditSelfieSpotActivity extends AppCompatActivity {
 
     private void showImage(final String url, final int width, final int height) {
         mImageView.setAdjustViewBounds(true);
-
-        //TODO - use image width & height
-        Picasso.with(this)
+        Glide.with(this)
                 .load(url)
                 .placeholder(R.drawable.ic_progress_indeterminate)
                 .error(R.drawable.ic_error)
@@ -334,13 +353,13 @@ public class EditSelfieSpotActivity extends AppCompatActivity {
         mSelfieSpot.saveInBackground(new SaveCallback() {
             @Override
             public void done(final ParseException e) {
+                // TODO - determine if activity is visible before doing anything view related
+
                 if (e == null) {
-                    Toast.makeText(EditSelfieSpotActivity.this, "Saved SelfieSpot", Toast.LENGTH_SHORT).show();
-                    finish();
+                    mAnimatedCircleLoadingView.stopOk();
                 } else {
-                    Log.e(TAG, "Error saving SelfieSpot", e);
-                    hideBusy();
-                    Toast.makeText(EditSelfieSpotActivity.this, "Error saving SelfieSpot", Toast.LENGTH_SHORT).show();
+                    mAnimatedCircleLoadingView.stopFailure();
+                    Toast.makeText(EditSelfieSpotActivity.this, "Error saving SelfieSpot", Toast.LENGTH_LONG).show();
                 }
             }
         });
@@ -348,12 +367,11 @@ public class EditSelfieSpotActivity extends AppCompatActivity {
 
     private void showBusy() {
         mProgressFrameLayout.setVisibility(View.VISIBLE);
-        mCreateButton.setVisibility(View.INVISIBLE);
+        mAnimatedCircleLoadingView.startIndeterminate();
     }
 
     private void hideBusy() {
         mProgressFrameLayout.setVisibility(View.GONE);
-        mCreateButton.setVisibility(View.VISIBLE);
     }
 
     private void showMap() {
