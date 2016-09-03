@@ -14,6 +14,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.codepath.selfiespot.R;
 import com.codepath.selfiespot.fragments.AlertLocationMapFragment;
 import com.codepath.selfiespot.models.SelfieSpot;
@@ -138,6 +139,7 @@ public class TempDetailSelfieSpotActivity extends AppCompatActivity {
                 .load(mSelfieSpot.getMediaFile().getUrl())
                 .fitCenter()
                 .bitmapTransform(new RoundedCornersTransformation(this, ROUND_TRANSFORMATION_RADIUS, ROUND_TRANSFORMATION_MARGIN))
+                .diskCacheStrategy(DiskCacheStrategy.SOURCE)
                 .placeholder(R.drawable.ic_progress_indeterminate)
                 .error(R.drawable.ic_error)
                 .into(mImageView);

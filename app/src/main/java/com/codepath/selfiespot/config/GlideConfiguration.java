@@ -18,6 +18,7 @@ public class GlideConfiguration implements GlideModule {
     @Override
     public void applyOptions(final Context context, final GlideBuilder builder) {
         builder.setDecodeFormat(DecodeFormat.PREFER_ARGB_8888);
+        builder.setDiskCache(new InternalCacheDiskCacheFactory(context));
     }
 
     @Override
