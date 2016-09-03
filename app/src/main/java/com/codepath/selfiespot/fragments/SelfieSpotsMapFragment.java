@@ -4,8 +4,9 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.util.Log;
-import android.view.View;
-import android.widget.FrameLayout;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.widget.Toast;
 
 import com.codepath.selfiespot.R;
@@ -41,12 +42,17 @@ public class SelfieSpotsMapFragment extends BaseMapFragment implements ClusterMa
 
     private CountDownTimer mCountDownTimer;
 
-    FrameLayout mLoadingContainer;
+    private MenuItem mActionProgressBarItem;
+
+    @Override
+    public void onCreate(Bundle bundle) {
+        super.onCreate(bundle);
+        setHasOptionsMenu(true);
+    }
 
     @Override
     public void onActivityCreated(final Bundle bundle) {
         super.onActivityCreated(bundle);
-        mLoadingContainer = (FrameLayout) getActivity().findViewById(R.id.fl_progress_holder);
 
         // unpin all the previously pinned objects
         ParseObject.unpinAllInBackground(PIN_LABEL_SELFIES, new DeleteCallback() {
@@ -114,6 +120,17 @@ public class SelfieSpotsMapFragment extends BaseMapFragment implements ClusterMa
         }
     }
 
+    @Override
+    public void onCreateOptionsMenu(final Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.menu_frag_selfie_map, menu);
+        mActionProgressBarItem = menu.findItem(R.id.action_view_progress);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(final MenuItem item) {
+        return super.onOptionsItemSelected(item);
+    }
+
     private void doQuery() {
         // cancel the current query if running (no way to check if current query is running)
         if (mCurrentQuery != null) {
@@ -166,11 +183,11 @@ public class SelfieSpotsMapFragment extends BaseMapFragment implements ClusterMa
     }
 
     private void showBusy() {
-        mLoadingContainer.setVisibility(View.VISIBLE);
+        mActionProgressBarItem.setVisible(true);
     }
 
     private void hideBusy() {
-        mLoadingContainer.setVisibility(View.GONE);
+        mActionProgressBarItem.setVisible(false);
     }
 
     private void clearAll() {

@@ -33,5 +33,6 @@
 
     <string name="text_likes">LIKES</string>
     <string name="text_by">By %s</string>
+    <string name="menu_loading">Loading</string>
 
 </resources>
