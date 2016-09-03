@@ -18,6 +18,9 @@ public class ParseUserUtil {
 
     private static final String PROPERTY_RELATION_BOOKMARKS = "bookmarks";
     private static final String PROPERTY_RELATION_LIKES = "likes";
+    private static final String PROPERTY_PROFILE_PIC = "profilePic";
+    private static final String PROPERTY_COVER_PIC = "coverPic";
+
     private static final String PROPERTY_OBJECT_ID = "objectId";
     private static final String CLASS_USER = "_User";
 
@@ -25,6 +28,23 @@ public class ParseUserUtil {
         final ParseRelation<SelfieSpot> relation = parseUser.getRelation(PROPERTY_RELATION_BOOKMARKS);
         return relation.getQuery();
     }
+
+    public static String getProfilePictureUrl(final ParseUser parseUser) {
+        return parseUser.getString(PROPERTY_PROFILE_PIC);
+    }
+
+    public static void setProfilePictureUrl(final ParseUser parseUser, final String profilePicUrl) {
+        parseUser.put(PROPERTY_PROFILE_PIC, profilePicUrl);
+    }
+
+    public static String getCoverPictureUrl(final ParseUser parseUser) {
+        return parseUser.getString(PROPERTY_COVER_PIC);
+    }
+
+    public static void setCoverPictureUrl(final ParseUser parseUser, final String coverPicUrl) {
+        parseUser.put(PROPERTY_COVER_PIC, coverPicUrl);
+    }
+
 
     public static void isBookmarked(final ParseUser user, final SelfieSpot selfieSpot, final FindCallback<SelfieSpot> callback) {
         // relations are weird, require this type of "hack" to query relations

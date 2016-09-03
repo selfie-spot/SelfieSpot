@@ -9,6 +9,7 @@ import android.widget.Button;
 import android.widget.Toast;
 
 import com.codepath.selfiespot.R;
+import com.codepath.selfiespot.util.ParseUserUtil;
 import com.facebook.AccessToken;
 import com.facebook.GraphRequest;
 import com.facebook.GraphResponse;
@@ -81,14 +82,21 @@ public class LoginActivity extends AppCompatActivity {
 
     private void getUserDetailsFromFaceBook() {
         final Bundle parameters = new Bundle();
-        parameters.putString("fields", "id,name,email");
+        parameters.putString("fields", "id,name,email,picture.width(240).height(240),cover");
         new GraphRequest(AccessToken.getCurrentAccessToken(), "/me", parameters, HttpMethod.GET, new GraphRequest.Callback() {
             @Override
             public void onCompleted(final GraphResponse response) {
                 try {
                     final String email = response.getJSONObject().getString("email");
                     final String name = response.getJSONObject().getString("name");
-                    saveNewUser(email, name);
+                    final String profilePic = response.getJSONObject()
+                            .getJSONObject("picture")
+                            .getJSONObject("data")
+                            .getString("url");
+                    final String coverPic = response.getJSONObject()
+                            .getJSONObject("cover")
+                            .getString("source");
+                    saveNewUser(email, name, profilePic, coverPic);
                     Toast.makeText(LoginActivity.this, "User logged-in & saved", Toast.LENGTH_SHORT).show();
                     navigateToMain();
                 } catch (final JSONException e) {
@@ -99,10 +107,15 @@ public class LoginActivity extends AppCompatActivity {
         }).executeAsync();
     }
 
-    private void saveNewUser(final String email, final String name) {
+    private void saveNewUser(final String email,
+                             final String name,
+                             final String profilePic,
+                             final String coverPic) {
         final ParseUser parseUser = ParseUser.getCurrentUser();
         parseUser.setEmail(email);
         parseUser.setUsername(name);
+        ParseUserUtil.setProfilePictureUrl(parseUser, profilePic);
+        ParseUserUtil.setCoverPictureUrl(parseUser, coverPic);
         parseUser.saveEventually();
     }
 
