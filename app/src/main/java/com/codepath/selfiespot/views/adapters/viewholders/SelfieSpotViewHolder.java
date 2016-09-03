@@ -5,17 +5,18 @@ import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.codepath.selfiespot.R;
 import com.codepath.selfiespot.models.SelfieSpot;
 import com.codepath.selfiespot.util.ViewUtils;
 import com.codepath.selfiespot.views.DynamicHeightImageView;
 import com.codepath.selfiespot.views.adapters.SelfieSpotItemCallback;
 import com.parse.ParseException;
-import com.squareup.picasso.Picasso;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import jp.wasabeef.picasso.transformations.RoundedCornersTransformation;
+import jp.wasabeef.glide.transformations.RoundedCornersTransformation;
 
 public class SelfieSpotViewHolder extends RecyclerView.ViewHolder {
     private static final String TAG = SelfieSpotViewHolder.class.getSimpleName();
@@ -68,11 +69,11 @@ public class SelfieSpotViewHolder extends RecyclerView.ViewHolder {
 
         mImageView.setHeightRatio((float) selfieSpot.getMediaHeight() / (float) selfieSpot.getMediaWidth());
 
-        Picasso.with(itemView.getContext())
+        Glide.clear(mImageView);
+        Glide.with(itemView.getContext())
                 .load(selfieSpot.getMediaFile().getUrl())
-                .fit()
-                .centerInside()
-                .transform(new RoundedCornersTransformation(ROUND_TRANSFORMATION_RADIUS, ROUND_TRANSFORMATION_MARGIN))
+                .bitmapTransform(new RoundedCornersTransformation(itemView.getContext(), ROUND_TRANSFORMATION_RADIUS, ROUND_TRANSFORMATION_MARGIN))
+                .diskCacheStrategy(DiskCacheStrategy.SOURCE)
                 .placeholder(R.drawable.ic_progress_indeterminate)
                 .error(R.drawable.ic_error)
                 .into(mImageView);

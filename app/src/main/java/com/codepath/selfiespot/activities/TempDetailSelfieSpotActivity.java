@@ -13,6 +13,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.codepath.selfiespot.R;
 import com.codepath.selfiespot.fragments.AlertLocationMapFragment;
 import com.codepath.selfiespot.models.SelfieSpot;
@@ -29,7 +30,6 @@ import com.parse.ParseGeoPoint;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
 import com.parse.SaveCallback;
-import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -37,7 +37,7 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import jp.wasabeef.picasso.transformations.RoundedCornersTransformation;
+import jp.wasabeef.glide.transformations.RoundedCornersTransformation;
 
 public class TempDetailSelfieSpotActivity extends AppCompatActivity {
     private static final String TAG = TempDetailSelfieSpotActivity.class.getSimpleName();
@@ -133,13 +133,13 @@ public class TempDetailSelfieSpotActivity extends AppCompatActivity {
 
         mImageView.setHeightRatio(
                 (float) mSelfieSpot.getMediaHeight() / (float) mSelfieSpot.getMediaWidth());
-        Picasso.with(this)
+
+        Glide.with(this)
                 .load(mSelfieSpot.getMediaFile().getUrl())
-                .fit()
-                .centerInside()
+                .fitCenter()
+                .bitmapTransform(new RoundedCornersTransformation(this, ROUND_TRANSFORMATION_RADIUS, ROUND_TRANSFORMATION_MARGIN))
                 .placeholder(R.drawable.ic_progress_indeterminate)
                 .error(R.drawable.ic_error)
-                .transform(new RoundedCornersTransformation(ROUND_TRANSFORMATION_RADIUS, ROUND_TRANSFORMATION_MARGIN))
                 .into(mImageView);
 
         mTimeTextView.setText(DateUtils.getDetailPageTime(mSelfieSpot.getCreatedAt()));

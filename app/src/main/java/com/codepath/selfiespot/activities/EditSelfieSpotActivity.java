@@ -23,6 +23,7 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.afollestad.materialcamera.MaterialCamera;
+import com.bumptech.glide.Glide;
 import com.codepath.selfiespot.R;
 import com.codepath.selfiespot.fragments.AlertLocationPickerMapFragment;
 import com.codepath.selfiespot.models.SelfieSpot;
@@ -37,7 +38,6 @@ import com.parse.ParseGeoPoint;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
 import com.parse.SaveCallback;
-import com.squareup.picasso.Picasso;
 
 import java.io.File;
 import java.io.Serializable;
@@ -261,9 +261,7 @@ public class EditSelfieSpotActivity extends AppCompatActivity {
 
     private void showImage(final String url, final int width, final int height) {
         mImageView.setAdjustViewBounds(true);
-
-        //TODO - use image width & height
-        Picasso.with(this)
+        Glide.with(this)
                 .load(url)
                 .placeholder(R.drawable.ic_progress_indeterminate)
                 .error(R.drawable.ic_error)
