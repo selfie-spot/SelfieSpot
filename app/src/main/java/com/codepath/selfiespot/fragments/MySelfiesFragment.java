@@ -4,6 +4,7 @@ package com.codepath.selfiespot.fragments;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.RecyclerView;
@@ -20,6 +21,7 @@ import com.codepath.selfiespot.models.SelfieSpot;
 import com.codepath.selfiespot.util.CollectionUtils;
 import com.codepath.selfiespot.views.adapters.SelfieSpotAdapter;
 import com.codepath.selfiespot.views.adapters.SelfieSpotItemCallback;
+import com.codepath.selfiespot.views.adapters.viewholders.SelfieSpotViewHolder;
 import com.parse.DeleteCallback;
 import com.parse.FindCallback;
 import com.parse.ParseException;
@@ -124,9 +126,11 @@ public class MySelfiesFragment extends Fragment implements SelfieSpotItemCallbac
     }
 
     @Override
-    public void onSelfieSpotSelected(final SelfieSpot selfieSpot) {
+    public void onSelfieSpotSelected(final SelfieSpot selfieSpot, final SelfieSpotViewHolder viewHolder) {
         final Intent intent = TempDetailSelfieSpotActivity.createIntent(getActivity(), selfieSpot.getObjectId());
-        startActivity(intent);
+        final ActivityOptionsCompat options = ActivityOptionsCompat.
+                makeSceneTransitionAnimation(getActivity(), (View)viewHolder.mImageView, "image");
+        startActivity(intent, options.toBundle());
     }
 
     private void showBusy() {

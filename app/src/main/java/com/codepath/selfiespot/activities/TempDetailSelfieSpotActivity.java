@@ -141,6 +141,23 @@ public class TempDetailSelfieSpotActivity extends AppCompatActivity {
         return true;
     }
 
+    @Override
+    public boolean onOptionsItemSelected(final MenuItem item) {
+        switch (item.getItemId()) {
+            // Respond to the action bar's Up/Home button
+            case android.R.id.home: {
+                supportFinishAfterTransition();
+                return true;
+            }
+            case R.id.action_delete: {
+                Toast.makeText(this, "Delete", Toast.LENGTH_SHORT).show();
+                // TODO - show a dialog before deleting
+            }
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+
     private void initViews() {
         mNameTextView.setText(mSelfieSpot.getName());
 
