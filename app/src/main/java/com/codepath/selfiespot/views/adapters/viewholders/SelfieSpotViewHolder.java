@@ -28,21 +28,21 @@ public class SelfieSpotViewHolder extends RecyclerView.ViewHolder {
     private SelfieSpot mSelfieSpot;
 
     @BindView(R.id.iv_image)
-    DynamicHeightImageView mImageView;
+    public DynamicHeightImageView mImageView;
 
     @BindView(R.id.tv_name)
-    TextView mNameTextView;
+    public TextView mNameTextView;
 
     @BindView(R.id.tv_likes)
-    TextView mLikesTextView;
+    public TextView mLikesTextView;
 
     @BindView(R.id.tv_author)
-    TextView mAuthorTextView;
+    public TextView mAuthorTextView;
 
     private View.OnClickListener mOnClickListener = new View.OnClickListener() {
         @Override
         public void onClick(final View view) {
-            mCallback.onSelfieSpotSelected(mSelfieSpot);
+            mCallback.onSelfieSpotSelected(mSelfieSpot, SelfieSpotViewHolder.this);
         }
     };
 

@@ -36,5 +36,6 @@
     <string name="menu_loading">Loading</string>
     <string name="message_no_my_selfies">No Selfies Created</string>
     <string name="message_no_bookmarks">No Selfies Bookmarked</string>
+    <string name="action_delete">Delete</string>
 
 </resources>

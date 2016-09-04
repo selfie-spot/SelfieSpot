@@ -9,6 +9,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -88,6 +90,8 @@ public class TempDetailSelfieSpotActivity extends AppCompatActivity {
 
     private SelfieSpot mSelfieSpot;
 
+    private MenuItem mDeleteItem;
+
     public static Intent createIntent(final Context context, final String selfieSpotId) {
         final Intent intent = new Intent(context, TempDetailSelfieSpotActivity.class);
         if (!TextUtils.isEmpty(selfieSpotId)) {
@@ -129,8 +133,35 @@ public class TempDetailSelfieSpotActivity extends AppCompatActivity {
         });
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(final Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_activity_detail, menu);
+        mDeleteItem = menu.findItem(R.id.action_delete);
+        determineDeleteMenuVisiblity();
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(final MenuItem item) {
+        switch (item.getItemId()) {
+            // Respond to the action bar's Up/Home button
+            case android.R.id.home: {
+                supportFinishAfterTransition();
+                return true;
+            }
+            case R.id.action_delete: {
+                Toast.makeText(this, "Delete", Toast.LENGTH_SHORT).show();
+                // TODO - show a dialog before deleting
+            }
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+
     private void initViews() {
         mNameTextView.setText(mSelfieSpot.getName());
+
+        final ParseUser loggedInUser = ParseUser.getCurrentUser();
 
         try {
             mAuthorTextView.setText(String.format(getResources().getString(R.string.text_by), mSelfieSpot.getUser().fetchIfNeeded().getUsername()));
@@ -154,7 +185,7 @@ public class TempDetailSelfieSpotActivity extends AppCompatActivity {
         mLikesTextView.setText(ViewUtils.getSpannedText(this, getString(R.string.text_likes),
                 mSelfieSpot.getLikesCount()));
 
-        ParseUserUtil.isBookmarked(ParseUser.getCurrentUser(), mSelfieSpot, new FindCallback<SelfieSpot>() {
+        ParseUserUtil.isBookmarked(loggedInUser, mSelfieSpot, new FindCallback<SelfieSpot>() {
             @Override
             public void done(final List<SelfieSpot> objects, final ParseException e) {
                 if (e != null) {
@@ -171,7 +202,7 @@ public class TempDetailSelfieSpotActivity extends AppCompatActivity {
                     mBookmarkImageView.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(final View view) {
-                            ParseUserUtil.bookmarkSelfieSpot(ParseUser.getCurrentUser(), mSelfieSpot, new SaveCallback() {
+                            ParseUserUtil.bookmarkSelfieSpot(loggedInUser, mSelfieSpot, new SaveCallback() {
                                 @Override
                                 public void done(final ParseException e) {
                                     if (e != null) {
@@ -189,7 +220,7 @@ public class TempDetailSelfieSpotActivity extends AppCompatActivity {
             }
         });
 
-        ParseUserUtil.isLiked(ParseUser.getCurrentUser(), mSelfieSpot, new FindCallback<SelfieSpot>() {
+        ParseUserUtil.isLiked(loggedInUser, mSelfieSpot, new FindCallback<SelfieSpot>() {
             @Override
             public void done(final List<SelfieSpot> objects, final ParseException e) {
                 if (e != null) {
@@ -206,7 +237,7 @@ public class TempDetailSelfieSpotActivity extends AppCompatActivity {
                     mLikeImageView.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(final View view) {
-                            ParseUserUtil.likeSelfieSpot(ParseUser.getCurrentUser(), mSelfieSpot, new SaveCallback() {
+                            ParseUserUtil.likeSelfieSpot(loggedInUser, mSelfieSpot, new SaveCallback() {
                                 @Override
                                 public void done(final ParseException e) {
                                     if (e != null) {
@@ -242,6 +273,20 @@ public class TempDetailSelfieSpotActivity extends AppCompatActivity {
             mTagsTextView.setText(getTagsText(mSelfieSpot.getTags()));
             mTagsTextView.setVisibility(View.VISIBLE);
             mLikesDivider.setVisibility(View.VISIBLE);
+        }
+
+        determineDeleteMenuVisiblity();
+    }
+
+    private void determineDeleteMenuVisiblity() {
+        final ParseUser loggedInUser = ParseUser.getCurrentUser();
+
+        if (mDeleteItem == null || mSelfieSpot == null) {
+            return;
+        }
+
+        if (loggedInUser.getObjectId().equals(mSelfieSpot.getUser().getObjectId())) {
+            mDeleteItem.setVisible(true);
         }
     }
 

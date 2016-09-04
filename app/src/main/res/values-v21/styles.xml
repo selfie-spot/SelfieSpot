@@ -1,0 +1,5 @@
+<resources>
+    <style name="AppTheme.SelfieSpot">
+        <item name="android:windowContentTransitions">true</item>
+    </style>
+</resources>

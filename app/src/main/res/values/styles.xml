@@ -9,6 +9,11 @@
         <item name="android:textViewStyle">@style/RobotoTextViewStyle</item>
     </style>
 
+    <style name="AppTheme.SelfieSpot">
+
+    </style>
+
+
     <style name="Dialog.FullScreen" parent="Theme.AppCompat.Light.Dialog">
         <item name="android:padding">0dp</item>
         <item name="android:windowBackground">@android:color/white</item>
