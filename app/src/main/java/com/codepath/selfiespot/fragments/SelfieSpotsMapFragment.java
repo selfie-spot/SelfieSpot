@@ -162,6 +162,10 @@ public class SelfieSpotsMapFragment extends BaseMapFragment implements ClusterMa
         });
     }
 
+    protected boolean animateCameraToCurrentLocation() {
+        return true;
+    }
+
     private void addMarkers(final List<SelfieSpot> selfieSpots) {
         // the user might have zoomed-out beyond the min zoom level, so, no point adding markers,
         // also clear the map
