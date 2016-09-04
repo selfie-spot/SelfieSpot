@@ -58,7 +58,6 @@ public class EditSelfieSpotActivity extends AppCompatActivity {
     // state "keys"
     private static final String STATE_DATA = "selfieSpotData";
 
-    private static final int REQUEST_CODE_CAMERA = 2;
     private static final String EXTRA_SELFIE_SPOT_ID = EditSelfieSpotActivity.class.getSimpleName() + ":SELFIE_SPOT_ID";
 
     private static final String TAG_MAP_PICKER = "mapPicker";

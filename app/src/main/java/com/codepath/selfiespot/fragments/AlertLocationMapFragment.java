@@ -7,6 +7,7 @@ import android.support.v4.app.FragmentTransaction;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 
 import com.codepath.selfiespot.R;
 import com.google.android.gms.maps.model.LatLng;
@@ -34,6 +35,18 @@ public class AlertLocationMapFragment extends DialogFragment {
         if (getArguments() != null) {
             mPosition = getArguments().getParcelable(ARG_POSITION);
         }
+    }
+
+    @Override
+    public void onResume() {
+        // Get existing layout params for the window
+        final ViewGroup.LayoutParams params = getDialog().getWindow().getAttributes();
+        // Assign window properties to fill the parent
+        params.width = WindowManager.LayoutParams.MATCH_PARENT;
+        params.height = WindowManager.LayoutParams.MATCH_PARENT;
+        getDialog().getWindow().setAttributes((android.view.WindowManager.LayoutParams) params);
+        // Call super onResume after sizing
+        super.onResume();
     }
 
     @Override

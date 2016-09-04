@@ -79,7 +79,7 @@ public class LocationPickerMapFragment extends BaseMapFragment implements Google
         }
 
         final BitmapDescriptor defaultMarker =
-                BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN);
+                BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_CYAN);
 
         final MarkerOptions markerOptions = new MarkerOptions()
                 .position(position)

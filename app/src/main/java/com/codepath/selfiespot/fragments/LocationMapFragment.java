@@ -2,6 +2,7 @@ package com.codepath.selfiespot.fragments;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.view.View;
 
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -15,6 +16,8 @@ public class LocationMapFragment extends BaseMapFragment {
     public static String ARG_POSITION = AlertLocationPickerMapFragment.class.getSimpleName() + "POSITION";
 
     private LatLng mPosition;
+    private View.OnClickListener mOnClickListener;
+    private boolean mEnableUiGestureSettings = true;
 
     public static LocationMapFragment createInstance(final LatLng mPosition) {
         final LocationMapFragment fragment = new LocationMapFragment();
@@ -38,7 +41,17 @@ public class LocationMapFragment extends BaseMapFragment {
     @SuppressWarnings({"MissingPermission"})
     protected void loadMap(final GoogleMap googleMap) {
         super.loadMap(googleMap);
+        googleMap.getUiSettings().setAllGesturesEnabled(mEnableUiGestureSettings);
         mMap.setMyLocationEnabled(false);
+        mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
+            @Override
+            public void onMapClick(final LatLng latLng) {
+                if (mOnClickListener != null) {
+                    // google map doesn't expose a view
+                    mOnClickListener.onClick(null);
+                }
+            }
+        });
 
         drawMarker(mPosition);
 
@@ -48,7 +61,7 @@ public class LocationMapFragment extends BaseMapFragment {
 
     private void drawMarker(final LatLng position) {
         final BitmapDescriptor defaultMarker =
-                BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN);
+                BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_CYAN);
 
         final MarkerOptions markerOptions = new MarkerOptions()
                 .position(position)
@@ -56,5 +69,13 @@ public class LocationMapFragment extends BaseMapFragment {
                 .icon(defaultMarker);
 
         mMap.addMarker(markerOptions);
+    }
+
+    public void setOnClickListener(final View.OnClickListener onClickListener) {
+        mOnClickListener = onClickListener;
+    }
+
+    public void setEnableUiGestureSettings(final boolean enableUiGestureSettings) {
+        mEnableUiGestureSettings = enableUiGestureSettings;
     }
 }

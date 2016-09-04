@@ -4,7 +4,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
@@ -17,6 +19,7 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.codepath.selfiespot.R;
 import com.codepath.selfiespot.fragments.AlertLocationMapFragment;
+import com.codepath.selfiespot.fragments.LocationMapFragment;
 import com.codepath.selfiespot.models.SelfieSpot;
 import com.codepath.selfiespot.util.CollectionUtils;
 import com.codepath.selfiespot.util.DateUtils;
@@ -27,7 +30,6 @@ import com.google.android.gms.maps.model.LatLng;
 import com.parse.FindCallback;
 import com.parse.GetCallback;
 import com.parse.ParseException;
-import com.parse.ParseGeoPoint;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
 import com.parse.SaveCallback;
@@ -50,6 +52,9 @@ public class TempDetailSelfieSpotActivity extends AppCompatActivity {
 
     @BindView(R.id.iv_image)
     DynamicHeightImageView mImageView;
+
+    @BindView(R.id.toolbar)
+    Toolbar mToolbar;
 
     @BindView(R.id.tv_name)
     TextView mNameTextView;
@@ -78,9 +83,6 @@ public class TempDetailSelfieSpotActivity extends AppCompatActivity {
     @BindView(R.id.iv_like_action)
     ImageView mLikeImageView;
 
-    @BindView(R.id.iv_map_action)
-    ImageView mMapImageView;
-
     @BindView(R.id.iv_share_action)
     ImageView mShareImageView;
 
@@ -100,6 +102,10 @@ public class TempDetailSelfieSpotActivity extends AppCompatActivity {
         setContentView(R.layout.activity_temp_detail_selfie_spot);
 
         ButterKnife.bind(this);
+
+        setSupportActionBar(mToolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayShowTitleEnabled(false);
 
         final String selfieSpotId = getIntent().getStringExtra(EXTRA_SELFIE_SPOT_ID);
         showBusy();
@@ -218,15 +224,19 @@ public class TempDetailSelfieSpotActivity extends AppCompatActivity {
             }
         });
 
-        mMapImageView.setOnClickListener(new View.OnClickListener() {
+        final LocationMapFragment mLocationMapFragment = LocationMapFragment.createInstance(mSelfieSpot.getPosition());
+        mLocationMapFragment.setEnableUiGestureSettings(false);
+        mLocationMapFragment.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(final View view) {
-                final ParseGeoPoint location = mSelfieSpot.getLocation();
+                final LatLng location = mSelfieSpot.getPosition();
                 final AlertLocationMapFragment mapFragment =
-                        AlertLocationMapFragment.createInstance(new LatLng(location.getLatitude(), location.getLongitude()));
+                        AlertLocationMapFragment.createInstance(location);
+                mapFragment.setStyle(DialogFragment.STYLE_NO_FRAME, R.style.Dialog_FullScreen);
                 mapFragment.show(getSupportFragmentManager(), "map");
             }
         });
+        getSupportFragmentManager().beginTransaction().replace(R.id.fl_map_container, mLocationMapFragment).commit();
 
         if (! CollectionUtils.isEmpty(mSelfieSpot.getTags())) {
             mTagsTextView.setText(getTagsText(mSelfieSpot.getTags()));
