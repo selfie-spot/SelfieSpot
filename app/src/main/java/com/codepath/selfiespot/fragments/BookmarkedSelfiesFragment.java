@@ -33,6 +33,7 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import jp.wasabeef.recyclerview.adapters.ScaleInAnimationAdapter;
 
 /**
  * Fragment to show bookmarked selfie spots.
@@ -71,7 +72,9 @@ public class BookmarkedSelfiesFragment extends Fragment implements SelfieSpotIte
         ButterKnife.bind(this, view);
 
         mSelfieSpotAdapter = new SelfieSpotAdapter(new ArrayList<SelfieSpot>(), this);
-        mvSelfieSpotsRecyclerView.setAdapter(mSelfieSpotAdapter);
+        final ScaleInAnimationAdapter adapter = new ScaleInAnimationAdapter(mSelfieSpotAdapter);
+        adapter.setFirstOnly(false);
+        mvSelfieSpotsRecyclerView.setAdapter(adapter);
         mLayoutManager = new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
         mLayoutManager.setGapStrategy(StaggeredGridLayoutManager.GAP_HANDLING_NONE);
         mvSelfieSpotsRecyclerView.setLayoutManager(mLayoutManager);
