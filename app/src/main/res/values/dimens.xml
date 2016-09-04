@@ -4,8 +4,7 @@
     <dimen name="activity_vertical_margin">16dp</dimen>
     <dimen name="fab_elevation">8dp</dimen>
     <dimen name="space_content">8dp</dimen>
-    <dimen name="text_drawer_title">20sp</dimen>
-
+    <dimen name="text_drawer_title">18sp</dimen>
 
     <dimen name="create_button_horizontal_padding">5dp</dimen>
     <dimen name="create_button_vertical_padding">3dp</dimen>

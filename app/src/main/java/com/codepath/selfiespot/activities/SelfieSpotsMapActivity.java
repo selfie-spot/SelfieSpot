@@ -15,19 +15,25 @@ import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.codepath.selfiespot.R;
 import com.codepath.selfiespot.repositories.PreferencesDAO;
+import com.codepath.selfiespot.util.ParseUserUtil;
 import com.parse.ParseUser;
 
 import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import jp.wasabeef.glide.transformations.RoundedCornersTransformation;
 
 public class SelfieSpotsMapActivity extends AppCompatActivity {
     private static final String TAG = SelfieSpotsMapActivity.class.getSimpleName();
+    private static final int PROFILE_TRANSFORM_MARGIN = 0;
+    private static final int PROFILE_TRANSFORM_RADIUS = 10;
 
     private static final int INDEX_HOME = 0;
     private static final int DURATION_FAB_DELAY = 600; // millis
@@ -141,7 +147,17 @@ public class SelfieSpotsMapActivity extends AppCompatActivity {
     private void populateLoggedInUserDetails() {
         final View headerLayout = mDrawer.getHeaderView(0);
         final TextView profileNameTextView = (TextView) headerLayout.findViewById(R.id.tv_profile_name);
-        profileNameTextView.setText(ParseUser.getCurrentUser().getUsername());
+        final ImageView profileImageView = (ImageView) headerLayout.findViewById(R.id.iv_profile);
+
+        final ParseUser parseUser = ParseUser.getCurrentUser();
+        profileNameTextView.setText(parseUser.getUsername());
+
+        Glide.with(this)
+                .load(ParseUserUtil.getProfilePictureUrl(parseUser))
+                .bitmapTransform(new RoundedCornersTransformation(this, PROFILE_TRANSFORM_RADIUS, PROFILE_TRANSFORM_MARGIN))
+                .placeholder(R.drawable.ic_progress_indeterminate)
+                .error(R.drawable.ic_error)
+                .into(profileImageView);
     }
 
     private ActionBarDrawerToggle setupDrawerToggle() {
