@@ -5,21 +5,26 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import com.codepath.selfiespot.R;
 import com.codepath.selfiespot.activities.TempDetailSelfieSpotActivity;
 import com.codepath.selfiespot.models.SelfieSpot;
+import com.codepath.selfiespot.util.CollectionUtils;
 import com.codepath.selfiespot.util.ParseUserUtil;
 import com.codepath.selfiespot.views.adapters.SelfieSpotAdapter;
 import com.codepath.selfiespot.views.adapters.SelfieSpotItemCallback;
+import com.parse.DeleteCallback;
 import com.parse.FindCallback;
 import com.parse.ParseException;
+import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
 
@@ -34,9 +39,16 @@ import butterknife.ButterKnife;
  */
 public class BookmarkedSelfiesFragment extends Fragment implements SelfieSpotItemCallback {
     private static final String TAG = MySelfiesFragment.class.getSimpleName();
+    private static final String PIN_LABEL_BOOKMARKS = BookmarkedSelfiesFragment.class.getSimpleName() + ":BOOKMARKS";
 
-    @BindView(R.id.rvMySelfieSpot)
-    RecyclerView rvSelfieSpot;
+    @BindView(R.id.rv_bookmarks)
+    RecyclerView mvSelfieSpotsRecyclerView;
+
+    @BindView(R.id.srl_bookmarks)
+    SwipeRefreshLayout mSwipeRefreshLayout;
+
+    @BindView(R.id.tv_no_bookmarks)
+    TextView mNoBookmarksTextView;
 
     private SelfieSpotAdapter mSelfieSpotAdapter;
     private StaggeredGridLayoutManager mLayoutManager;
@@ -59,10 +71,16 @@ public class BookmarkedSelfiesFragment extends Fragment implements SelfieSpotIte
         ButterKnife.bind(this, view);
 
         mSelfieSpotAdapter = new SelfieSpotAdapter(new ArrayList<SelfieSpot>(), this);
-        rvSelfieSpot.setAdapter(mSelfieSpotAdapter);
+        mvSelfieSpotsRecyclerView.setAdapter(mSelfieSpotAdapter);
         mLayoutManager = new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
         mLayoutManager.setGapStrategy(StaggeredGridLayoutManager.GAP_HANDLING_NONE);
-        rvSelfieSpot.setLayoutManager(mLayoutManager);
+        mvSelfieSpotsRecyclerView.setLayoutManager(mLayoutManager);
+        mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                retrieveData();
+            }
+        });
     }
 
     @Override
@@ -72,17 +90,33 @@ public class BookmarkedSelfiesFragment extends Fragment implements SelfieSpotIte
     }
 
     private void retrieveData() {
+        mSwipeRefreshLayout.setRefreshing(true);
+        mSelfieSpotAdapter.clearAll();
+        showBusy();
+
         final ParseQuery<SelfieSpot> query = ParseUserUtil.getBookmarksQuery(ParseUser.getCurrentUser());
         query.findInBackground(new FindCallback<SelfieSpot>() {
             @Override
             public void done(final List<SelfieSpot> selfieSpotsobjects, final ParseException e) {
                 if(e == null) {
                     Log.d(TAG, "Retrieved Bookmarks SelfieSpots: " + selfieSpotsobjects.size());
-                    mSelfieSpotAdapter.addSelfieSpots(selfieSpotsobjects);
-                }
-                else{
+                    if (CollectionUtils.isEmpty(selfieSpotsobjects)) {
+                        showNoBookmarks();
+                    } else {
+                        hideNoBookmarks();
+                        // cache according to the recommended pattern - https://parseplatform.github.io//docs/android/guide/#caching-query-results
+                        ParseObject.unpinAllInBackground(PIN_LABEL_BOOKMARKS, new DeleteCallback() {
+                            @Override
+                            public void done(final ParseException e) {
+                                mSelfieSpotAdapter.addSelfieSpots(selfieSpotsobjects);
+                                ParseObject.pinAllInBackground(PIN_LABEL_BOOKMARKS, selfieSpotsobjects);
+                            }
+                        });
+                    }
+                } else {
                     Log.e(TAG, "Unable to retrieve Bookmarked SelfieSpots", e);
                 }
+                hideBusy();
             }
         });
     }
@@ -91,5 +125,25 @@ public class BookmarkedSelfiesFragment extends Fragment implements SelfieSpotIte
     public void onSelfieSpotSelected(final SelfieSpot selfieSpot) {
         final Intent intent = TempDetailSelfieSpotActivity.createIntent(getActivity(), selfieSpot.getObjectId());
         startActivity(intent);
+    }
+
+    private void showBusy() {
+        mSwipeRefreshLayout.setRefreshing(true);
+        mvSelfieSpotsRecyclerView.setVisibility(View.GONE);
+        mNoBookmarksTextView.setVisibility(View.GONE);
+    }
+
+    private void hideBusy() {
+        mSwipeRefreshLayout.setRefreshing(false);
+    }
+
+    private void showNoBookmarks() {
+        mvSelfieSpotsRecyclerView.setVisibility(View.GONE);
+        mNoBookmarksTextView.setVisibility(View.VISIBLE);
+    }
+
+    private void hideNoBookmarks() {
+        mvSelfieSpotsRecyclerView.setVisibility(View.VISIBLE);
+        mNoBookmarksTextView.setVisibility(View.GONE);
     }
 }

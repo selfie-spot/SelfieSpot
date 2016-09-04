@@ -47,4 +47,9 @@ public class SelfieSpotAdapter extends RecyclerView.Adapter<SelfieSpotViewHolder
         mSelfieSpots.addAll(selfieSpots);
         notifyDataSetChanged();
     }
+
+    public void clearAll() {
+        mSelfieSpots.clear();
+        notifyDataSetChanged();
+    }
 }

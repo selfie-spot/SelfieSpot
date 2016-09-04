@@ -34,5 +34,7 @@
     <string name="text_likes">LIKES</string>
     <string name="text_by">By %s</string>
     <string name="menu_loading">Loading</string>
+    <string name="message_no_my_selfies">No Selfies Created</string>
+    <string name="message_no_bookmarks">No Selfies Bookmarked</string>
 
 </resources>
