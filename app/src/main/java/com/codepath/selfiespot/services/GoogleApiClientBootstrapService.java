@@ -4,6 +4,7 @@ import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.location.Location;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
@@ -35,6 +36,9 @@ public class GoogleApiClientBootstrapService extends Service implements GoogleAp
 
     private GoogleApiClient mGoogleApiClient;
 
+    // TODO - Get current location after adding geo-fence, this will help trigger the geofence event if
+    // user is already in the geofence
+
     public static Intent createIntent(final Context context) {
         final Intent intent = new Intent(context, GoogleApiClientBootstrapService.class);
         return intent;
@@ -57,6 +61,7 @@ public class GoogleApiClientBootstrapService extends Service implements GoogleAp
     @Override
     public int onStartCommand(final Intent intent, final int flags, final int startId) {
         Log.d(TAG, "Starting service..");
+        retrieveBoomarksAndUpdateGeofences(startId);
 
         // keep alive until we call stopSelf()
         return START_STICKY;
@@ -74,7 +79,6 @@ public class GoogleApiClientBootstrapService extends Service implements GoogleAp
     @Override
     public void onConnected(final Bundle bundle) {
         Log.i(TAG, "Connected to GoogleApiClient");
-        retrieveBoomarksAndUpdateGeofences();
     }
 
     @Override
@@ -93,7 +97,7 @@ public class GoogleApiClientBootstrapService extends Service implements GoogleAp
         return null;
     }
 
-    private void retrieveBoomarksAndUpdateGeofences() {
+    private void retrieveBoomarksAndUpdateGeofences(final int startId) {
         final ParseQuery<SelfieSpot> query = ParseUserUtil.getBookmarksQuery(ParseUser.getCurrentUser());
         query.findInBackground(new FindCallback<SelfieSpot>() {
             @Override
@@ -103,7 +107,7 @@ public class GoogleApiClientBootstrapService extends Service implements GoogleAp
                     LocationServices.GeofencingApi.removeGeofences(mGoogleApiClient, getGeofencePendingIntent());
                     Log.d(TAG, "Retrieved Bookmarks SelfieSpots: " + selfieSpotsobjects.size());
                     if (! CollectionUtils.isEmpty(selfieSpotsobjects)) {
-                        addGeofences(selfieSpotsobjects);
+                        addGeofences(selfieSpotsobjects, startId);
                     }
                 } else {
                     Log.e(TAG, "Unable to retrieve Bookmarked SelfieSpots", e);
@@ -113,7 +117,7 @@ public class GoogleApiClientBootstrapService extends Service implements GoogleAp
     }
 
     @SuppressWarnings({"MissingPermission"})
-    private void addGeofences(final List<SelfieSpot> selfieSpotsobjects) {
+    private void addGeofences(final List<SelfieSpot> selfieSpotsobjects, final int startId) {
         // geofences request
         LocationServices.GeofencingApi.addGeofences(
                 mGoogleApiClient,
@@ -127,8 +131,12 @@ public class GoogleApiClientBootstrapService extends Service implements GoogleAp
                 } else {
                     Log.e(TAG, "Error adding Geofencing" + status.getStatusMessage());
                 }
+                // try getting the last location, this will help trigger the geofence immediately if
+                // user is already in the geofence
+                final Location location = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
+                Log.d(TAG,"Last location: " + location);
                 // kill the service, we no longer need it..
-                stopSelf();
+                stopSelf(startId);
             }
         });
     }

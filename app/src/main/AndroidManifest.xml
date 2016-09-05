@@ -60,7 +60,11 @@
 
         <activity android:name=".activities.ProfileActivity" />
 
-        <activity android:name=".activities.SettingsActivity" />
+        <activity android:name=".activities.SettingsActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".activities.SelfieSpotsMapActivity" />
+        </activity>
 
         <service android:name=".services.GeofenceTransitionsIntentService"
             android:exported="false" />
