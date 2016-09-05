@@ -84,8 +84,28 @@ public class ParseUserUtil {
                 final ParseRelation<SelfieSpot> bookmarks = user.getRelation(PROPERTY_RELATION_BOOKMARKS);
                 bookmarks.add(selfieSpot);
                 user.saveInBackground(callback);
+            }
+        });
+    }
 
-                ParseUser.saveAllInBackground(Arrays.asList(selfieSpot, user), callback);
+    public static void unbookmarkSelfieSpot(final ParseUser user, final SelfieSpot selfieSpot, final SaveCallback callback) {
+        isBookmarked(user, selfieSpot, new FindCallback<SelfieSpot>() {
+            @Override
+            public void done(final List<SelfieSpot> objects, final ParseException e) {
+                if (e != null) {
+                    Log.w(TAG, "Unable to determine if the user bookmarked already");
+                    callback.done(e);
+                    return;
+                }
+
+                if (CollectionUtils.isEmpty(objects)) {
+                    Log.w(TAG, "Not bookmarked: " + selfieSpot.getObjectId());
+                    return;
+                }
+
+                final ParseRelation<SelfieSpot> bookmarks = user.getRelation(PROPERTY_RELATION_BOOKMARKS);
+                bookmarks.remove(selfieSpot);
+                user.saveInBackground(callback);
             }
         });
     }

@@ -99,6 +99,7 @@ public class TempDetailSelfieSpotActivity extends AppCompatActivity {
     private SelfieSpot mSelfieSpot;
 
     private MenuItem mDeleteItem;
+    private boolean mCurrentlyBookmarked;
 
     public static Intent createIntent(final Context context, final String selfieSpotId) {
         final Intent intent = new Intent(context, TempDetailSelfieSpotActivity.class);
@@ -231,7 +232,47 @@ public class TempDetailSelfieSpotActivity extends AppCompatActivity {
                     return;
                 }
 
-                setBookmarkIcon(! CollectionUtils.isEmpty(objects));
+                mCurrentlyBookmarked = ! CollectionUtils.isEmpty(objects);
+                setBookmarkIcon(mCurrentlyBookmarked);
+
+                mBookmarkImageView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(final View view) {
+                        if (! mCurrentlyBookmarked) {
+                            ParseUserUtil.bookmarkSelfieSpot(loggedInUser, mSelfieSpot, new SaveCallback() {
+                                @Override
+                                public void done(final ParseException e) {
+                                    if (e != null) {
+                                        Toast.makeText(TempDetailSelfieSpotActivity.this, "Unable to add bookmark", Toast.LENGTH_SHORT).show();
+                                        Log.e(TAG, "Unable to add bookmark: " + mSelfieSpot.getObjectId(), e);
+                                        return;
+                                    }
+                                    mCurrentlyBookmarked = true;
+                                    setBookmarkIcon(mCurrentlyBookmarked);
+
+                                    // fire service to update bookmarks geofences
+                                    TempDetailSelfieSpotActivity.this.startService(GoogleApiClientBootstrapService.createIntent(TempDetailSelfieSpotActivity.this));
+                                }
+                            });
+                        } else {
+                            ParseUserUtil.unbookmarkSelfieSpot(loggedInUser, mSelfieSpot, new SaveCallback() {
+                                @Override
+                                public void done(final ParseException e) {
+                                    if (e != null) {
+                                        Toast.makeText(TempDetailSelfieSpotActivity.this, "Unable to remove bookmark", Toast.LENGTH_SHORT).show();
+                                        Log.e(TAG, "Unable to remove bookmark: " + mSelfieSpot.getObjectId(), e);
+                                        return;
+                                    }
+                                    mCurrentlyBookmarked = false;
+                                    setBookmarkIcon(mCurrentlyBookmarked);
+
+                                    // fire service to update bookmarks geofences
+                                    TempDetailSelfieSpotActivity.this.startService(GoogleApiClientBootstrapService.createIntent(TempDetailSelfieSpotActivity.this));
+                                }
+                            });
+                        }
+                    }
+                });
 
                 // for the time being only enable the listener if not bookmarked
                 // TODO - add ability to toggle bookmarks i.e., if bookmarked, user should have
