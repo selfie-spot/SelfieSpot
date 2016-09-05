@@ -16,12 +16,11 @@ import com.codepath.selfiespot.SelfieSpotApplication;
 import com.codepath.selfiespot.activities.SelfieSpotsMapActivity;
 import com.codepath.selfiespot.activities.TempDetailSelfieSpotActivity;
 import com.codepath.selfiespot.models.SelfieSpot;
+import com.codepath.selfiespot.receivers.TakePictureBroadcastReceiver;
 import com.google.android.gms.location.GeofencingEvent;
-import com.parse.GetCallback;
 import com.parse.ParseException;
 
 import java.util.Date;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.inject.Inject;
 
@@ -33,9 +32,6 @@ import javax.inject.Inject;
 public class GeofenceTransitionsIntentService extends IntentService {
     private static final String TAG = GeofenceTransitionsIntentService.class.getSimpleName();
     private static final long MIN_NOTIFICATION_INTERVAL_IN_MILLIS = 24 * 60 * 60 * 1000; // 24 hours
-
-    // TODO - find a way to generate this uniquely
-    private static AtomicInteger sNotificationId = new AtomicInteger(0);
 
     @Inject
     SharedPreferences mSharedPreferences;
@@ -64,28 +60,28 @@ public class GeofenceTransitionsIntentService extends IntentService {
     }
 
     private void validateAndSendNotification(final String selfieSpotId) {
-        SelfieSpot.getQuery().getInBackground(selfieSpotId, new GetCallback<SelfieSpot>() {
-            @Override
-            public void done(final SelfieSpot selfieSpot, final ParseException e) {
-                if (e != null || selfieSpot == null) {
-                    Log.d(TAG, "Unable to retrieve SelfieSpot: " + selfieSpotId, e);
-                } else {
-                    if (canSendNotification(selfieSpotId)) {
-                        sendNotification(selfieSpotId, selfieSpot);
-                        setLastNotificationTimeForSelfieSpot(selfieSpotId);
-                    } else {
-                        final Date date = getLastNotificationTimeForSelfieSpot(selfieSpotId);
-                        final String dateString;
-                        if (date != null) {
-                            dateString = date.toString();
-                        } else {
-                            dateString = "N/A";
-                        }
-                        Log.d(TAG, "NO Notification sent, last notification sent for " + selfieSpotId + "; at " + dateString);
-                    }
-                }
+        try {
+            final SelfieSpot selfieSpot = SelfieSpot.getQuery().get(selfieSpotId);
+            if (selfieSpot == null) {
+                Log.d(TAG, "Unable to retrieve SelfieSpot: " + selfieSpotId);
+                return;
             }
-        });
+            if (canSendNotification(selfieSpotId)) {
+                sendNotification(selfieSpotId, selfieSpot);
+                setLastNotificationTimeForSelfieSpot(selfieSpotId);
+            } else {
+                final Date date = getLastNotificationTimeForSelfieSpot(selfieSpotId);
+                final String dateString;
+                if (date != null) {
+                    dateString = date.toString();
+                } else {
+                    dateString = "N/A";
+                }
+                Log.d(TAG, "NO Notification sent, last notification sent for " + selfieSpotId + "; at " + dateString);
+            }
+        } catch (final ParseException e) {
+            Log.d(TAG, "Unable to retrieve SelfieSpot: " + selfieSpotId, e);
+        }
     }
 
     private void sendNotification(final String selfieSpotId, final SelfieSpot selfieSpot) {
@@ -95,19 +91,25 @@ public class GeofenceTransitionsIntentService extends IntentService {
         stackBuilder.addNextIntent(resultIntent);
         final PendingIntent resultPendingIntent = stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
 
+        final int requestId = createRequestId();
+        final Intent takePictureIntent = TakePictureBroadcastReceiver.createIntent(requestId);
+        final PendingIntent takePicturePendingIntent = PendingIntent.getBroadcast(this, 0, takePictureIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+
         final NotificationCompat.Builder builder =
                 new NotificationCompat.Builder(this)
                         .setSmallIcon(R.drawable.ic_launcher)
                         .setContentTitle("Time for a Selfie!")
-                        .setContentText(getNotificationText(selfieSpot))
+                        .setStyle(new NotificationCompat.BigTextStyle().bigText(getNotificationText(selfieSpot)))
                         .setContentIntent(resultPendingIntent)
                         .setAutoCancel(true)
-                        .setDefaults(Notification.DEFAULT_ALL);
+                        .setDefaults(Notification.DEFAULT_ALL)
+                        .addAction(android.R.drawable.ic_menu_camera, "Take Selfie", takePicturePendingIntent);
 
-        final NotificationManager mNotificationManager =
+        final NotificationManager notificationManager =
                 (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-        // TODO - use the truncated system millis as notification id?
-        mNotificationManager.notify(sNotificationId.incrementAndGet(), builder.build());
+
+        Log.d(TAG, "Sending notification: " + requestId);
+        notificationManager.notify(requestId, builder.build());
     }
 
     private boolean canSendNotification(final String selfieSpotId) {
@@ -137,5 +139,15 @@ public class GeofenceTransitionsIntentService extends IntentService {
     private String getNotificationText(final SelfieSpot selfieSpot) {
         final String notificationText = "You are near one of your favorite SelfieSpot: " + selfieSpot.getName();
         return notificationText;
+    }
+
+    private int createRequestId(){
+        int requestId = (int) System.currentTimeMillis();
+
+        if (requestId < 0) {
+            requestId = - requestId;
+        }
+
+        return requestId;
     }
 }
