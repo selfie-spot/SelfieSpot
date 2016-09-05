@@ -1,5 +1,6 @@
 package com.codepath.selfiespot.activities;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -27,6 +28,11 @@ import java.util.List;
 public class LoginActivity extends AppCompatActivity {
     private static final String TAG = LoginActivity.class.getSimpleName();
     private Button loginButton;
+
+    public static Intent createIntent(final Context context) {
+        final Intent intent = new Intent(context, LoginActivity.class);
+        return intent;
+    }
 
     @Override
     protected void onCreate(final Bundle savedInstanceState) {

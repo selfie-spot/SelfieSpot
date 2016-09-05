@@ -1,6 +1,7 @@
 package com.codepath.selfiespot.di;
 
 
+import com.codepath.selfiespot.activities.SettingsActivity;
 import com.codepath.selfiespot.di.modules.ApplicationModule;
 import com.codepath.selfiespot.services.GeofenceTransitionsIntentService;
 
@@ -13,4 +14,6 @@ import dagger.Component;
 public interface ApplicationComponent {
 
     void inject(GeofenceTransitionsIntentService geofenceTransitionsIntentService);
+
+    void inject(SettingsActivity settingsActivity);
 }

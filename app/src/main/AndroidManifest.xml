@@ -60,6 +60,8 @@
 
         <activity android:name=".activities.ProfileActivity" />
 
+        <activity android:name=".activities.SettingsActivity" />
+
         <service android:name=".services.GeofenceTransitionsIntentService"
             android:exported="false" />
 
