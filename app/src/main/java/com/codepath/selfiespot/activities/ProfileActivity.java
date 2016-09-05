@@ -2,6 +2,7 @@ package com.codepath.selfiespot.activities;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
@@ -11,6 +12,9 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
+import android.text.Spannable;
+import android.text.SpannableString;
+import android.text.style.ImageSpan;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -121,6 +125,11 @@ public class ProfileActivity extends AppCompatActivity implements AppBarLayout.O
         private final int POSITION_MY_SELFIES = 0;
         private final int POSITION_BOOKMARK_SELFIES = 1;
         private String mTabTitles[] = new String[] {"My Selfies", "Bookmarks"};
+        private int[] imageResId = {
+                R.drawable.ic_myselfies,
+                R.drawable.ic_bookmark_plus,
+
+        };
 
         public SelfieSpotsPagerAdapter(final FragmentManager fm) {
             super(fm);
@@ -141,7 +150,14 @@ public class ProfileActivity extends AppCompatActivity implements AppBarLayout.O
 
         @Override
         public CharSequence getPageTitle(int position) {
-            return mTabTitles[position];
+
+            Drawable image = getApplicationContext().getResources().getDrawable(imageResId[position]);
+            image.setBounds(0, 0, image.getIntrinsicWidth(), image.getIntrinsicHeight());
+            // Replace blank spaces with image icon
+            SpannableString sb = new SpannableString("   " + mTabTitles[position]);
+            ImageSpan imageSpan = new ImageSpan(image, ImageSpan.ALIGN_BOTTOM);
+            sb.setSpan(imageSpan, 0, 1, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+            return sb;
         }
 
         @Override
