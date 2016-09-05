@@ -23,6 +23,7 @@ import com.codepath.selfiespot.R;
 import com.codepath.selfiespot.fragments.AlertLocationMapFragment;
 import com.codepath.selfiespot.fragments.LocationMapFragment;
 import com.codepath.selfiespot.models.SelfieSpot;
+import com.codepath.selfiespot.services.GoogleApiClientBootstrapService;
 import com.codepath.selfiespot.util.CollectionUtils;
 import com.codepath.selfiespot.util.DateUtils;
 import com.codepath.selfiespot.util.ParseUserUtil;
@@ -212,6 +213,9 @@ public class TempDetailSelfieSpotActivity extends AppCompatActivity {
                                     }
                                     setBookmarkIcon(true);
                                     mBookmarkImageView.setOnClickListener(null);
+
+                                    // fire service to update bookmarks geofences
+                                    TempDetailSelfieSpotActivity.this.startService(GoogleApiClientBootstrapService.createIntent(TempDetailSelfieSpotActivity.this));
                                 }
                             });
                         }

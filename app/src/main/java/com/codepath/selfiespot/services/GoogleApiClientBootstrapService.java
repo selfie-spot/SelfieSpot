@@ -2,6 +2,7 @@ package com.codepath.selfiespot.services;
 
 import android.app.PendingIntent;
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.IBinder;
@@ -32,8 +33,12 @@ public class GoogleApiClientBootstrapService extends Service implements GoogleAp
     private static final String TAG = GoogleApiClientBootstrapService.class.getSimpleName();
     private static final int RADIUS_IN_METERS = 200;
 
-
     private GoogleApiClient mGoogleApiClient;
+
+    public static Intent createIntent(final Context context) {
+        final Intent intent = new Intent(context, GoogleApiClientBootstrapService.class);
+        return intent;
+    }
 
     @Override
     public void onCreate() {
@@ -107,8 +112,6 @@ public class GoogleApiClientBootstrapService extends Service implements GoogleAp
         });
     }
 
-
-
     @SuppressWarnings({"MissingPermission"})
     private void addGeofences(final List<SelfieSpot> selfieSpotsobjects) {
         // geofences request
@@ -120,7 +123,7 @@ public class GoogleApiClientBootstrapService extends Service implements GoogleAp
             @Override
             public void onResult(final Status status) {
                 if (status.isSuccess()) {
-                    Log.e(TAG, "Successfully added geofences");
+                    Log.d(TAG, "Successfully added geofences");
                 } else {
                     Log.e(TAG, "Error adding Geofencing" + status.getStatusMessage());
                 }

@@ -18,6 +18,7 @@ import android.widget.TextView;
 import com.codepath.selfiespot.R;
 import com.codepath.selfiespot.activities.TempDetailSelfieSpotActivity;
 import com.codepath.selfiespot.models.SelfieSpot;
+import com.codepath.selfiespot.services.GoogleApiClientBootstrapService;
 import com.codepath.selfiespot.util.CollectionUtils;
 import com.codepath.selfiespot.util.ParseUserUtil;
 import com.codepath.selfiespot.views.adapters.SelfieSpotAdapter;
@@ -92,6 +93,9 @@ public class BookmarkedSelfiesFragment extends Fragment implements SelfieSpotIte
     public void onActivityCreated(@Nullable final Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         retrieveData();
+
+        // fire service to update bookmarks geofences
+        getActivity().startService(GoogleApiClientBootstrapService.createIntent(getActivity()));
     }
 
     private void retrieveData() {

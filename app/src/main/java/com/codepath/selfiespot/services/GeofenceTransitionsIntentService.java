@@ -72,6 +72,7 @@ public class GeofenceTransitionsIntentService extends IntentService {
                 } else {
                     if (canSendNotification(selfieSpotId)) {
                         sendNotification(selfieSpotId, selfieSpot);
+                        setLastNotificationTimeForSelfieSpot(selfieSpotId);
                     } else {
                         final Date date = getLastNotificationTimeForSelfieSpot(selfieSpotId);
                         final String dateString;
@@ -80,7 +81,7 @@ public class GeofenceTransitionsIntentService extends IntentService {
                         } else {
                             dateString = "N/A";
                         }
-                        Log.d(TAG, "Last notification sent to: " + selfieSpotId + "; at: " + dateString);
+                        Log.d(TAG, "NO Notification sent, last notification sent for " + selfieSpotId + "; at " + dateString);
                     }
                 }
             }
