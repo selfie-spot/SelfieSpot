@@ -29,6 +29,7 @@ public class LoginActivity extends AppCompatActivity {
     private static final String TAG = LoginActivity.class.getSimpleName();
     private Button loginButton;
 
+
     public static Intent createIntent(final Context context) {
         final Intent intent = new Intent(context, LoginActivity.class);
         return intent;
@@ -38,6 +39,7 @@ public class LoginActivity extends AppCompatActivity {
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+
 
         // already logged-in, directly go to home-activity
         if (ParseUser.getCurrentUser() != null) {
