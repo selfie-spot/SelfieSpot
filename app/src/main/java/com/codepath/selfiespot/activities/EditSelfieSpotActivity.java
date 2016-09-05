@@ -259,7 +259,8 @@ public class EditSelfieSpotActivity extends AppCompatActivity {
         EditSelfieSpotActivityPermissionsDispatcher.onRequestPermissionsResult(this, requestCode, grantResults);
     }
 
-    @NeedsPermission({Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE})
+    @NeedsPermission({Manifest.permission.CAMERA,
+            Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE})
     void addPhoto() {
         EasyImage.openChooserWithGallery(this, "Pick an Image", 0);
     }

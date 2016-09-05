@@ -34,7 +34,7 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".activities.SelfieSpotsMapActivity" />
+        <activity android:name=".activities.SelfieSpotsMapActivity"/>
 
         <activity
             android:name=".activities.EditSelfieSpotActivity"
@@ -56,9 +56,23 @@
             android:name="com.facebook.FacebookActivity"
             android:configChanges="keyboard|keyboardHidden|screenLayout|screenSize|orientation"
             android:label="@string/app_name"
-            android:theme="@android:style/Theme.Translucent.NoTitleBar" />
+            android:theme="@android:style/Theme.Translucent.NoTitleBar"/>
 
-        <activity android:name=".activities.ProfileActivity"></activity>
+        <activity android:name=".activities.ProfileActivity" />
+
+        <activity android:name=".activities.SettingsActivity" />
+
+        <service android:name=".services.GeofenceTransitionsIntentService"
+            android:exported="false" />
+
+        <service android:name=".services.GoogleApiClientBootstrapService"
+                 android:exported="false" />
+
+        <receiver android:name=".receivers.TakePictureBroadcastReceiver">
+            <intent-filter>
+                <action android:name="com.codepath.selfiespot.camera" />
+            </intent-filter>
+        </receiver>
 
         <meta-data
             android:name="com.facebook.sdk.PERMISSIONS"

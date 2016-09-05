@@ -14,7 +14,6 @@ import com.parse.Parse;
 import com.parse.ParseACL;
 import com.parse.ParseFacebookUtils;
 import com.parse.ParseObject;
-import com.parse.interceptors.ParseLogInterceptor;
 
 public class SelfieSpotApplication extends Application {
     private ApplicationComponent mComponent;
@@ -30,7 +29,7 @@ public class SelfieSpotApplication extends Application {
         super.onCreate();
         initParse();
         initDagger();
-        initStetho();
+//        initStetho();
     }
 
     private void initDagger() {
@@ -47,7 +46,7 @@ public class SelfieSpotApplication extends Application {
                 .applicationId(BuildConfig.PARSE_ID)
 //                .clientKey(BuildConfig.PARSE_KEY)
                 .server(BuildConfig.PARSE_SERVER_URL)
-                .addNetworkInterceptor(new ParseLogInterceptor())
+//                .addNetworkInterceptor(new ParseLogInterceptor())
                 .enableLocalDataStore()
                 .build());
 
