@@ -51,4 +51,10 @@
         <item name="android:textColor">@color/tab_normal</item>
     </style>
 
+    <style name="SelfieSpotBottomSheetDialog" parent="Theme.Design.Light.BottomSheetDialog">
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:colorBackgroundCacheHint">@null</item>
+        <item name="android:windowIsTranslucent">true</item>
+    </style>
+
 </resources>

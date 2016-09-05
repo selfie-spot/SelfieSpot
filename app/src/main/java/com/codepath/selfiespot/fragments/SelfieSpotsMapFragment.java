@@ -3,6 +3,8 @@ package com.codepath.selfiespot.fragments;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.CountDownTimer;
+import android.support.design.widget.BottomSheetBehavior;
+import android.support.design.widget.BottomSheetDialog;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -43,6 +45,8 @@ public class SelfieSpotsMapFragment extends BaseMapFragment implements ClusterMa
     private CountDownTimer mCountDownTimer;
 
     private MenuItem mActionProgressBarItem;
+    private BottomSheetDialog mBottomSheetDialog;
+    private BottomSheetBehavior mDialogBehavior;
 
     @Override
     public void onCreate(Bundle bundle) {
@@ -128,7 +132,17 @@ public class SelfieSpotsMapFragment extends BaseMapFragment implements ClusterMa
 
     @Override
     public boolean onOptionsItemSelected(final MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_nav_filter: {
+                openFilters();
+                return true;
+            }
+        }
         return super.onOptionsItemSelected(item);
+    }
+
+    private void openFilters() {
+        new FiltersDialogFragment().show(getChildFragmentManager(), "dialog");
     }
 
     private void doQuery() {
