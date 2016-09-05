@@ -1,10 +1,12 @@
 package com.codepath.selfiespot.activities;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
@@ -14,6 +16,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -30,6 +33,7 @@ import com.codepath.selfiespot.util.ParseUserUtil;
 import com.codepath.selfiespot.util.ViewUtils;
 import com.codepath.selfiespot.views.DynamicHeightImageView;
 import com.google.android.gms.maps.model.LatLng;
+import com.parse.DeleteCallback;
 import com.parse.FindCallback;
 import com.parse.GetCallback;
 import com.parse.ParseException;
@@ -77,9 +81,6 @@ public class TempDetailSelfieSpotActivity extends AppCompatActivity {
     @BindView(R.id.divider_likes)
     View mLikesDivider;
 
-    @BindView(R.id.fl_progress_holder)
-    FrameLayout mProgressFrameLayout;
-
     @BindView(R.id.iv_bookmark_action)
     ImageView mBookmarkImageView;
 
@@ -89,9 +90,16 @@ public class TempDetailSelfieSpotActivity extends AppCompatActivity {
     @BindView(R.id.iv_share_action)
     ImageView mShareImageView;
 
+    @BindView(R.id.fl_progress_holder)
+    FrameLayout mProgressFrameLayout;
+
+    @BindView(R.id.pb_loading)
+    ProgressBar mLoadingProgressBar;
+
     private SelfieSpot mSelfieSpot;
 
     private MenuItem mDeleteItem;
+    private boolean mCurrentlyBookmarked;
 
     public static Intent createIntent(final Context context, final String selfieSpotId) {
         final Intent intent = new Intent(context, TempDetailSelfieSpotActivity.class);
@@ -151,13 +159,43 @@ public class TempDetailSelfieSpotActivity extends AppCompatActivity {
                 return true;
             }
             case R.id.action_delete: {
-                Toast.makeText(this, "Delete", Toast.LENGTH_SHORT).show();
-                // TODO - show a dialog before deleting
+                delete();
             }
         }
         return super.onOptionsItemSelected(item);
     }
 
+    private void delete() {
+        new AlertDialog.Builder(this)
+                .setTitle(R.string.delete_title)
+                .setMessage(R.string.delete_warning)
+                .setNegativeButton(R.string.delete_cancel, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(final DialogInterface dialogInterface, final int i) {
+                        // no-op
+                    }
+                })
+                .setPositiveButton(R.string.delete_ok, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(final DialogInterface dialogInterface, final int i) {
+                        showBusy();
+
+                        mSelfieSpot.deleteInBackground(new DeleteCallback() {
+                            @Override
+                            public void done(ParseException e) {
+                                // TODO - determine if activity is visible before doing anything view related
+                                if (e == null) {
+                                    finish();
+                                } else {
+                                    hideBusy();
+                                    Toast.makeText(TempDetailSelfieSpotActivity.this, "Error deleting SelfieSpot", Toast.LENGTH_LONG).show();
+                                }
+                            }
+                        });
+                    }
+                })
+                .show();
+    }
 
     private void initViews() {
         mNameTextView.setText(mSelfieSpot.getName());
@@ -194,7 +232,47 @@ public class TempDetailSelfieSpotActivity extends AppCompatActivity {
                     return;
                 }
 
-                setBookmarkIcon(! CollectionUtils.isEmpty(objects));
+                mCurrentlyBookmarked = ! CollectionUtils.isEmpty(objects);
+                setBookmarkIcon(mCurrentlyBookmarked);
+
+                mBookmarkImageView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(final View view) {
+                        if (! mCurrentlyBookmarked) {
+                            ParseUserUtil.bookmarkSelfieSpot(loggedInUser, mSelfieSpot, new SaveCallback() {
+                                @Override
+                                public void done(final ParseException e) {
+                                    if (e != null) {
+                                        Toast.makeText(TempDetailSelfieSpotActivity.this, "Unable to add bookmark", Toast.LENGTH_SHORT).show();
+                                        Log.e(TAG, "Unable to add bookmark: " + mSelfieSpot.getObjectId(), e);
+                                        return;
+                                    }
+                                    mCurrentlyBookmarked = true;
+                                    setBookmarkIcon(mCurrentlyBookmarked);
+
+                                    // fire service to update bookmarks geofences
+                                    TempDetailSelfieSpotActivity.this.startService(GoogleApiClientBootstrapService.createIntent(TempDetailSelfieSpotActivity.this));
+                                }
+                            });
+                        } else {
+                            ParseUserUtil.unbookmarkSelfieSpot(loggedInUser, mSelfieSpot, new SaveCallback() {
+                                @Override
+                                public void done(final ParseException e) {
+                                    if (e != null) {
+                                        Toast.makeText(TempDetailSelfieSpotActivity.this, "Unable to remove bookmark", Toast.LENGTH_SHORT).show();
+                                        Log.e(TAG, "Unable to remove bookmark: " + mSelfieSpot.getObjectId(), e);
+                                        return;
+                                    }
+                                    mCurrentlyBookmarked = false;
+                                    setBookmarkIcon(mCurrentlyBookmarked);
+
+                                    // fire service to update bookmarks geofences
+                                    TempDetailSelfieSpotActivity.this.startService(GoogleApiClientBootstrapService.createIntent(TempDetailSelfieSpotActivity.this));
+                                }
+                            });
+                        }
+                    }
+                });
 
                 // for the time being only enable the listener if not bookmarked
                 // TODO - add ability to toggle bookmarks i.e., if bookmarked, user should have
