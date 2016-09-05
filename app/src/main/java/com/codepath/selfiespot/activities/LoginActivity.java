@@ -6,8 +6,10 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.codepath.selfiespot.R;
 import com.codepath.selfiespot.util.ParseUserUtil;
 import com.facebook.AccessToken;
@@ -27,11 +29,14 @@ import java.util.List;
 public class LoginActivity extends AppCompatActivity {
     private static final String TAG = LoginActivity.class.getSimpleName();
     private Button loginButton;
+    private ImageView ivGif;
 
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+        ivGif =(ImageView) findViewById(R.id.ivGif);
+        Glide.with(this).load(R.raw.selfiespot_gif).asGif().into(ivGif);
 
         // already logged-in, directly go to home-activity
         if (ParseUser.getCurrentUser() != null) {
