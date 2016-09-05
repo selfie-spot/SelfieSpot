@@ -7,4 +7,10 @@
         android:title="@string/menu_loading"
         app:actionLayout="@layout/action_view_progress"
         app:showAsAction="always"/>
+
+    <item
+        android:id="@+id/action_nav_filter"
+        android:icon="@drawable/ic_filter"
+        app:showAsAction="always"
+        android:title="@string/menu_filter" />
 </menu>

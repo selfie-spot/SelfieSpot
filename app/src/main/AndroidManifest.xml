@@ -18,7 +18,8 @@
         android:icon="@drawable/ic_launcher1"
         android:label="@string/app_name"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme.SelfieSpot">
+        android:theme="@style/AppTheme.SelfieSpot"
+        tools:replace="android:theme">
 
         <meta-data android:name="com.bumptech.glide.integration.okhttp.OkHttpGlideModule" tools:node="remove" />
 
@@ -60,7 +61,11 @@
 
         <activity android:name=".activities.ProfileActivity" />
 
-        <activity android:name=".activities.SettingsActivity" />
+        <activity android:name=".activities.SettingsActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".activities.SelfieSpotsMapActivity" />
+        </activity>
 
         <service android:name=".services.GeofenceTransitionsIntentService"
             android:exported="false" />

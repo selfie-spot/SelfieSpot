@@ -1,5 +1,6 @@
 package com.codepath.selfiespot.fragments;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.CountDownTimer;
@@ -11,7 +12,9 @@ import android.widget.Toast;
 
 import com.codepath.selfiespot.R;
 import com.codepath.selfiespot.activities.TempDetailSelfieSpotActivity;
+import com.codepath.selfiespot.models.SearchFilter;
 import com.codepath.selfiespot.models.SelfieSpot;
+import com.codepath.selfiespot.util.CollectionUtils;
 import com.codepath.selfiespot.views.SelfieSpotItemRenderer;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.LatLngBounds;
@@ -27,7 +30,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-public class SelfieSpotsMapFragment extends BaseMapFragment implements ClusterManager.OnClusterItemClickListener<SelfieSpot> {
+public class SelfieSpotsMapFragment extends BaseMapFragment implements
+        ClusterManager.OnClusterItemClickListener<SelfieSpot>, FiltersDialogFragment.FiltersCallback {
     private static final String TAG = SelfieSpotsMapFragment.class.getSimpleName();
     private static final String PIN_LABEL_SELFIES = MySelfiesFragment.class.getSimpleName() + ":SELFIES";
 
@@ -37,12 +41,20 @@ public class SelfieSpotsMapFragment extends BaseMapFragment implements ClusterMa
     // TODO - check if there is a better way to keep reference to added markers
     private Set<String> mMarkersReference = new HashSet<>();
 
+    private SelfieSpotsCallback mSelfieSpotsCallback;
     private ClusterManager<SelfieSpot> mClusterManager;
     private ParseQuery<SelfieSpot> mCurrentQuery;
 
     private CountDownTimer mCountDownTimer;
+    private MenuItem mActionProgressBarMenuItem;
+    private MenuItem mFilterMenuItem;
+    private SearchFilter mSearchFilter;
 
-    private MenuItem mActionProgressBarItem;
+    @Override
+    public void onAttach(final Activity activity) {
+        super.onAttach(activity);
+        mSelfieSpotsCallback = (SelfieSpotsCallback) activity;
+    }
 
     @Override
     public void onCreate(Bundle bundle) {
@@ -114,21 +126,38 @@ public class SelfieSpotsMapFragment extends BaseMapFragment implements ClusterMa
     @Override
     public void onResume() {
         super.onResume();
-        if (mMap != null && retrieveSelfieSpots()) {
-            clearAll();
-            doQuery();
-        }
+        checkAndQuery();
     }
 
     @Override
     public void onCreateOptionsMenu(final Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.menu_frag_selfie_map, menu);
-        mActionProgressBarItem = menu.findItem(R.id.action_view_progress);
+        mActionProgressBarMenuItem = menu.findItem(R.id.action_view_progress);
+        mFilterMenuItem = menu.findItem(R.id.action_nav_filter);
     }
 
     @Override
     public boolean onOptionsItemSelected(final MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_nav_filter: {
+                openFilters();
+                return true;
+            }
+        }
         return super.onOptionsItemSelected(item);
+    }
+
+    private void openFilters() {
+        final FiltersDialogFragment fragment = FiltersDialogFragment.createInstance(mSearchFilter);
+        fragment.show(getChildFragmentManager(), "dialog");
+        fragment.setFiltersCallback(this);
+    }
+
+    private void checkAndQuery() {
+        if (mMap != null && retrieveSelfieSpots()) {
+            clearAll();
+            doQuery();
+        }
     }
 
     private void doQuery() {
@@ -138,21 +167,27 @@ public class SelfieSpotsMapFragment extends BaseMapFragment implements ClusterMa
         }
 
         showBusy();
+        mSelfieSpotsCallback.hideMessage();
 
         final LatLngBounds latLngBounds = mMap.getProjection().getVisibleRegion().latLngBounds;
         final ParseGeoPoint sw = new ParseGeoPoint(latLngBounds.southwest.latitude, latLngBounds.southwest.longitude);
         final ParseGeoPoint ne = new ParseGeoPoint(latLngBounds.northeast.latitude, latLngBounds.northeast.longitude);
 
         // TODO - add parsequery cache, set a TTL
+        mCurrentQuery = SelfieSpot.getWhereWithinGeoBoxQuery(sw, ne, mSearchFilter);
 
-        mCurrentQuery = SelfieSpot.getWhereWithinGeoBoxQuery(sw, ne);
         mCurrentQuery.findInBackground(new FindCallback<SelfieSpot>() {
             @Override
             public void done(final List<SelfieSpot> selfieSpots, final ParseException e) {
                 if (e == null) {
                     Log.d(TAG, "Retrieved selfie-spots: " + selfieSpots.size());
                     ParseObject.pinAllInBackground(PIN_LABEL_SELFIES, selfieSpots);
-                    addMarkers(selfieSpots);
+
+                    if (CollectionUtils.isEmpty(selfieSpots)) {
+                        mSelfieSpotsCallback.setMessage("Whoa! Unable to find any SelfieSpots nearby. Try moving the map!");
+                    } else {
+                        addMarkers(selfieSpots);
+                    }
                 } else {
                     Log.e(TAG, "Unable to retrieve selfie-spots", e);
                     Toast.makeText(getActivity(), "Unable to retrieve selfie-spots", Toast.LENGTH_SHORT).show();
@@ -187,11 +222,11 @@ public class SelfieSpotsMapFragment extends BaseMapFragment implements ClusterMa
     }
 
     private void showBusy() {
-        mActionProgressBarItem.setVisible(true);
+        mActionProgressBarMenuItem.setVisible(true);
     }
 
     private void hideBusy() {
-        mActionProgressBarItem.setVisible(false);
+        mActionProgressBarMenuItem.setVisible(false);
     }
 
     private void clearAll() {
@@ -215,5 +250,27 @@ public class SelfieSpotsMapFragment extends BaseMapFragment implements ClusterMa
         final Intent intent = TempDetailSelfieSpotActivity.createIntent(getActivity(), selfieSpot.getObjectId());
         startActivity(intent);
         return true;
+    }
+
+    @Override
+    public void setFilters(final SearchFilter searchFilter) {
+        Log.d(TAG, "Filter: " + searchFilter);
+        mSearchFilter = searchFilter;
+
+        if (CollectionUtils.isEmpty(searchFilter.getTags()) && ! searchFilter.isHideZeroLikes()) {
+            // no filtering
+            mFilterMenuItem.setIcon(R.drawable.ic_filter);
+        } else {
+            // some filtering criteria exists
+            mFilterMenuItem.setIcon(R.drawable.ic_filter_populated);
+        }
+
+        checkAndQuery();
+    }
+
+    public interface SelfieSpotsCallback {
+        void setMessage(String message);
+
+        void hideMessage();
     }
 }

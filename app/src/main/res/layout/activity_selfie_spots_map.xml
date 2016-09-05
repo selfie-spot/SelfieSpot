@@ -31,6 +31,20 @@
                 android:name="com.codepath.selfiespot.fragments.SelfieSpotsMapFragment"
                 tools:context="com.codepath.selfiespot.activities.SelfieSpotsMapActivity"/>
 
+            <TextView
+                android:id="@+id/tv_message"
+                android:layout_height="wrap_content"
+                android:textColor="@android:color/white"
+                android:paddingLeft="@dimen/space_content"
+                android:paddingRight="@dimen/space_content"
+                android:paddingTop="2dp"
+                android:paddingBottom="2dp"
+                android:gravity="center"
+                android:textStyle="bold"
+                android:layout_width="match_parent"
+                android:alpha="0"
+                android:background="@android:color/black"/>
+
             <FrameLayout
                 android:id="@+id/fl_fab_container"
                 android:layout_width="wrap_content"

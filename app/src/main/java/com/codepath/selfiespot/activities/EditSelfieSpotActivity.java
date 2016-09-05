@@ -2,7 +2,6 @@ package com.codepath.selfiespot.activities;
 
 import android.Manifest;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -10,7 +9,6 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
@@ -25,8 +23,8 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.codepath.selfiespot.R;
 import com.codepath.selfiespot.fragments.AlertLocationPickerMapFragment;
+import com.codepath.selfiespot.fragments.TagsDialogFragment;
 import com.codepath.selfiespot.models.SelfieSpot;
-import com.codepath.selfiespot.models.Tag;
 import com.codepath.selfiespot.util.CollectionUtils;
 import com.codepath.selfiespot.util.ImageUtil;
 import com.github.jlmd.animatedcircleloadingview.AnimatedCircleLoadingView;
@@ -52,7 +50,7 @@ import pl.aprilapps.easyphotopicker.DefaultCallback;
 import pl.aprilapps.easyphotopicker.EasyImage;
 
 @RuntimePermissions
-public class EditSelfieSpotActivity extends AppCompatActivity {
+public class EditSelfieSpotActivity extends AppCompatActivity implements TagsDialogFragment.TagsCallback {
     private static final String TAG = EditSelfieSpotActivity.class.getSimpleName();
 
     // state "keys"
@@ -394,30 +392,19 @@ public class EditSelfieSpotActivity extends AppCompatActivity {
     }
 
     private void showTags() {
-        final AlertDialog.Builder builder = new AlertDialog.Builder(this);
-
-        final String[] allTags = Tag.getAllTagsAsStringArray();
-        final boolean[] checkedOptions = getSelectedTags(allTags);
-
-        builder.setMultiChoiceItems(allTags, checkedOptions, new DialogInterface.OnMultiChoiceClickListener() {
-            @Override
-            public void onClick(final DialogInterface dialogInterface, final int which, final boolean isChecked) {
-                final String item = allTags[which];
-                updateTag(item, isChecked);
-            }
-        });
-        builder.show();
+        final TagsDialogFragment tagsDialogFragment = TagsDialogFragment.createInstance(mSelfieSpotData.currentTags);
+        tagsDialogFragment.setTagsCallback(this);
+        tagsDialogFragment.show(getSupportFragmentManager(), "tags");
     }
 
-    private boolean[] getSelectedTags(final String[] allTags) {
-        final boolean[] selected = new boolean[allTags.length];
-        final Set<String> selectedTags = mSelfieSpotData.currentTags;
+    @Override
+    public void onTagSelected(final String tag) {
+        updateTag(tag, true);
+    }
 
-        for (int i = 0; i < allTags.length; i++) {
-            selected[i] = selectedTags.contains(allTags[i]);
-        }
-
-        return selected;
+    @Override
+    public void onTagDeselected(final String tag) {
+        updateTag(tag, false);
     }
 
     private void updateTag(final String tag, final boolean selected) {

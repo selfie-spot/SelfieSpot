@@ -50,5 +50,6 @@
     <string name="delete_ok">OK</string>
     <string name="delete_cancel">CANCEL</string>
     <string name="delete_warning">Are you sure?</string>
+    <string name="menu_filter">Filters</string>
 
 </resources>

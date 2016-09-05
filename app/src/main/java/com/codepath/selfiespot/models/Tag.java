@@ -4,7 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public enum Tag {
-    ADVENTUROUS, SCENIC, ELECTRIC, HISTORIC;
+    ADVENTUROUS, SCENIC, ADRENALINE, HISTORIC,
+    ROMANTIC, ECCENTRIC, BEAUTIFUL, ELECTRIC, GREEN,
+    DUSK, DAWN, NATURAL;
 
     private static String[] sAllTagsArray;
 
