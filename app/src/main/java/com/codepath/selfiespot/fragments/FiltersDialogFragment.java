@@ -8,8 +8,11 @@ import android.support.design.widget.BottomSheetDialog;
 import android.support.design.widget.BottomSheetDialogFragment;
 import android.util.Log;
 import android.view.View;
+import android.widget.CompoundButton;
+import android.widget.Switch;
 
 import com.codepath.selfiespot.R;
+import com.codepath.selfiespot.models.SearchFilter;
 import com.codepath.selfiespot.models.Tag;
 
 import butterknife.BindView;
@@ -28,7 +31,18 @@ public class FiltersDialogFragment extends BottomSheetDialogFragment implements 
     @BindView(R.id.cc_tags)
     ChipCloud mTagsChipCloud;
 
+    @BindView(R.id.ss_hide_no_likes)
+    Switch mHideNoLikesSwitch;
+
+    private FiltersCallback mFiltersCallback;
+
     private String[] mTags;
+
+    private SearchFilter mSearchFilter = new SearchFilter();
+
+    public static FiltersDialogFragment createInstance() {
+        return new FiltersDialogFragment();
+    }
 
     @NonNull
     @Override
@@ -40,6 +54,12 @@ public class FiltersDialogFragment extends BottomSheetDialogFragment implements 
 
         ButterKnife.bind(this, view);
         mFakeShadow.setVisibility(View.GONE);
+        mHideNoLikesSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(final CompoundButton compoundButton, final boolean isChecked) {
+                mSearchFilter.setHideZeroLikes(isChecked);
+            }
+        });
         populateTags();
 
         return dialog;
@@ -49,16 +69,23 @@ public class FiltersDialogFragment extends BottomSheetDialogFragment implements 
     public void onDismiss(final DialogInterface dialog) {
         super.onDismiss(dialog);
         Log.d(TAG, "FiltersDialogFragment dismissed");
+        if (mFiltersCallback != null) {
+            mFiltersCallback.setFilters(mSearchFilter);
+        }
     }
 
     @Override
-    public void chipSelected(final int i) {
-        Log.d(TAG, "chip selected: " + mTags[i]);
+    public void chipSelected(final int position) {
+        final String tag = getTag(position);
+        mSearchFilter.addTag(tag);
+        Log.d(TAG, "tag selected: " + tag);
     }
 
     @Override
-    public void chipDeselected(final int i) {
-        Log.d(TAG, "chip deselected: " + mTags[i]);
+    public void chipDeselected(final int position) {
+        final String tag = getTag(position);
+        mSearchFilter.removeTag(tag);
+        Log.d(TAG, "tag deselected: " + tag);
     }
 
     private void populateTags() {
@@ -67,8 +94,20 @@ public class FiltersDialogFragment extends BottomSheetDialogFragment implements 
         mTagsChipCloud.setChipListener(this);
     }
 
+    private String getTag(final int position) {
+        return mTags[position];
+    }
+
+    public void setFiltersCallback(final FiltersCallback filtersCallback) {
+        mFiltersCallback = filtersCallback;
+    }
+
 //    @Override
 //    public int getTheme() {
 //        return android.R.style.Theme_Translucent_NoTitleBar;
 //    }
+
+    public interface FiltersCallback {
+        void setFilters(SearchFilter searchFilter);
+    }
 }

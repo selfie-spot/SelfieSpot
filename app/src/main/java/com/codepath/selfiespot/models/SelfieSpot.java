@@ -1,5 +1,6 @@
 package com.codepath.selfiespot.models;
 
+import com.codepath.selfiespot.util.CollectionUtils;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.maps.android.clustering.ClusterItem;
 import com.parse.ParseClassName;
@@ -168,9 +169,20 @@ public class SelfieSpot extends ParseObject implements ClusterItem {
     }
 
     public static ParseQuery<SelfieSpot> getWhereWithinGeoBoxQuery(final ParseGeoPoint sw,
-                                                                   final ParseGeoPoint ne) {
+                                                                   final ParseGeoPoint ne,
+                                                                   final SearchFilter searchFilter) {
         final ParseQuery<SelfieSpot> query = getQuery();
         query.whereWithinGeoBox(PROPERTY_LOCATION, sw, ne);
+
+        if (searchFilter != null) {
+            if (searchFilter.isHideZeroLikes()) {
+                query.whereGreaterThan(PROPERTY_LIKES, 0);
+            }
+
+            if (! CollectionUtils.isEmpty(searchFilter.getTags())) {
+                query.whereContainedIn(PROPERTY_TAGS, searchFilter.getTags());
+            }
+        }
         query.setLimit(DEFAULT_LIMIT);
         return query;
     }

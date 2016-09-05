@@ -3,8 +3,6 @@ package com.codepath.selfiespot.fragments;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.CountDownTimer;
-import android.support.design.widget.BottomSheetBehavior;
-import android.support.design.widget.BottomSheetDialog;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -13,6 +11,7 @@ import android.widget.Toast;
 
 import com.codepath.selfiespot.R;
 import com.codepath.selfiespot.activities.TempDetailSelfieSpotActivity;
+import com.codepath.selfiespot.models.SearchFilter;
 import com.codepath.selfiespot.models.SelfieSpot;
 import com.codepath.selfiespot.views.SelfieSpotItemRenderer;
 import com.google.android.gms.maps.GoogleMap;
@@ -29,7 +28,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-public class SelfieSpotsMapFragment extends BaseMapFragment implements ClusterManager.OnClusterItemClickListener<SelfieSpot> {
+public class SelfieSpotsMapFragment extends BaseMapFragment implements
+        ClusterManager.OnClusterItemClickListener<SelfieSpot>, FiltersDialogFragment.FiltersCallback {
     private static final String TAG = SelfieSpotsMapFragment.class.getSimpleName();
     private static final String PIN_LABEL_SELFIES = MySelfiesFragment.class.getSimpleName() + ":SELFIES";
 
@@ -45,8 +45,7 @@ public class SelfieSpotsMapFragment extends BaseMapFragment implements ClusterMa
     private CountDownTimer mCountDownTimer;
 
     private MenuItem mActionProgressBarItem;
-    private BottomSheetDialog mBottomSheetDialog;
-    private BottomSheetBehavior mDialogBehavior;
+    private SearchFilter mSearchFilter;
 
     @Override
     public void onCreate(Bundle bundle) {
@@ -118,10 +117,7 @@ public class SelfieSpotsMapFragment extends BaseMapFragment implements ClusterMa
     @Override
     public void onResume() {
         super.onResume();
-        if (mMap != null && retrieveSelfieSpots()) {
-            clearAll();
-            doQuery();
-        }
+        checkAndQuery();
     }
 
     @Override
@@ -142,7 +138,16 @@ public class SelfieSpotsMapFragment extends BaseMapFragment implements ClusterMa
     }
 
     private void openFilters() {
-        new FiltersDialogFragment().show(getChildFragmentManager(), "dialog");
+        final FiltersDialogFragment fragment = new FiltersDialogFragment();
+        fragment.show(getChildFragmentManager(), "dialog");
+        fragment.setFiltersCallback(this);
+    }
+
+    private void checkAndQuery() {
+        if (mMap != null && retrieveSelfieSpots()) {
+            clearAll();
+            doQuery();
+        }
     }
 
     private void doQuery() {
@@ -158,8 +163,8 @@ public class SelfieSpotsMapFragment extends BaseMapFragment implements ClusterMa
         final ParseGeoPoint ne = new ParseGeoPoint(latLngBounds.northeast.latitude, latLngBounds.northeast.longitude);
 
         // TODO - add parsequery cache, set a TTL
+        mCurrentQuery = SelfieSpot.getWhereWithinGeoBoxQuery(sw, ne, mSearchFilter);
 
-        mCurrentQuery = SelfieSpot.getWhereWithinGeoBoxQuery(sw, ne);
         mCurrentQuery.findInBackground(new FindCallback<SelfieSpot>() {
             @Override
             public void done(final List<SelfieSpot> selfieSpots, final ParseException e) {
@@ -229,5 +234,12 @@ public class SelfieSpotsMapFragment extends BaseMapFragment implements ClusterMa
         final Intent intent = TempDetailSelfieSpotActivity.createIntent(getActivity(), selfieSpot.getObjectId());
         startActivity(intent);
         return true;
+    }
+
+    @Override
+    public void setFilters(final SearchFilter searchFilter) {
+        Log.d(TAG, "Filter: " + searchFilter);
+        mSearchFilter = searchFilter;
+        checkAndQuery();
     }
 }
