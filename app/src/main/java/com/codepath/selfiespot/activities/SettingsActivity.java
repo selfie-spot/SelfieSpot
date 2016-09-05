@@ -62,7 +62,7 @@ public class SettingsActivity extends AppCompatActivity {
     @OnClick(R.id.ll_user_container)
     void logout() {
         new AlertDialog.Builder(SettingsActivity.this)
-                .setTitle(R.string.sign_out)
+                .setTitle(R.string.sign_out_title)
                 .setMessage(R.string.sign_out_warning)
                 .setNegativeButton(R.string.sign_out_cancel, new DialogInterface.OnClickListener() {
                     @Override
