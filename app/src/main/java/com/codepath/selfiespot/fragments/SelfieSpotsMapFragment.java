@@ -1,5 +1,6 @@
 package com.codepath.selfiespot.fragments;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.CountDownTimer;
@@ -40,14 +41,20 @@ public class SelfieSpotsMapFragment extends BaseMapFragment implements
     // TODO - check if there is a better way to keep reference to added markers
     private Set<String> mMarkersReference = new HashSet<>();
 
+    private SelfieSpotsCallback mSelfieSpotsCallback;
     private ClusterManager<SelfieSpot> mClusterManager;
     private ParseQuery<SelfieSpot> mCurrentQuery;
 
     private CountDownTimer mCountDownTimer;
-
     private MenuItem mActionProgressBarMenuItem;
     private MenuItem mFilterMenuItem;
     private SearchFilter mSearchFilter;
+
+    @Override
+    public void onAttach(final Activity activity) {
+        super.onAttach(activity);
+        mSelfieSpotsCallback = (SelfieSpotsCallback) activity;
+    }
 
     @Override
     public void onCreate(Bundle bundle) {
@@ -160,6 +167,7 @@ public class SelfieSpotsMapFragment extends BaseMapFragment implements
         }
 
         showBusy();
+        mSelfieSpotsCallback.hideMessage();
 
         final LatLngBounds latLngBounds = mMap.getProjection().getVisibleRegion().latLngBounds;
         final ParseGeoPoint sw = new ParseGeoPoint(latLngBounds.southwest.latitude, latLngBounds.southwest.longitude);
@@ -174,7 +182,12 @@ public class SelfieSpotsMapFragment extends BaseMapFragment implements
                 if (e == null) {
                     Log.d(TAG, "Retrieved selfie-spots: " + selfieSpots.size());
                     ParseObject.pinAllInBackground(PIN_LABEL_SELFIES, selfieSpots);
-                    addMarkers(selfieSpots);
+
+                    if (CollectionUtils.isEmpty(selfieSpots)) {
+                        mSelfieSpotsCallback.setMessage("Whoa! Unable to find any SelfieSpots nearby. Try moving the map!");
+                    } else {
+                        addMarkers(selfieSpots);
+                    }
                 } else {
                     Log.e(TAG, "Unable to retrieve selfie-spots", e);
                     Toast.makeText(getActivity(), "Unable to retrieve selfie-spots", Toast.LENGTH_SHORT).show();
@@ -253,5 +266,11 @@ public class SelfieSpotsMapFragment extends BaseMapFragment implements
         }
 
         checkAndQuery();
+    }
+
+    public interface SelfieSpotsCallback {
+        void setMessage(String message);
+
+        void hideMessage();
     }
 }

@@ -20,6 +20,7 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.codepath.selfiespot.R;
+import com.codepath.selfiespot.fragments.SelfieSpotsMapFragment;
 import com.codepath.selfiespot.repositories.PreferencesDAO;
 import com.codepath.selfiespot.util.ParseUserUtil;
 import com.parse.ParseUser;
@@ -30,7 +31,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import jp.wasabeef.glide.transformations.RoundedCornersTransformation;
 
-public class SelfieSpotsMapActivity extends AppCompatActivity {
+public class SelfieSpotsMapActivity extends AppCompatActivity implements SelfieSpotsMapFragment.SelfieSpotsCallback {
     private static final String TAG = SelfieSpotsMapActivity.class.getSimpleName();
     private static final int PROFILE_TRANSFORM_MARGIN = 0;
     private static final int PROFILE_TRANSFORM_RADIUS = 10;
@@ -52,6 +53,9 @@ public class SelfieSpotsMapActivity extends AppCompatActivity {
 
     @BindView(R.id.fl_fab_container)
     FrameLayout mSelfieFabContainer;
+
+    @BindView(R.id.tv_message)
+    TextView mMessageTextView;
 
     private ActionBarDrawerToggle mDrawerToggle;
 
@@ -199,4 +203,14 @@ public class SelfieSpotsMapActivity extends AppCompatActivity {
         mDrawerLayout.closeDrawers();
     }
 
+    @Override
+    public void setMessage(final String message) {
+        mMessageTextView.setVisibility(View.VISIBLE);
+        mMessageTextView.setText(message);
+    }
+
+    @Override
+    public void hideMessage() {
+        mMessageTextView.setVisibility(View.GONE);
+    }
 }
