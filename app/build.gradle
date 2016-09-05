@@ -26,6 +26,8 @@ ext {
     ANIMATED_CIRCLE_LOADING_VERSION = "1.1.5"
     EASY_IMAGE_VERSION = "1.2.4"
     RECYCLER_VIEW_ANIMATORS = "2.2.3"
+    CALLIGRAPHY ="2.2.0"
+
 }
 
 android {
@@ -110,6 +112,8 @@ dependencies {
     compile "com.github.jkwiecien:EasyImage:$EASY_IMAGE_VERSION"
     compile "com.github.jlmd:AnimatedCircleLoadingView:$ANIMATED_CIRCLE_LOADING_VERSION@aar"
     compile "jp.wasabeef:recyclerview-animators:$RECYCLER_VIEW_ANIMATORS"
+
+    compile "uk.co.chrisjenx:calligraphy:$CALLIGRAPHY"
 
     testCompile "junit:junit:$JUNIT_VERSION"
 }
