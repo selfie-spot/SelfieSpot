@@ -28,6 +28,7 @@ import permissions.dispatcher.RuntimePermissions;
 @RuntimePermissions
 public class BaseMapFragment extends SupportMapFragment implements GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener {
+    private static final String TAG = BaseMapFragment.class.getSimpleName();
 
     protected GoogleMap mMap;
     protected GoogleApiClient mGoogleApiClient;
@@ -81,8 +82,10 @@ public class BaseMapFragment extends SupportMapFragment implements GoogleApiClie
     }
 
     @SuppressWarnings("all")
-    @NeedsPermission({Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION})
+    @NeedsPermission({Manifest.permission.ACCESS_FINE_LOCATION})
     void getMyLocation() {
+        Log.d(TAG, "Permissions granted for location permissions");
+
         if (mMap == null) {
             return;
         }
