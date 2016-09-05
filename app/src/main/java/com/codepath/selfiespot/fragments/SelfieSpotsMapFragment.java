@@ -13,6 +13,7 @@ import com.codepath.selfiespot.R;
 import com.codepath.selfiespot.activities.TempDetailSelfieSpotActivity;
 import com.codepath.selfiespot.models.SearchFilter;
 import com.codepath.selfiespot.models.SelfieSpot;
+import com.codepath.selfiespot.util.CollectionUtils;
 import com.codepath.selfiespot.views.SelfieSpotItemRenderer;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.LatLngBounds;
@@ -44,7 +45,8 @@ public class SelfieSpotsMapFragment extends BaseMapFragment implements
 
     private CountDownTimer mCountDownTimer;
 
-    private MenuItem mActionProgressBarItem;
+    private MenuItem mActionProgressBarMenuItem;
+    private MenuItem mFilterMenuItem;
     private SearchFilter mSearchFilter;
 
     @Override
@@ -123,7 +125,8 @@ public class SelfieSpotsMapFragment extends BaseMapFragment implements
     @Override
     public void onCreateOptionsMenu(final Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.menu_frag_selfie_map, menu);
-        mActionProgressBarItem = menu.findItem(R.id.action_view_progress);
+        mActionProgressBarMenuItem = menu.findItem(R.id.action_view_progress);
+        mFilterMenuItem = menu.findItem(R.id.action_nav_filter);
     }
 
     @Override
@@ -138,7 +141,7 @@ public class SelfieSpotsMapFragment extends BaseMapFragment implements
     }
 
     private void openFilters() {
-        final FiltersDialogFragment fragment = new FiltersDialogFragment();
+        final FiltersDialogFragment fragment = FiltersDialogFragment.createInstance(mSearchFilter);
         fragment.show(getChildFragmentManager(), "dialog");
         fragment.setFiltersCallback(this);
     }
@@ -206,11 +209,11 @@ public class SelfieSpotsMapFragment extends BaseMapFragment implements
     }
 
     private void showBusy() {
-        mActionProgressBarItem.setVisible(true);
+        mActionProgressBarMenuItem.setVisible(true);
     }
 
     private void hideBusy() {
-        mActionProgressBarItem.setVisible(false);
+        mActionProgressBarMenuItem.setVisible(false);
     }
 
     private void clearAll() {
@@ -240,6 +243,15 @@ public class SelfieSpotsMapFragment extends BaseMapFragment implements
     public void setFilters(final SearchFilter searchFilter) {
         Log.d(TAG, "Filter: " + searchFilter);
         mSearchFilter = searchFilter;
+
+        if (CollectionUtils.isEmpty(searchFilter.getTags()) && ! searchFilter.isHideZeroLikes()) {
+            // no filtering
+            mFilterMenuItem.setIcon(R.drawable.ic_filter);
+        } else {
+            // some filtering criteria exists
+            mFilterMenuItem.setIcon(R.drawable.ic_filter_populated);
+        }
+
         checkAndQuery();
     }
 }

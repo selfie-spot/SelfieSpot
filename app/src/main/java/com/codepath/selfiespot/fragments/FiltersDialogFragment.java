@@ -4,6 +4,7 @@ import android.app.Dialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.design.widget.BottomSheetDialog;
 import android.support.design.widget.BottomSheetDialogFragment;
 import android.util.Log;
@@ -14,6 +15,9 @@ import android.widget.Switch;
 import com.codepath.selfiespot.R;
 import com.codepath.selfiespot.models.SearchFilter;
 import com.codepath.selfiespot.models.Tag;
+import com.codepath.selfiespot.util.CollectionUtils;
+
+import java.util.Set;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -22,6 +26,7 @@ import eu.fiskur.chipcloud.ChipListener;
 
 public class FiltersDialogFragment extends BottomSheetDialogFragment implements ChipListener {
     private static final String TAG = FiltersDialogFragment.class.getSimpleName();
+    private static final String ARG_FILTERS = FiltersDialogFragment.class.getSimpleName() + ":FILTERS";
 
 //    private BottomSheetBehavior mBehavior;
 
@@ -38,10 +43,27 @@ public class FiltersDialogFragment extends BottomSheetDialogFragment implements 
 
     private String[] mTags;
 
-    private SearchFilter mSearchFilter = new SearchFilter();
+    private SearchFilter mSearchFilter;
 
-    public static FiltersDialogFragment createInstance() {
-        return new FiltersDialogFragment();
+    public static FiltersDialogFragment createInstance(final SearchFilter searchFilter) {
+        final FiltersDialogFragment fragment = new FiltersDialogFragment();
+        if (searchFilter != null) {
+            final Bundle args = new Bundle();
+            args.putSerializable(ARG_FILTERS, searchFilter);
+            fragment.setArguments(args);
+        }
+        return fragment;
+    }
+
+    @Override
+    public void onCreate(@Nullable final Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        if (getArguments() != null && getArguments().getSerializable(ARG_FILTERS) != null) {
+            mSearchFilter = (SearchFilter) getArguments().getSerializable(ARG_FILTERS);
+        } else {
+            mSearchFilter = new SearchFilter();
+        }
     }
 
     @NonNull
@@ -54,12 +76,14 @@ public class FiltersDialogFragment extends BottomSheetDialogFragment implements 
 
         ButterKnife.bind(this, view);
         mFakeShadow.setVisibility(View.GONE);
+        mHideNoLikesSwitch.setChecked(mSearchFilter.isHideZeroLikes());
         mHideNoLikesSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(final CompoundButton compoundButton, final boolean isChecked) {
                 mSearchFilter.setHideZeroLikes(isChecked);
             }
         });
+
         populateTags();
 
         return dialog;
@@ -91,6 +115,17 @@ public class FiltersDialogFragment extends BottomSheetDialogFragment implements 
     private void populateTags() {
         mTags = Tag.getAllTagsAsStringArray();
         mTagsChipCloud.addChips(mTags);
+
+        // set the selected tags
+        final Set<String> currentSelectedTags = mSearchFilter.getTags();
+        if (! CollectionUtils.isEmpty(currentSelectedTags)) {
+            for (int i = 0; i < mTags.length; i++) {
+                if (currentSelectedTags.contains(mTags[i])) {
+                    mTagsChipCloud.setSelectedChip(i);
+                }
+            }
+        }
+
         mTagsChipCloud.setChipListener(this);
     }
 
