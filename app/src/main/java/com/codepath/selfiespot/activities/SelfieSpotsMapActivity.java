@@ -38,6 +38,7 @@ public class SelfieSpotsMapActivity extends AppCompatActivity implements SelfieS
 
     private static final int INDEX_HOME = 0;
     private static final int DURATION_FAB_DELAY = 600; // millis
+    private static final int DURATION_MESSAGE_ANIMATION = 600; // millis
 
     @BindView(R.id.drawer_layout)
     DrawerLayout mDrawerLayout;
@@ -205,12 +206,12 @@ public class SelfieSpotsMapActivity extends AppCompatActivity implements SelfieS
 
     @Override
     public void setMessage(final String message) {
-        mMessageTextView.setVisibility(View.VISIBLE);
         mMessageTextView.setText(message);
+        mMessageTextView.animate().alpha(0.6f).setDuration(DURATION_MESSAGE_ANIMATION);
     }
 
     @Override
     public void hideMessage() {
-        mMessageTextView.setVisibility(View.GONE);
+        mMessageTextView.animate().alpha(0f).setDuration(DURATION_MESSAGE_ANIMATION);
     }
 }

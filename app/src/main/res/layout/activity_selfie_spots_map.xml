@@ -42,8 +42,8 @@
                 android:gravity="center"
                 android:textStyle="bold"
                 android:layout_width="match_parent"
-                android:visibility="gone"
-                android:background="#88000000"/>
+                android:alpha="0"
+                android:background="@android:color/black"/>
 
             <FrameLayout
                 android:id="@+id/fl_fab_container"
