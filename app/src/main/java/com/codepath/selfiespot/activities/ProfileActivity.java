@@ -2,7 +2,7 @@ package com.codepath.selfiespot.activities;
 
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.drawable.Drawable;
+import android.content.res.ColorStateList;
 import android.os.Bundle;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
@@ -12,9 +12,6 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
-import android.text.Spannable;
-import android.text.SpannableString;
-import android.text.style.ImageSpan;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -57,6 +54,7 @@ public class ProfileActivity extends AppCompatActivity implements AppBarLayout.O
 
     private int mMaxScrollSize;
     private boolean mIsAvatarShown = true;
+    ColorStateList colors;
 
     public static Intent createIntent(final Context context) {
         final Intent intent = new Intent(context, ProfileActivity.class);
@@ -72,6 +70,13 @@ public class ProfileActivity extends AppCompatActivity implements AppBarLayout.O
 
         mViewPager.setAdapter(new SelfieSpotsPagerAdapter(getSupportFragmentManager()));
         mTabLayout.setupWithViewPager(mViewPager);
+
+        TabLayout.Tab tabCall  = mTabLayout.getTabAt(0);
+        tabCall.setIcon(R.drawable.tab_icon_myselfispot);
+
+        TabLayout.Tab tabCall2  = mTabLayout.getTabAt(1);
+        tabCall2.setIcon(R.drawable.tab_icon_bookmark);
+
 
         mAppBarLayout.addOnOffsetChangedListener(this);
         mMaxScrollSize = mAppBarLayout.getTotalScrollRange();
@@ -125,11 +130,6 @@ public class ProfileActivity extends AppCompatActivity implements AppBarLayout.O
         private final int POSITION_MY_SELFIES = 0;
         private final int POSITION_BOOKMARK_SELFIES = 1;
         private String mTabTitles[] = new String[] {"My Selfies", "Bookmarks"};
-        private int[] imageResId = {
-                R.drawable.ic_myselfies,
-                R.drawable.ic_bookmark_plus,
-
-        };
 
         public SelfieSpotsPagerAdapter(final FragmentManager fm) {
             super(fm);
@@ -150,14 +150,7 @@ public class ProfileActivity extends AppCompatActivity implements AppBarLayout.O
 
         @Override
         public CharSequence getPageTitle(int position) {
-
-            Drawable image = getApplicationContext().getResources().getDrawable(imageResId[position]);
-            image.setBounds(0, 0, image.getIntrinsicWidth(), image.getIntrinsicHeight());
-            // Replace blank spaces with image icon
-            SpannableString sb = new SpannableString("   " + mTabTitles[position]);
-            ImageSpan imageSpan = new ImageSpan(image, ImageSpan.ALIGN_BOTTOM);
-            sb.setSpan(imageSpan, 0, 1, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-            return sb;
+            return mTabTitles[position];
         }
 
         @Override

@@ -51,5 +51,8 @@
     <string name="delete_cancel">CANCEL</string>
     <string name="delete_warning">Are you sure?</string>
     <string name="menu_filter">Filters</string>
+    <string name="gradient">gradient</string>
+    <string name="login_with_facebook">Log in with facebook</string>
+    <string name="desc">loingin camera image</string>
 
 </resources>

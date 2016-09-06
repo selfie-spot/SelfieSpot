@@ -51,7 +51,7 @@
             android:paddingTop="@dimen/space_content"
             android:paddingRight="@dimen/space_content"
             android:paddingBottom="@dimen/space_content"
-            android:paddingLeft="18dp">
+            android:paddingLeft="8dp">
 
             <TextView
                 android:id="@+id/tv_name"
@@ -74,7 +74,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@+id/appbar"
-            android:paddingLeft="@dimen/activity_vertical_margin"/>
+
+            app:tabGravity="fill"/>
 
     </android.support.design.widget.AppBarLayout>
 
