@@ -3,6 +3,7 @@ package com.codepath.selfiespot.activities;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
@@ -29,6 +30,7 @@ import com.codepath.selfiespot.models.SelfieSpot;
 import com.codepath.selfiespot.services.GoogleApiClientBootstrapService;
 import com.codepath.selfiespot.util.CollectionUtils;
 import com.codepath.selfiespot.util.DateUtils;
+import com.codepath.selfiespot.util.ImageUtil;
 import com.codepath.selfiespot.util.ParseUserUtil;
 import com.codepath.selfiespot.util.ViewUtils;
 import com.codepath.selfiespot.views.DynamicHeightImageView;
@@ -41,6 +43,7 @@ import com.parse.ParseQuery;
 import com.parse.ParseUser;
 import com.parse.SaveCallback;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -334,6 +337,30 @@ public class TempDetailSelfieSpotActivity extends AppCompatActivity {
                         }
                     });
                 }
+            }
+        });
+
+        mShareImageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                String text = mSelfieSpot.getName();
+                ImageView siv = (ImageView) findViewById(R.id.iv_image);
+                String imagePath = ImageUtil.getStorageDir() + "/siv.png";
+
+                File imageFileToShare = new File(imagePath);
+                Uri imageUri = Uri.fromFile(imageFileToShare);
+                int[] imageSize = ImageUtil.getImageSize(imageUri);
+                ImageUtil.getResizedImageSize(imageSize);
+
+                Intent shareIntent = new Intent();
+                shareIntent.setAction(Intent.ACTION_SEND);
+                shareIntent.putExtra(android.content.Intent.EXTRA_TEXT, mSelfieSpot.getName());
+                shareIntent.putExtra(Intent.EXTRA_STREAM, imageUri);
+                shareIntent.setType("image/*");
+                shareIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                startActivity(Intent.createChooser(shareIntent, "Share images..."));
+
             }
         });
 
