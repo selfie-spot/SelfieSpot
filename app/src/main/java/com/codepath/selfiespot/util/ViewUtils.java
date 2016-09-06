@@ -12,7 +12,7 @@ public class ViewUtils {
 
     public static SpannableStringBuilder getSpannedText(final Context context, final String label, final int count) {
         final SpannableStringBuilder spannableStringBuilder = new SpannableStringBuilder();
-        spannableStringBuilder.append(Integer.toString(count));
+        spannableStringBuilder.append(NumberUtils.withSuffix(count));
         spannableStringBuilder.setSpan(new StyleSpan(android.graphics.Typeface.BOLD), 0, spannableStringBuilder.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
         spannableStringBuilder.setSpan(new ForegroundColorSpan(context.getResources().getColor(R.color.detail_text_likes)), 0, spannableStringBuilder.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
         spannableStringBuilder.append(" ").append(label);
