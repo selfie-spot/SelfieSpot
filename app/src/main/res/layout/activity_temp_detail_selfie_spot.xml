@@ -1,36 +1,39 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-             xmlns:tools="http://schemas.android.com/tools"
-             xmlns:app="http://schemas.android.com/apk/res-auto"
-             android:clipToPadding="false"
-             android:layout_width="match_parent"
-             android:layout_height="match_parent">
-
-    <RelativeLayout
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                                                 xmlns:tools="http://schemas.android.com/tools"
+                                                 android:layout_width="match_parent"
+                                                 android:layout_height="match_parent"
+                                                 xmlns:app="http://schemas.android.com/apk/res-auto"
+                                                 android:clipToPadding="false">
+    <android.support.design.widget.AppBarLayout
+        android:id="@+id/appbar_layout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:clipToPadding="false">
+        android:layout_height="wrap_content"
+        android:fitsSystemWindows="true"
+        android:theme="@style/ToolbarTheme">
 
-        <android.support.design.widget.AppBarLayout
-            android:id="@+id/appbar"
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:theme="@style/ToolbarTheme">
+            android:minHeight="?attr/actionBarSize"
+            app:layout_scrollFlags="scroll|enterAlways"/>
+    </android.support.design.widget.AppBarLayout>
 
-            <android.support.v7.widget.Toolbar
-                android:id="@+id/toolbar"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:minHeight="?attr/actionBarSize" />
-        </android.support.design.widget.AppBarLayout>
+    <android.support.v4.widget.NestedScrollView
+        android:id="@+id/nsv_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:paddingLeft="@dimen/space_content"
+        android:paddingRight="@dimen/space_content"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        android:scrollbars="none">
 
-        <ScrollView
+        <FrameLayout
+            android:paddingTop="5dp"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:scrollbars="none"
-            android:paddingTop="70dp"
-            android:paddingLeft="@dimen/space_content"
-            android:paddingRight="@dimen/space_content">
+            android:clipToPadding="false">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -41,20 +44,20 @@
                     android:id="@+id/tv_name"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:textSize="20sp"
-                    android:textColor="@android:color/black"
-                    android:textStyle="bold"
                     android:ellipsize="end"
                     android:lines="1"
                     android:maxLines="1"
+                    android:textColor="@android:color/black"
+                    android:textSize="20sp"
+                    android:textStyle="bold"
                     tools:text="Image Title 1"/>
 
                 <TextView
                     android:id="@+id/tv_author"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="@dimen/space_content"
                     android:layout_marginBottom="@dimen/space_content"
+                    android:layout_marginLeft="@dimen/space_content"
                     android:textSize="12sp"
                     tools:text="by John Doe"/>
 
@@ -62,9 +65,9 @@
                     android:id="@+id/iv_image"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:transitionName="image"
                     android:layout_marginBottom="@dimen/space_content"
-                    android:adjustViewBounds="true"/>
+                    android:adjustViewBounds="true"
+                    android:transitionName="image"/>
 
                 <TextView
                     android:id="@+id/tv_time"
@@ -86,15 +89,15 @@
                 <View
                     android:id="@+id/divider_likes"
                     style="@style/Divider"
-                    android:visibility="gone"
-                    android:layout_marginBottom="@dimen/detail_divider_margin"/>
+                    android:layout_marginBottom="@dimen/detail_divider_margin"
+                    android:visibility="gone"/>
 
                 <TextView
                     android:id="@+id/tv_tags"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:visibility="gone"
-                    android:layout_marginBottom="@dimen/space_content"/>
+                    android:layout_marginBottom="@dimen/space_content"
+                    android:visibility="gone"/>
 
                 <View
                     android:id="@+id/divider_tags"
@@ -107,8 +110,8 @@
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="@dimen/detail_divider_margin"
                     android:clickable="true"
-                    android:padding="5dp"
-                    android:foreground="?android:attr/selectableItemBackground">
+                    android:foreground="?android:attr/selectableItemBackground"
+                    android:padding="5dp">
 
                     <FrameLayout
                         android:id="@+id/fl_map_container"
@@ -126,56 +129,58 @@
                     android:id="@+id/ll_action_container"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:layout_marginBottom="@dimen/detail_divider_margin">
+                    android:layout_marginBottom="@dimen/detail_divider_margin"
+                    android:orientation="horizontal">
 
                     <ImageView
                         android:id="@+id/iv_like_action"
                         android:layout_width="@dimen/detail_action_width"
                         android:layout_height="@dimen/detail_action_height"
-                        android:layout_weight="1"
                         android:layout_gravity="center"
+                        android:layout_weight="1"
                         android:src="@drawable/ic_thumb_up"/>
 
                     <ImageView
                         android:id="@+id/iv_bookmark_action"
                         android:layout_width="@dimen/detail_action_width"
                         android:layout_height="@dimen/detail_action_height"
-                        android:layout_weight="1"
                         android:layout_gravity="center"
+                        android:layout_weight="1"
                         android:src="@drawable/ic_bookmark"/>
 
                     <ImageView
                         android:id="@+id/iv_share_action"
                         android:layout_width="@dimen/detail_action_width"
                         android:layout_height="@dimen/detail_action_height"
-                        android:layout_weight="1"
                         android:layout_gravity="center"
+                        android:layout_weight="1"
                         android:src="@drawable/ic_share"/>
                 </LinearLayout>
             </LinearLayout>
-        </ScrollView>
-    </RelativeLayout>
 
-    <FrameLayout
-        android:id="@+id/fl_progress_holder"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:alpha="0.8"
-        android:animateLayoutChanges="true"
-        android:clickable="true"
-        android:background="#000000"
-        android:visibility="gone">
+            <FrameLayout
+                android:id="@+id/fl_progress_holder"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:alpha="0.8"
+                android:animateLayoutChanges="true"
+                android:background="#000000"
+                android:clickable="true"
+                android:visibility="gone">
 
-        <ProgressBar
-            android:id="@+id/pb_loading"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:layout_alignParentTop="true"
-            android:layout_gravity="center"
-            android:indeterminate="true"
-            android:indeterminateDrawable="@drawable/ic_progress_indeterminate"/>
+                <ProgressBar
+                    android:id="@+id/pb_loading"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentBottom="true"
+                    android:layout_alignParentTop="true"
+                    android:layout_gravity="center"
+                    android:indeterminate="true"
+                    android:indeterminateDrawable="@drawable/ic_progress_indeterminate"/>
 
-     </FrameLayout>
-</FrameLayout>
+            </FrameLayout>
+
+        </FrameLayout>
+
+    </android.support.v4.widget.NestedScrollView>
+</android.support.design.widget.CoordinatorLayout>
