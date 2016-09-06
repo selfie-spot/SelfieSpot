@@ -10,11 +10,14 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.widget.CompoundButton;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.codepath.selfiespot.R;
 import com.codepath.selfiespot.SelfieSpotApplication;
+import com.codepath.selfiespot.util.Constants;
 import com.parse.LogOutCallback;
 import com.parse.ParseException;
 import com.parse.ParseUser;
@@ -29,6 +32,7 @@ import butterknife.OnClick;
 public class SettingsActivity extends AppCompatActivity {
 
     private static final String TAG = SettingsActivity.class.getSimpleName();
+
     @Inject
     SharedPreferences mSharedPreferences;
 
@@ -37,6 +41,9 @@ public class SettingsActivity extends AppCompatActivity {
 
     @BindView(R.id.toolbar)
     Toolbar mToolbar;
+
+    @BindView(R.id.sw_notification_on_preference)
+    Switch mNotificationsPreferenceSwitch;
 
     public static Intent createIntent(final Context context) {
         return new Intent(context, SettingsActivity.class);
@@ -57,6 +64,16 @@ public class SettingsActivity extends AppCompatActivity {
 
         final ParseUser currentUser = ParseUser.getCurrentUser();
         mAccountNameTextView.setText(currentUser.getUsername());
+
+        boolean notificationsEnabled = mSharedPreferences.getBoolean(Constants.PREF_KEY_NOTIFICATIONS, true);
+        mNotificationsPreferenceSwitch.setChecked(notificationsEnabled);
+
+        mNotificationsPreferenceSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(final CompoundButton compoundButton, final boolean isChecked) {
+                mSharedPreferences.edit().putBoolean(Constants.PREF_KEY_NOTIFICATIONS, isChecked).commit();
+            }
+        });
     }
 
     @OnClick(R.id.ll_user_container)

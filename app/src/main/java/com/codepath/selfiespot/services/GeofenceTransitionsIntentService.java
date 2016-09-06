@@ -17,6 +17,7 @@ import com.codepath.selfiespot.activities.SelfieSpotsMapActivity;
 import com.codepath.selfiespot.activities.TempDetailSelfieSpotActivity;
 import com.codepath.selfiespot.models.SelfieSpot;
 import com.codepath.selfiespot.receivers.TakePictureBroadcastReceiver;
+import com.codepath.selfiespot.util.Constants;
 import com.google.android.gms.location.GeofencingEvent;
 import com.parse.ParseException;
 
@@ -56,7 +57,13 @@ public class GeofenceTransitionsIntentService extends IntentService {
         }
 
         final String selfieSpotId = geofencingEvent.getTriggeringGeofences().get(0).getRequestId();
-        validateAndSendNotification(selfieSpotId);
+
+        final boolean notificationsEnabled = mSharedPreferences.getBoolean(Constants.PREF_KEY_NOTIFICATIONS, true);
+        if (notificationsEnabled) {
+            validateAndSendNotification(selfieSpotId);
+        } else {
+            Log.d(TAG, "Notifications disabled, ignoring geofence event for selfiespot: " + selfieSpotId);
+        }
     }
 
     private void validateAndSendNotification(final String selfieSpotId) {
