@@ -104,6 +104,8 @@ public class EditSelfieSpotActivity extends AppCompatActivity implements TagsDia
 
         ButterKnife.bind(this);
 
+        setSupportActionBar(mToolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowTitleEnabled(true);
 
 
