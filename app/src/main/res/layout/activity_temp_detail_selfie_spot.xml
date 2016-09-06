@@ -157,30 +157,29 @@
                         android:src="@drawable/ic_share"/>
                 </LinearLayout>
             </LinearLayout>
-
-            <FrameLayout
-                android:id="@+id/fl_progress_holder"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:alpha="0.8"
-                android:animateLayoutChanges="true"
-                android:background="#000000"
-                android:clickable="true"
-                android:visibility="gone">
-
-                <ProgressBar
-                    android:id="@+id/pb_loading"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentBottom="true"
-                    android:layout_alignParentTop="true"
-                    android:layout_gravity="center"
-                    android:indeterminate="true"
-                    android:indeterminateDrawable="@drawable/ic_progress_indeterminate"/>
-
-            </FrameLayout>
-
         </FrameLayout>
 
     </android.support.v4.widget.NestedScrollView>
+
+    <FrameLayout
+        android:id="@+id/fl_progress_holder"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:alpha="0.8"
+        android:animateLayoutChanges="true"
+        android:background="#000000"
+        android:clickable="true"
+        android:visibility="gone">
+
+        <ProgressBar
+            android:id="@+id/pb_loading"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentTop="true"
+            android:layout_gravity="center"
+            android:indeterminate="true"
+            android:indeterminateDrawable="@drawable/ic_progress_indeterminate"/>
+
+    </FrameLayout>
 </android.support.design.widget.CoordinatorLayout>

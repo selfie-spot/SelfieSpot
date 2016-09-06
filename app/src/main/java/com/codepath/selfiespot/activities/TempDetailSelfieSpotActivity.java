@@ -3,8 +3,12 @@ package com.codepath.selfiespot.activities;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AlertDialog;
@@ -30,7 +34,6 @@ import com.codepath.selfiespot.models.SelfieSpot;
 import com.codepath.selfiespot.services.GoogleApiClientBootstrapService;
 import com.codepath.selfiespot.util.CollectionUtils;
 import com.codepath.selfiespot.util.DateUtils;
-import com.codepath.selfiespot.util.ImageUtil;
 import com.codepath.selfiespot.util.ParseUserUtil;
 import com.codepath.selfiespot.util.ViewUtils;
 import com.codepath.selfiespot.views.DynamicHeightImageView;
@@ -43,7 +46,9 @@ import com.parse.ParseQuery;
 import com.parse.ParseUser;
 import com.parse.SaveCallback;
 
-import java.io.File;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -235,13 +240,13 @@ public class TempDetailSelfieSpotActivity extends AppCompatActivity {
                     return;
                 }
 
-                mCurrentlyBookmarked = ! CollectionUtils.isEmpty(objects);
+                mCurrentlyBookmarked = !CollectionUtils.isEmpty(objects);
                 setBookmarkIcon(mCurrentlyBookmarked);
 
                 mBookmarkImageView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(final View view) {
-                        if (! mCurrentlyBookmarked) {
+                        if (!mCurrentlyBookmarked) {
                             ParseUserUtil.bookmarkSelfieSpot(loggedInUser, mSelfieSpot, new SaveCallback() {
                                 @Override
                                 public void done(final ParseException e) {
@@ -313,7 +318,7 @@ public class TempDetailSelfieSpotActivity extends AppCompatActivity {
                     return;
                 }
 
-                setLikeIcon(! CollectionUtils.isEmpty(objects), mSelfieSpot.getLikesCount());
+                setLikeIcon(!CollectionUtils.isEmpty(objects), mSelfieSpot.getLikesCount());
 
                 // for the time being only enable the listener if not bookmarked
                 // TODO - add ability to toggle likes i.e., if likes, user should have
@@ -342,25 +347,8 @@ public class TempDetailSelfieSpotActivity extends AppCompatActivity {
 
         mShareImageView.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view) {
-
-                String text = mSelfieSpot.getName();
-                ImageView siv = (ImageView) findViewById(R.id.iv_image);
-                String imagePath = ImageUtil.getStorageDir() + "/siv.png";
-
-                File imageFileToShare = new File(imagePath);
-                Uri imageUri = Uri.fromFile(imageFileToShare);
-                int[] imageSize = ImageUtil.getImageSize(imageUri);
-                ImageUtil.getResizedImageSize(imageSize);
-
-                Intent shareIntent = new Intent();
-                shareIntent.setAction(Intent.ACTION_SEND);
-                shareIntent.putExtra(android.content.Intent.EXTRA_TEXT, mSelfieSpot.getName());
-                shareIntent.putExtra(Intent.EXTRA_STREAM, imageUri);
-                shareIntent.setType("image/*");
-                shareIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-                startActivity(Intent.createChooser(shareIntent, "Share images..."));
-
+            public void onClick(final View view) {
+                shareImage();
             }
         });
 
@@ -378,13 +366,18 @@ public class TempDetailSelfieSpotActivity extends AppCompatActivity {
         });
         getSupportFragmentManager().beginTransaction().replace(R.id.fl_map_container, mLocationMapFragment).commit();
 
-        if (! CollectionUtils.isEmpty(mSelfieSpot.getTags())) {
+        if (!CollectionUtils.isEmpty(mSelfieSpot.getTags())) {
             mTagsTextView.setText(getTagsText(mSelfieSpot.getTags()));
             mTagsTextView.setVisibility(View.VISIBLE);
             mLikesDivider.setVisibility(View.VISIBLE);
         }
 
         determineDeleteMenuVisiblity();
+    }
+
+    private void shareImage() {
+        new ShareImageTask().execute(mSelfieSpot.getMediaFile().getUrl());
+        showBusy();
     }
 
     private void determineDeleteMenuVisiblity() {
@@ -432,4 +425,47 @@ public class TempDetailSelfieSpotActivity extends AppCompatActivity {
     private void hideBusy() {
         mProgressFrameLayout.setVisibility(View.GONE);
     }
+
+    // TODO - find a better alternative, this is bad bad bad..
+    private class ShareImageTask extends AsyncTask<String, Void, String> {
+
+        @Override
+        protected String doInBackground(final String... urls) {
+            try {
+                // get the first element of urls array
+                final URL url = new URL(urls[0]);
+                final HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+                connection.setDoInput(true);
+                connection.connect();
+                final InputStream input = connection.getInputStream();
+                final Bitmap immutableBpm = BitmapFactory.decodeStream(input);
+                final Bitmap mutableBitmap = immutableBpm.copy(Bitmap.Config.ARGB_8888, true);
+                final String title = "share"; // "share_image_" + System.currentTimeMillis()
+                return MediaStore.Images.Media.insertImage(getContentResolver(), mutableBitmap, title, null);
+            } catch (final Exception e) {
+                Log.e(TAG, "Cannot share Unknown exception retrieving media: " + urls[0], e);
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(final String path) {
+            hideBusy();
+            if (path == null) {
+                Toast.makeText(TempDetailSelfieSpotActivity.this, "Unable to share SelfieSpot, Apologies!", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            Log.d(TAG, "Sharing image: " + path);
+
+            final Uri uri = Uri.parse(path);
+            final Intent shareIntent = new Intent();
+            shareIntent.setAction(Intent.ACTION_SEND);
+            shareIntent.putExtra(Intent.EXTRA_STREAM, uri);
+            shareIntent.setType("image/*");
+            // Launch sharing dialog for image
+            startActivity(Intent.createChooser(shareIntent, "Share Image"));
+        }
+    }
+
 }
