@@ -43,8 +43,8 @@
         <item name="tabTextAppearance">@style/TabTextAppearance</item>
         <item name="tabMode">fixed</item>
         <item name="tabGravity">fill</item>
-        <item name="tabPaddingStart">16dp</item>
-        <item name="tabPaddingEnd">16dp</item>
+        <item name="tabPaddingStart">0dp</item>
+        <item name="tabPaddingEnd">0dp</item>
     </style>
 
     <style name="TabTextAppearance" parent="TextAppearance.AppCompat.Button">
