@@ -2,7 +2,6 @@ package com.codepath.selfiespot.activities;
 
 import android.content.Context;
 import android.content.Intent;
-import android.content.res.ColorStateList;
 import android.os.Bundle;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
@@ -54,7 +53,6 @@ public class ProfileActivity extends AppCompatActivity implements AppBarLayout.O
 
     private int mMaxScrollSize;
     private boolean mIsAvatarShown = true;
-    ColorStateList colors;
 
     public static Intent createIntent(final Context context) {
         final Intent intent = new Intent(context, ProfileActivity.class);
@@ -70,13 +68,6 @@ public class ProfileActivity extends AppCompatActivity implements AppBarLayout.O
 
         mViewPager.setAdapter(new SelfieSpotsPagerAdapter(getSupportFragmentManager()));
         mTabLayout.setupWithViewPager(mViewPager);
-
-        TabLayout.Tab tabCall  = mTabLayout.getTabAt(0);
-        tabCall.setIcon(R.drawable.tab_icon_myselfispot);
-
-        TabLayout.Tab tabCall2  = mTabLayout.getTabAt(1);
-        tabCall2.setIcon(R.drawable.tab_icon_bookmark);
-
 
         mAppBarLayout.addOnOffsetChangedListener(this);
         mMaxScrollSize = mAppBarLayout.getTotalScrollRange();
