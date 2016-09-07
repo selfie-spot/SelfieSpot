@@ -46,7 +46,8 @@
             android:layout_marginTop="@dimen/space_content"
             android:layout_marginBottom="@dimen/space_content"
             android:scaleType="centerInside"
-            android:adjustViewBounds="true"/>
+            android:adjustViewBounds="true"
+            />
 
         <View
             android:id="@id/divider_action_container"
@@ -74,7 +75,9 @@
                     android:id="@+id/iv_location"
                     android:layout_width="@dimen/detail_action_width"
                     android:layout_height="@dimen/detail_action_height"
-                    android:src="@drawable/ic_place_normal"/>
+                    android:src="@drawable/ic_place_normal"
+                    android:layout_gravity="center"
+                    />
             </FrameLayout>
 
 
@@ -87,7 +90,8 @@
                     android:id="@+id/iv_tag"
                     android:layout_width="@dimen/detail_action_width"
                     android:layout_height="@dimen/detail_action_height"
-                    android:src="@drawable/ic_tag"/>
+                    android:src="@drawable/ic_tag"
+                    android:layout_gravity="center"/>
             </FrameLayout>
 
             <FrameLayout
@@ -107,7 +111,7 @@
                     android:textColor="@android:color/white"
                     app:backgroundTint="@color/btn_create"
                     android:textAllCaps="false"
-                    android:text="Create"/>
+                    android:text="Create" />
             </FrameLayout>
         </LinearLayout>
 

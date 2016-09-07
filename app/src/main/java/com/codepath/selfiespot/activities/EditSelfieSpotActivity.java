@@ -106,7 +106,8 @@ public class EditSelfieSpotActivity extends AppCompatActivity implements TagsDia
 
         setSupportActionBar(mToolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setDisplayShowTitleEnabled(false);
+        getSupportActionBar().setDisplayShowTitleEnabled(true);
+
 
         if (savedInstanceState != null) {
             mSelfieSpotData = (SelfieSpotData) savedInstanceState.getSerializable(STATE_DATA);

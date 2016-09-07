@@ -2,11 +2,13 @@ package com.codepath.selfiespot.activities;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.codepath.selfiespot.R;
@@ -28,6 +30,8 @@ import java.util.List;
 public class LoginActivity extends AppCompatActivity {
     private static final String TAG = LoginActivity.class.getSimpleName();
     private Button loginButton;
+    private TextView appName;
+    private TextView punchLine;
 
 
     public static Intent createIntent(final Context context) {
@@ -39,7 +43,11 @@ public class LoginActivity extends AppCompatActivity {
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-
+        appName =(TextView) findViewById(R.id.tv_title);
+        punchLine =(TextView) findViewById(R.id.tv_punchline);
+        Typeface font = Typeface.createFromAsset(getAssets(), "fonts/GenBasR.ttf");
+        appName.setTypeface(font);
+        punchLine.setTypeface(font);
 
         // already logged-in, directly go to home-activity
         if (ParseUser.getCurrentUser() != null) {
