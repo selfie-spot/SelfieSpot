@@ -14,6 +14,7 @@ import com.parse.Parse;
 import com.parse.ParseACL;
 import com.parse.ParseFacebookUtils;
 import com.parse.ParseObject;
+import com.parse.interceptors.ParseLogInterceptor;
 
 public class SelfieSpotApplication extends Application {
     private ApplicationComponent mComponent;
@@ -46,13 +47,14 @@ public class SelfieSpotApplication extends Application {
                 .applicationId(BuildConfig.PARSE_ID)
 //                .clientKey(BuildConfig.PARSE_KEY)
                 .server(BuildConfig.PARSE_SERVER_URL)
-//                .addNetworkInterceptor(new ParseLogInterceptor())
+                .addNetworkInterceptor(new ParseLogInterceptor())
                 .enableLocalDataStore()
                 .build());
 
         final ParseACL defaultACL = new ParseACL();
         // Optionally enable public read access.
         defaultACL.setPublicReadAccess(true);
+        defaultACL.setPublicWriteAccess(true);
         ParseACL.setDefaultACL(defaultACL, true);
 
         ParseFacebookUtils.initialize(getApplicationContext());
