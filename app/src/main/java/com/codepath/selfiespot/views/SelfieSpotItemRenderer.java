@@ -8,6 +8,7 @@ import android.widget.TextView;
 
 import com.codepath.selfiespot.R;
 import com.codepath.selfiespot.models.SelfieSpot;
+import com.codepath.selfiespot.util.NumberUtils;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -40,7 +41,7 @@ public class SelfieSpotItemRenderer extends DefaultClusterRenderer<SelfieSpot> {
 
     @Override
     protected void onBeforeClusterItemRendered(final SelfieSpot selfieSpot, final MarkerOptions markerOptions) {
-        mLikesTextView.setText(Integer.toString(selfieSpot.getLikesCount()));
+        mLikesTextView.setText(NumberUtils.withSuffix(selfieSpot.getLikesCount()));
         final Bitmap icon = mIconGenerator.makeIcon();
         markerOptions.icon(BitmapDescriptorFactory.fromBitmap(icon)).title(selfieSpot.getName());
     }
