@@ -240,6 +240,7 @@ public class SelfieSpotsMapFragment extends BaseMapFragment implements
         final float zoomLevel = mMap.getCameraPosition().zoom;
         final boolean retrieve = zoomLevel >= MIN_ZOOM_LEVEL;
         if (! retrieve) {
+            mSelfieSpotsCallback.setMessage("Whoa! That is too far up! Try zooming-in!");
             Log.d(TAG, "Zoom level too high: " + zoomLevel);
         }
         return retrieve;
