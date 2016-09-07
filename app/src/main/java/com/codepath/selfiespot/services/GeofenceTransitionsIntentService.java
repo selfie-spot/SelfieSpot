@@ -104,7 +104,7 @@ public class GeofenceTransitionsIntentService extends IntentService {
 
         final NotificationCompat.Builder builder =
                 new NotificationCompat.Builder(this)
-                        .setSmallIcon(R.drawable.ic_launcher)
+                        .setSmallIcon(R.drawable.ic_launcher5)
                         .setContentTitle("Time for a Selfie!")
                         .setStyle(new NotificationCompat.BigTextStyle().bigText(getNotificationText(selfieSpot)))
                         .setContentIntent(resultPendingIntent)
