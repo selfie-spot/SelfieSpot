@@ -73,9 +73,7 @@
             style="@style/SelfieSpotTabLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/appbar"
-
-            app:tabGravity="fill"/>
+            android:layout_below="@+id/appbar" />
 
     </android.support.design.widget.AppBarLayout>
 
